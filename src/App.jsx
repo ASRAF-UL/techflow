@@ -1,15 +1,29 @@
 import { useState } from "react";
-import { IoIosArrowUp, IoIosArrowDown, IoIosSearch } from "react-icons/io";
+import {
+  IoIosArrowUp,
+  IoIosArrowDown,
+  IoIosSearch,
+  IoIosMenu,
+} from "react-icons/io";
+import { FaPhoneVolume } from "react-icons/fa6";
+import LeftSideModal from "./components/sideModal";
+import Carousel from "./components/carousel";
+import { RiArrowDownDoubleLine } from "react-icons/ri";
+import CarouselProductList from "./components/carouselProductList";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState("Shoes");
+  const [isSideModalOpen, setIsSideModalOpen] = useState(false);
+  const [showNestedModal, setShowNestedModal] = useState(false);
+  const [showNestedThirdModal, setShowNestedThirdModal] = useState(false);
   const items = ["Shoes", "Jeans", "T-shirts", "Shirts"];
+  const images = ["1.png", "2.png", "1.png", "2.png"];
 
   return (
     <>
-      <div className="h-screen w-screen flex flex-col">
+      <div className="flex flex-col items-center overflow-y-auto">
         <div className="h-[37px] w-full px-[calc(7%)] flex justify-between items-center bg-main-green">
           <div className="font-main-font text-white text-[14px] flex justify-between gap-5">
             <a href="#" className="hover:underline">
@@ -171,76 +185,231 @@ function App() {
             </div>
           </div>
         </div>
-        <nav class="bg-gray-800 p-4">
-          <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="text-white text-2xl font-semibold">
-              <a href="#">MyWebsite</a>
-            </div>
-            <ul class="hidden md:flex space-x-8 text-white">
-              <li>
-                <a href="#" class="hover:bg-gray-700 p-2 rounded">
+        <nav class="px-[calc(7%)] h-[56px] w-full flex justify-between items-center border-1 border-border-gray">
+          <div className="relative text-dark-black flex flex-row items-center gap-20 h-full">
+            <button
+              onClick={() => setIsSideModalOpen(!isSideModalOpen)}
+              className="group flex justify-between items-center w-full px-4 py-2 gap-4 hover:text-main-green border-r-1 border-border-gray"
+            >
+              <IoIosMenu
+                size={20}
+                className="text-black group-hover:text-main-green"
+              />
+              Menu
+            </button>
+            <LeftSideModal
+              isOpen={isSideModalOpen}
+              onClose={() => {
+                setIsSideModalOpen(false);
+                setShowNestedModal(false);
+                setShowNestedThirdModal(false);
+              }}
+            >
+              <div className="flex flex-row">
+                <div className="w-72">
+                  <h1>Modal 01</h1>
+                  <button onClick={() => setShowNestedModal(true)}>
+                    2nd modal open
+                  </button>
+                </div>
+                <div className={`w-72 ${showNestedModal ? "" : "hidden"}`}>
+                  <h1>Modal 02</h1>
+                  <button onClick={() => setShowNestedThirdModal(true)}>
+                    3nd modal open
+                  </button>
+                </div>
+                <div className={`w-72 ${showNestedThirdModal ? "" : "hidden"}`}>
+                  Modal 03
+                </div>
+              </div>
+            </LeftSideModal>
+            <div className="flex flex-row justify-between items-center gap-10 h-full">
+              <div className="dropdown h-full font-semibold text-light-black text-[16px]">
+                <button className="border-none cursor-pointer h-full">
+                  English
+                </button>
+                <ul className="dropdown-content">
+                  <li>
+                    <a href="#">English</a>
+                  </li>
+                  <li>
+                    <a href="#">Japan</a>
+                  </li>
+                  <li>
+                    <a href="#">French</a>
+                  </li>
+                  <li>
+                    <a href="#">German</a>
+                  </li>
+                  <li>
+                    <a href="#">Bangladesh</a>
+                  </li>
+                  <li>
+                    <a href="#">South Korea</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="dropdown h-full font-semibold text-light-black text-[16px]">
+                <button className="border-none cursor-pointer h-full">
                   Home
+                </button>
+                <ul className="dropdown-content">
+                  <li>
+                    <a href="#">Home</a>
+                  </li>
+                  <li>
+                    <a href="#">Home 01</a>
+                  </li>
+                  <li>
+                    <a href="#">Home 02</a>
+                  </li>
+                  <li>
+                    <a href="#">Home 03</a>
+                  </li>
+                  <li>
+                    <a href="#">Home 04</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="dropdown h-full font-semibold text-light-black text-[16px]">
+                <button className="border-none cursor-pointer h-full">
+                  Product
+                </button>
+                <ul className="dropdown-content">
+                  <li>
+                    <a href="#">Product</a>
+                  </li>
+                  <li>
+                    <a href="#">Product 01</a>
+                  </li>
+                  <li>
+                    <a href="#">Product 02</a>
+                  </li>
+                  <li>
+                    <a href="#">Product 03</a>
+                  </li>
+                  <li>
+                    <a href="#">Product 04</a>
+                  </li>
+                  <li>
+                    <a href="#">Product 05</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="dropdown h-full font-semibold text-light-black text-[16px]">
+                <button className="border-none cursor-pointer h-full">
+                  Pages
+                </button>
+                <ul className="dropdown-content">
+                  <li>
+                    <a href="#">Pages</a>
+                  </li>
+                  <li>
+                    <a href="#">Pages 01</a>
+                  </li>
+                  <li>
+                    <a href="#">Pages 02</a>
+                  </li>
+                  <li>
+                    <a href="#">Pages 03</a>
+                  </li>
+                  <li>
+                    <a href="#">Pages 04</a>
+                  </li>
+                  <li>
+                    <a href="#">Pages 05</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="dropdown h-full font-semibold text-light-black text-[16px]">
+                <button className="border-none cursor-pointer h-full">
+                  Blog
+                </button>
+                <ul className="dropdown-content">
+                  <li>
+                    <a href="#">Blog</a>
+                  </li>
+                  <li>
+                    <a href="#">Blog 01</a>
+                  </li>
+                  <li>
+                    <a href="#">Blog 02</a>
+                  </li>
+                  <li>
+                    <a href="#">Blog 03</a>
+                  </li>
+                  <li>
+                    <a href="#">Blog 04</a>
+                  </li>
+                  <li>
+                    <a href="#">Blog 05</a>
+                  </li>
+                </ul>
+              </div>
+              <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
+                <a href="#" className="whitespace-nowrap">
+                  Contact Us
                 </a>
-              </li>
-              <li>
-                <a href="#" class="hover:bg-gray-700 p-2 rounded">
-                  About
-                </a>
-              </li>
-              <li>
-                <a href="#" class="hover:bg-gray-700 p-2 rounded">
-                  Services
-                </a>
-              </li>
-              <li>
-                <a href="#" class="hover:bg-gray-700 p-2 rounded">
-                  Contact
-                </a>
-              </li>
-            </ul>
-            <div class="md:hidden flex items-center">
-              <button id="hamburger" class="text-white focus:outline-none">
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M3 12h18M3 6h18M3 18h18"></path>
-                </svg>
-              </button>
+              </div>
             </div>
           </div>
-          <ul
-            id="mobile-menu"
-            class="md:hidden bg-gray-800 space-y-4 text-white p-4 absolute top-16 left-0 right-0 hidden"
-          >
-            <li>
-              <a href="#" class="hover:bg-gray-700 p-2 rounded">
-                Home
-              </a>
-            </li>
-            <li>
-              <a href="#" class="hover:bg-gray-700 p-2 rounded">
-                About
-              </a>
-            </li>
-            <li>
-              <a href="#" class="hover:bg-gray-700 p-2 rounded">
-                Services
-              </a>
-            </li>
-            <li>
-              <a href="#" class="hover:bg-gray-700 p-2 rounded">
-                Contact
-              </a>
-            </li>
-          </ul>
+          <div className="flex flex-row gap-2 items-center justify-center h-full bg-main-green p-[10px] text-white text-[18px] font-semibold tracking-wide">
+            <button className="h-[32px] w-[32px] flex justify-center items-center">
+              <FaPhoneVolume size={24} />
+            </button>
+            <span>(+88) 01784251150</span>
+          </div>
         </nav>
+        {/* <div
+          className="content h-[calc(100%-19rem)] w-[calc(86%)] my-8 rounded-[20px] flex"
+          style={{
+            backgroundImage: "url(bg.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="absolute w-full top-10 bottom-10 left-0 right-0">
+            <Carousel images={images} />
+          </div>
+          <div className="circle"></div>
+          <div className="moving-arrow w-[100px] h-[100px] bg-yellow-300 flex items-center justify-center rounded-full">
+            <button className="absolute h-full w-full bg-main-green hover:bg-hover-green flex items-center justify-center rounded-full border-4 border-white">
+              <RiArrowDownDoubleLine
+                size={36}
+                color="white"
+                className="animate-wave-icon"
+              />
+            </button>
+          </div>
+        </div> */}
+        <div
+          className="content max-h-[610px] min-h-[610px] w-[calc(86%)] my-8 rounded-[20px] flex"
+          style={{
+            backgroundImage: "url(bg.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="absolute w-full top-10 bottom-10 left-0 right-0">
+            <Carousel images={images} />
+          </div>
+          <div className="circle"></div>
+          <div className="moving-arrow w-[100px] h-[100px] bg-yellow-300 flex items-center justify-center rounded-full">
+            <button className="absolute h-full w-full bg-main-green hover:bg-hover-green flex items-center justify-center rounded-full border-4 border-white">
+              <RiArrowDownDoubleLine
+                size={36}
+                color="white"
+                className="animate-wave-icon"
+              />
+            </button>
+          </div>
+        </div>
+        <div className="h-72 w-full px-[calc(7%)] py-5">
+          <CarouselProductList />
+        </div>
+        <div className="h-[360px] w-full px-[calc(7%)] flex flex-row">
+          <div></div>
+        </div>
       </div>
     </>
   );

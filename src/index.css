@@ -9,13 +9,17 @@
   --color-dark-black: rgba(0, 0, 0, 0.7);
   --color-border-green: #20c997;
   --color-border-gray: #e6e6e6;
+  --color-semi-transparent: rgba(0, 0, 0, 0.6);
+  --font-quick-sand: "Quicksand, sans-serif";
+  --color-large-text: #121535;
+  --color-hover-green: #1b824c;
+  --color-carousel-green: #e8f7e6;
 }
 
 /* Dropdown container */
 .dropdown {
   position: relative;
   display: inline-block;
-  height: 37px;
 }
 
 /* Dropdown menu (hidden by default) */
@@ -48,4 +52,65 @@
 /* Show dropdown when button is hovered */
 .dropdown:hover .dropdown-content {
   display: block;
+}
+.content {
+  position: relative;
+  background: #d3ebc0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.circle {
+  height: 100px;
+  width: 150px;
+  background: #d3ebc0;
+  position: relative;
+  top: 50px;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+.circle::before {
+  content: "";
+  height: 30px;
+  width: 40px;
+  background: red;
+  position: absolute;
+  border-top-right-radius: 50px;
+  top: 50px;
+  left: -33px;
+  box-shadow: 8px -15px #d3ebc0;
+  background: transparent;
+}
+.circle::after {
+  content: "";
+  height: 30px;
+  width: 40px;
+  background: red;
+  position: absolute;
+  border-top-left-radius: 50px;
+  top: 50px;
+  right: -33px;
+  box-shadow: -8px -15px #d3ebc0;
+  background: transparent;
+}
+.moving-arrow {
+  position: absolute;
+  bottom: -20px; /* Adjusts the distance from the bottom of the parent */
+  left: 50%; /* Centers the element horizontally */
+  transform: translateX(-50%); /* Ensures perfect centering */
+}
+@keyframes wave-icon {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.animate-wave-icon {
+  animation: wave-icon 2s ease-in-out infinite;
 }
