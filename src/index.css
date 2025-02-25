@@ -14,6 +14,15 @@
   --color-large-text: #121535;
   --color-hover-green: #1b824c;
   --color-carousel-green: #e8f7e6;
+  --color-card-100: #fff3cd;
+  --color-card-200: #d1e7dd;
+  --color-card-300: #f8d7da;
+  --color-card-400: #f3faf2;
+  --color-circle-100: #ffe69c;
+  --color-circle-200: #a3cfbb;
+  --color-circle-300: #f1aeb5;
+  --color-circle-400: #fff3cd;
+  --color-add-cart: #e6f9ef;
 }
 
 /* Dropdown container */
@@ -113,4 +122,24 @@
 
 .animate-wave-icon {
   animation: wave-icon 2s ease-in-out infinite;
+}
+.parent-div-bg {
+  position: relative; /* Required for pseudo-element positioning */
+  z-index: 1; /* Ensure content is above the background */
+}
+
+.parent-div-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background-image: url("bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.7; /* Adjust opacity (0.5 = 50% opacity) */
+  z-index: -1; /* Place the background behind the content */
 }

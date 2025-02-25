@@ -77,7 +77,9 @@ const CarouselProductList = () => {
                       className="h-auto transition-transform duration-300 ease-in-out group-hover:scale-110"
                     />
                   </div>
-                  <h2 className="text-sm font-semibold">{product.category}</h2>
+                  <h2 className="text-sm font-semibold hover:text-hover-green">
+                    {product.category}
+                  </h2>
                   <span className="text-gray-500 text-xs">
                     {product.quantity}+ products
                   </span>
@@ -90,7 +92,7 @@ const CarouselProductList = () => {
       {/* Previous Button */}
       <button
         onClick={prevSlide}
-        className="h-10 w-10 absolute top-1/2 left-2 transform -translate-y-1/2 bg-white hover:bg-green-500 bg-opacity-50 rounded-full flex items-center justify-center hover:bg-opacity-75 group border border-gray-300"
+        className="h-10 w-10 absolute top-1/2 left-2 transform -translate-y-1/2 bg-white hover:bg-hover-green bg-opacity-50 rounded-full flex items-center justify-center hover:bg-opacity-75 group border border-gray-300"
       >
         <IoIosArrowBack
           size={16}
@@ -101,7 +103,7 @@ const CarouselProductList = () => {
       {/* Next Button */}
       <button
         onClick={nextSlide}
-        className="h-10 w-10 absolute top-1/2 right-2 transform -translate-y-1/2 bg-white hover:bg-green-500 bg-opacity-50 rounded-full flex items-center justify-center hover:bg-opacity-75 group border border-gray-300"
+        className="h-10 w-10 absolute top-1/2 right-2 transform -translate-y-1/2 bg-white hover:bg-hover-green bg-opacity-50 rounded-full flex items-center justify-center hover:bg-opacity-75 group border border-gray-300"
       >
         <IoIosArrowForward
           size={16}

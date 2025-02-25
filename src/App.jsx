@@ -10,6 +10,11 @@ import LeftSideModal from "./components/sideModal";
 import Carousel from "./components/carousel";
 import { RiArrowDownDoubleLine } from "react-icons/ri";
 import CarouselProductList from "./components/carouselProductList";
+import { FaArrowRightLong } from "react-icons/fa6";
+import FlashSalesCarousel from "./components/flashSaleCarousel";
+import { LuShoppingCart } from "react-icons/lu";
+import { FaStar } from "react-icons/fa";
+import HotDealsCarousel from "./components/hotDealsCarousel";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +25,16 @@ function App() {
   const [showNestedThirdModal, setShowNestedThirdModal] = useState(false);
   const items = ["Shoes", "Jeans", "T-shirts", "Shirts"];
   const images = ["1.png", "2.png", "1.png", "2.png"];
+  const categories = [
+    "All",
+    "Grocery",
+    "Fruits",
+    "Juices",
+    "Vegetables",
+    "Snacks",
+    "Organic Foods",
+  ];
+  const [selected, setSelected] = useState("All");
 
   return (
     <>
@@ -360,28 +375,6 @@ function App() {
             <span>(+88) 01784251150</span>
           </div>
         </nav>
-        {/* <div
-          className="content h-[calc(100%-19rem)] w-[calc(86%)] my-8 rounded-[20px] flex"
-          style={{
-            backgroundImage: "url(bg.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div className="absolute w-full top-10 bottom-10 left-0 right-0">
-            <Carousel images={images} />
-          </div>
-          <div className="circle"></div>
-          <div className="moving-arrow w-[100px] h-[100px] bg-yellow-300 flex items-center justify-center rounded-full">
-            <button className="absolute h-full w-full bg-main-green hover:bg-hover-green flex items-center justify-center rounded-full border-4 border-white">
-              <RiArrowDownDoubleLine
-                size={36}
-                color="white"
-                className="animate-wave-icon"
-              />
-            </button>
-          </div>
-        </div> */}
         <div
           className="content max-h-[610px] min-h-[610px] w-[calc(86%)] my-8 rounded-[20px] flex"
           style={{
@@ -407,8 +400,1489 @@ function App() {
         <div className="h-72 w-full px-[calc(7%)] py-5">
           <CarouselProductList />
         </div>
-        <div className="h-[360px] w-full px-[calc(7%)] flex flex-row">
-          <div></div>
+        <div className="h-[360px] w-full px-[calc(7%)] flex flex-row gap-6 py-4">
+          <div className="relative w-1/4 h-full bg-card-100 rounded-[20px] overflow-hidden flex items-center">
+            <div className="relative flex flex-col w-1/2 items-center justify-center p-4">
+              <h1 className="text-[24px] font-quick-sand text-large-text font-bold mb-[16px] leading-[1.5] text-center">
+                Everyday Fresh Meat
+              </h1>
+              <button className="text-white flex items-center gap-2 text-[16px] bg-main-green hover:bg-hover-green font-semibold h-[48px] px-[24px] py-[13px] rounded-full mt-[24px]">
+                Shop Now
+                <FaArrowRightLong size={18} color="white" />
+              </button>
+            </div>
+            <div className="absolute top-[-10%] right-[-20%] w-[240px] h-[240px] rounded-full bg-circle-100"></div>
+            <img
+              src="1.png"
+              alt="img 1"
+              className="absolute w-2/3 h-auto right-[-20%] top-[25%]"
+            />
+          </div>
+          <div className="relative w-1/4 h-full bg-card-200 rounded-[20px] overflow-hidden flex items-center">
+            <div className="relative flex flex-col w-1/2 items-center justify-center p-4">
+              <h1 className="text-[24px] font-quick-sand text-large-text font-bold mb-[16px] leading-[1.5] text-center">
+                Daily Fresh Vegetables
+              </h1>
+              <button className="text-white flex items-center gap-2 text-[16px] bg-main-green hover:bg-hover-green font-semibold h-[48px] px-[24px] py-[13px] rounded-full mt-[24px]">
+                Shop Now
+                <FaArrowRightLong size={18} color="white" />
+              </button>
+            </div>
+            <div className="absolute top-[-10%] right-[-20%] w-[240px] h-[240px] rounded-full bg-circle-200"></div>
+            <img
+              src="2.png"
+              alt="img 2"
+              className="absolute w-2/3 h-auto right-[-20%] top-[25%]"
+            />
+          </div>
+          <div className="relative w-1/4 h-full bg-card-300 rounded-[20px] overflow-hidden flex items-center">
+            <div className="relative flex flex-col w-1/2 items-center justify-center p-4">
+              <h1 className="text-[24px] font-quick-sand text-large-text font-bold mb-[16px] leading-[1.5] text-center">
+                Everyday Fresh Milk
+              </h1>
+              <button className="text-white flex items-center gap-2 text-[16px] bg-main-green hover:bg-hover-green font-semibold h-[48px] px-[24px] py-[13px] rounded-full mt-[24px]">
+                Shop Now
+                <FaArrowRightLong size={18} color="white" />
+              </button>
+            </div>
+            <div className="absolute top-[-10%] right-[-20%] w-[240px] h-[240px] rounded-full bg-circle-300"></div>
+            <img
+              src="4.png"
+              alt="img 3"
+              className="absolute w-2/3 h-auto right-[-20%] top-[25%]"
+            />
+          </div>
+          <div className="relative w-1/4 h-full bg-card-400 rounded-[20px] overflow-hidden flex items-center">
+            <div className="relative flex flex-col w-1/2 items-center justify-center p-4">
+              <h1 className="text-[24px] font-quick-sand text-large-text font-bold mb-[16px] leading-[1.5] text-center">
+                Everyday Fresh Fruits
+              </h1>
+              <button className="text-white flex items-center gap-2 text-[16px] bg-main-green hover:bg-hover-green font-semibold h-[48px] px-[24px] py-[13px] rounded-full mt-[24px]">
+                Shop Now
+                <FaArrowRightLong size={18} color="white" />
+              </button>
+            </div>
+            <div className="absolute top-[-10%] right-[-20%] w-[240px] h-[240px] rounded-full bg-circle-400"></div>
+            <img
+              src="7.png"
+              alt="img 7"
+              className="absolute w-2/3 h-auto right-[-20%] top-[25%]"
+            />
+          </div>
+        </div>
+
+        <FlashSalesCarousel />
+        <div className="h-[470px] w-full px-[7%] py-2 flex flex-row gap-5">
+          <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+            <button className="group absolute z-10 top-4 right-4 flex items-center justify-center gap-2 text-main-green hover:text-white text-sm font-semibold hover:bg-main-green bg-add-cart rounded-full h-10 px-4 transition-all duration-300 ease-in-out">
+              Add
+              <LuShoppingCart
+                size={16}
+                className="text-main-green group-hover:text-white transition-all duration-300 ease-in-out"
+              />
+            </button>
+            <a
+              href="#"
+              className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+            >
+              <img
+                src="11.png"
+                alt="Product Image"
+                className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+              />
+            </a>
+            <div className="w-full mt-4">
+              {/* Pricing Section */}
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-2xl font-bold text-large-text">
+                  $14.99
+                </span>
+                <span className="text-sm text-gray-500">/Qty</span>
+                <span className="ml-2 text-base text-gray-400 line-through">
+                  $28.99
+                </span>
+              </div>
+
+              {/* Rating Section */}
+              <div className="flex items-center gap-1 mb-3">
+                <div className="flex items-center text-yellow-400">
+                  <FaStar size={16} />
+                </div>
+                <span className="text-sm font-medium text-gray-700">4.8</span>
+                <span className="text-sm text-gray-400">(17k)</span>
+              </div>
+
+              {/* Product Details */}
+              <h3 className="text-lg font-semibold text-large-text mb-2">
+                Taylor Farms Broccoli
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+              {/* Progress Bar */}
+              <div className="w-full mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-1">
+                  <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                </div>
+                <div className="flex justify-between text-sm text-large-text mb-1">
+                  <span>Sold: 30/40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+            <button className="group absolute z-10 top-4 right-4 flex items-center justify-center gap-2 text-main-green hover:text-white text-sm font-semibold hover:bg-main-green bg-add-cart rounded-full h-10 px-4 transition-all duration-300 ease-in-out">
+              Add
+              <LuShoppingCart
+                size={16}
+                className="text-main-green group-hover:text-white transition-all duration-300 ease-in-out"
+              />
+            </button>
+            <a
+              href="#"
+              className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+            >
+              <img
+                src="11.png"
+                alt="Product Image"
+                className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+              />
+            </a>
+            <div className="w-full mt-4">
+              {/* Pricing Section */}
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-2xl font-bold text-large-text">
+                  $14.99
+                </span>
+                <span className="text-sm text-gray-500">/Qty</span>
+                <span className="ml-2 text-base text-gray-400 line-through">
+                  $28.99
+                </span>
+              </div>
+
+              {/* Rating Section */}
+              <div className="flex items-center gap-1 mb-3">
+                <div className="flex items-center text-yellow-400">
+                  <FaStar size={16} />
+                </div>
+                <span className="text-sm font-medium text-gray-700">4.8</span>
+                <span className="text-sm text-gray-400">(17k)</span>
+              </div>
+
+              {/* Product Details */}
+              <h3 className="text-lg font-semibold text-large-text mb-2">
+                Taylor Farms Broccoli
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+              {/* Progress Bar */}
+              <div className="w-full mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-1">
+                  <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                </div>
+                <div className="flex justify-between text-sm text-large-text mb-1">
+                  <span>Sold: 30/40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+            <button className="group absolute z-10 top-4 right-4 flex items-center justify-center gap-2 text-main-green hover:text-white text-sm font-semibold hover:bg-main-green bg-add-cart rounded-full h-10 px-4 transition-all duration-300 ease-in-out">
+              Add
+              <LuShoppingCart
+                size={16}
+                className="text-main-green group-hover:text-white transition-all duration-300 ease-in-out"
+              />
+            </button>
+            <a
+              href="#"
+              className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+            >
+              <img
+                src="22.png"
+                alt="Product Image"
+                className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+              />
+            </a>
+            <div className="w-full mt-4">
+              {/* Pricing Section */}
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-2xl font-bold text-large-text">
+                  $14.99
+                </span>
+                <span className="text-sm text-gray-500">/Qty</span>
+                <span className="ml-2 text-base text-gray-400 line-through">
+                  $28.99
+                </span>
+              </div>
+
+              {/* Rating Section */}
+              <div className="flex items-center gap-1 mb-3">
+                <div className="flex items-center text-yellow-400">
+                  <FaStar size={16} />
+                </div>
+                <span className="text-sm font-medium text-gray-700">4.8</span>
+                <span className="text-sm text-gray-400">(17k)</span>
+              </div>
+
+              {/* Product Details */}
+              <h3 className="text-lg font-semibold text-large-text mb-2">
+                Taylor Farms Broccoli
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+              {/* Progress Bar */}
+              <div className="w-full mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-1">
+                  <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                </div>
+                <div className="flex justify-between text-sm text-large-text mb-1">
+                  <span>Sold: 30/40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+            <button className="group absolute z-10 top-4 right-4 flex items-center justify-center gap-2 text-main-green hover:text-white text-sm font-semibold hover:bg-main-green bg-add-cart rounded-full h-10 px-4 transition-all duration-300 ease-in-out">
+              Add
+              <LuShoppingCart
+                size={16}
+                className="text-main-green group-hover:text-white transition-all duration-300 ease-in-out"
+              />
+            </button>
+            <a
+              href="#"
+              className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+            >
+              <img
+                src="33.png"
+                alt="Product Image"
+                className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+              />
+            </a>
+            <div className="w-full mt-4">
+              {/* Pricing Section */}
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-2xl font-bold text-large-text">
+                  $14.99
+                </span>
+                <span className="text-sm text-gray-500">/Qty</span>
+                <span className="ml-2 text-base text-gray-400 line-through">
+                  $28.99
+                </span>
+              </div>
+
+              {/* Rating Section */}
+              <div className="flex items-center gap-1 mb-3">
+                <div className="flex items-center text-yellow-400">
+                  <FaStar size={16} />
+                </div>
+                <span className="text-sm font-medium text-gray-700">4.8</span>
+                <span className="text-sm text-gray-400">(17k)</span>
+              </div>
+
+              {/* Product Details */}
+              <h3 className="text-lg font-semibold text-large-text mb-2">
+                Taylor Farms Broccoli
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+              {/* Progress Bar */}
+              <div className="w-full mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-1">
+                  <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                </div>
+                <div className="flex justify-between text-sm text-large-text mb-1">
+                  <span>Sold: 30/40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+            <button className="group absolute z-10 top-4 right-4 flex items-center justify-center gap-2 text-main-green hover:text-white text-sm font-semibold hover:bg-main-green bg-add-cart rounded-full h-10 px-4 transition-all duration-300 ease-in-out">
+              Add
+              <LuShoppingCart
+                size={16}
+                className="text-main-green group-hover:text-white transition-all duration-300 ease-in-out"
+              />
+            </button>
+            <a
+              href="#"
+              className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+            >
+              <img
+                src="44.png"
+                alt="Product Image"
+                className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+              />
+            </a>
+            <div className="w-full mt-4">
+              {/* Pricing Section */}
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-2xl font-bold text-large-text">
+                  $14.99
+                </span>
+                <span className="text-sm text-gray-500">/Qty</span>
+                <span className="ml-2 text-base text-gray-400 line-through">
+                  $28.99
+                </span>
+              </div>
+
+              {/* Rating Section */}
+              <div className="flex items-center gap-1 mb-3">
+                <div className="flex items-center text-yellow-400">
+                  <FaStar size={16} />
+                </div>
+                <span className="text-sm font-medium text-gray-700">4.8</span>
+                <span className="text-sm text-gray-400">(17k)</span>
+              </div>
+
+              {/* Product Details */}
+              <h3 className="text-lg font-semibold text-large-text mb-2">
+                Taylor Farms Broccoli
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+              {/* Progress Bar */}
+              <div className="w-full mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-1">
+                  <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                </div>
+                <div className="flex justify-between text-sm text-large-text mb-1">
+                  <span>Sold: 30/40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+            <button className="group absolute z-10 top-4 right-4 flex items-center justify-center gap-2 text-main-green hover:text-white text-sm font-semibold hover:bg-main-green bg-add-cart rounded-full h-10 px-4 transition-all duration-300 ease-in-out">
+              Add
+              <LuShoppingCart
+                size={16}
+                className="text-main-green group-hover:text-white transition-all duration-300 ease-in-out"
+              />
+            </button>
+            <a
+              href="#"
+              className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+            >
+              <img
+                src="55.png"
+                alt="Product Image"
+                className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+              />
+            </a>
+            <div className="w-full mt-4">
+              {/* Pricing Section */}
+              <div className="flex items-end gap-2 mb-2">
+                <span className="text-2xl font-bold text-large-text">
+                  $14.99
+                </span>
+                <span className="text-sm text-gray-500">/Qty</span>
+                <span className="ml-2 text-base text-gray-400 line-through">
+                  $28.99
+                </span>
+              </div>
+
+              {/* Rating Section */}
+              <div className="flex items-center gap-1 mb-3">
+                <div className="flex items-center text-yellow-400">
+                  <FaStar size={16} />
+                </div>
+                <span className="text-sm font-medium text-gray-700">4.8</span>
+                <span className="text-sm text-gray-400">(17k)</span>
+              </div>
+
+              {/* Product Details */}
+              <h3 className="text-lg font-semibold text-large-text mb-2">
+                Taylor Farms Broccoli
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+              {/* Progress Bar */}
+              <div className="w-full mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-1">
+                  <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                </div>
+                <div className="flex justify-between text-sm text-large-text mb-1">
+                  <span>Sold: 30/40</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="w-full px-[7%] py-14 flex flex-row gap-5">
+          {/* First Card */}
+          <div className="w-1/2 h-[320px] rounded-2xl bg-main-green relative flex gap-10">
+            <div
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                backgroundImage: "url(offer_bg.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                opacity: 0.06, // Image opacity at 30%
+              }}
+            ></div>
+            <div className="w-2/5 p-4 flex items-center justify-center h-full">
+              <img
+                src="1.png"
+                alt="img"
+                className="max-w-full h-auto object-fit rounded-lg"
+              />
+            </div>
+            <div className="relative flex flex-col gap-2 mt-2 flex-start items-start py-[24px]">
+              <div className="h-[80px] w-[80px] mb-[16px] bg-white p-4 rounded-full">
+                <img
+                  src="offer_logo.png"
+                  alt="img"
+                  className="w-full h-auto object-fit rounded-full"
+                />
+              </div>
+              <h1 className="text-[34px] font-quick-sand text-white font-bold leading-[1] text-center">
+                $5 off your first order
+              </h1>
+              <div className="flex gap-2">
+                <span className="text-[14px] font-quick-sand text-white font-semibold leading-[1.5]">
+                  Delivery by 6:15am
+                </span>
+                <span className="text-[14px] font-quick-sand text-orange-400 font-semibold leading-[1.5]">
+                  expired Aug 5
+                </span>
+              </div>
+              <button className="group text-large-text flex justify-center items-center gap-3 text-[16px] bg-white hover:bg-hover-green text-gray-900 hover:text-white font-semibold h-12 px-6 py-3.5 rounded-full mt-6 max-w-[50%] transition-colors duration-200">
+                Shop Now
+                <FaArrowRightLong
+                  size={18}
+                  className="group-hover:text-white transition-colors duration-200"
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Second Card */}
+          <div className="w-1/2 h-[320px] rounded-2xl bg-main-green relative flex gap-10">
+            <div
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                backgroundImage: "url(offer_bg.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                opacity: 0.06, // Image opacity at 10%
+              }}
+            ></div>
+            <div className="w-2/5 p-4 flex items-center justify-center h-full">
+              <img
+                src="2.png"
+                alt="img"
+                className="max-w-full h-auto object-fit rounded-lg"
+              />
+            </div>
+            <div className="relative flex flex-col gap-2 mt-2 flex-start items-start py-[24px]">
+              <div className="h-[80px] w-[80px] mb-[16px] bg-white p-4 rounded-full">
+                <img
+                  src="offer_logo.png"
+                  alt="img"
+                  className="w-full h-auto object-fit rounded-full"
+                />
+              </div>
+              <h1 className="text-[34px] font-quick-sand text-white font-bold leading-[1] text-center">
+                $5 off your first order
+              </h1>
+              <div className="flex gap-2">
+                <span className="text-[14px] font-quick-sand text-white font-semibold leading-[1.5]">
+                  Delivery by 6:15am
+                </span>
+                <span className="text-[14px] font-quick-sand text-orange-400 font-semibold leading-[1.5]">
+                  expired Aug 5
+                </span>
+              </div>
+              <button className="group text-large-text flex justify-center items-center gap-3 text-[16px] bg-white hover:bg-hover-green text-gray-900 hover:text-white font-semibold h-12 px-6 py-3.5 rounded-full mt-6 max-w-[50%] transition-colors duration-200">
+                Shop Now
+                <FaArrowRightLong
+                  size={18}
+                  className="group-hover:text-white transition-colors duration-200"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="w-full px-[7%] py-14 flex flex-col gap-5">
+          <div className="w-full flex flex-row justify-between items-center pb-4">
+            <h1 className="text-[32px] font-quick-sand text-large-text font-semibold leading-[1]">
+              Recommended for you
+            </h1>
+            <div className="flex space-x-3">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className={`px-4 py-2 rounded-full text-[16px] font-medium transition-colors ${
+                    selected === category
+                      ? "bg-main-green text-white"
+                      : "text-light-black"
+                  }`}
+                  onClick={() => setSelected(category)}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="h-[470px] w-full py-2 flex flex-row gap-5">
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="11.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                Sale 50%
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="11.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-blue-800 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                Best Sale
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="22.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-orange-400 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                New
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="33.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                Sale 50%
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="44.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-orange-400 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                New
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="55.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="h-[470px] w-full py-2 flex flex-row gap-5">
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              {/* <button className="group absolute z-10 top-4 right-4 flex items-center justify-center gap-2 text-main-green hover:text-white text-sm font-semibold hover:bg-main-green bg-add-cart rounded-full h-10 px-4 transition-all duration-300 ease-in-out">
+                Add
+                <LuShoppingCart
+                  size={16}
+                  className="text-main-green group-hover:text-white transition-all duration-300 ease-in-out"
+                />
+              </button> */}
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="11.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                Sale 50%
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="11.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-blue-800 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                Best Sale
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="22.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-orange-400 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                New
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="33.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                Sale 50%
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="44.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+            <div className="relative w-1/6 h-full border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+              <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-orange-400 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                New
+              </span>
+              <a
+                href="#"
+                className="w-full h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+              >
+                <img
+                  src="55.png"
+                  alt="Product Image"
+                  className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                />
+              </a>
+              <div className="w-full mt-4">
+                {/* Pricing Section */}
+                <div className="flex items-end gap-2 mb-2">
+                  <span className="text-2xl font-bold text-large-text">
+                    $14.99
+                  </span>
+                  <span className="text-sm text-gray-500">/Qty</span>
+                  <span className="ml-2 text-base text-gray-400 line-through">
+                    $28.99
+                  </span>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center text-yellow-400">
+                    <FaStar size={16} />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">4.8</span>
+                  <span className="text-sm text-gray-400">(17k)</span>
+                </div>
+
+                {/* Product Details */}
+                <h3 className="text-lg font-semibold text-large-text mb-2">
+                  Taylor Farms Broccoli
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
+                {/* Progress Bar */}
+                <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full">
+                  Add To Cart
+                  <LuShoppingCart
+                    size={20}
+                    className="text-current group-hover:text-white"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <HotDealsCarousel />
+        <div className="w-full px-[7%] py-14 flex flex-col gap-5">
+          <div className="w-full flex flex-row justify-between items-center pb-4">
+            <h1 className="text-[32px] font-quick-sand text-large-text font-semibold leading-[1]">
+              Daily Best Sells
+            </h1>
+          </div>
+          <div className="h-[550px] w-full flex flex-row gap-5">
+            <div className="w-4/6 h-full grid grid-cols-2 gap-4">
+              <div className="relative border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-row items-center shadow-sm hover:shadow-md">
+                <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                  Sale 50%
+                </span>
+                <div className="w-1/2 h-full flex flex-col justify-between">
+                  <a
+                    href="#"
+                    className="h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+                  >
+                    <img
+                      src="22.png"
+                      alt="Product Image"
+                      className="max-w-[120px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                    />
+                  </a>
+                  <div className="flex gap-2 text-large-text font-quick-sand text-xs">
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      78 Hours
+                    </span>
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      65 Min
+                    </span>
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      43 Sec
+                    </span>
+                  </div>
+                </div>
+
+                <div className="w-1/2 h-full">
+                  {/* Pricing Section */}
+                  <div className="flex items-end gap-2 mb-2">
+                    <span className="text-2xl font-bold text-large-text">
+                      $14.99
+                    </span>
+                    <span className="text-sm text-gray-500">/Qty</span>
+                    <span className="ml-2 text-base text-gray-400 line-through">
+                      $28.99
+                    </span>
+                  </div>
+
+                  {/* Rating Section */}
+                  <div className="flex items-center gap-1 mb-3">
+                    <div className="flex items-center text-yellow-400">
+                      <FaStar size={16} />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      4.8
+                    </span>
+                    <span className="text-sm text-gray-400">(17k)</span>
+                  </div>
+
+                  {/* Product Details */}
+                  <h3 className="text-lg font-semibold text-large-text mb-2">
+                    Taylor Farms Broccoli
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Florets Vegetables
+                  </p>
+                  <div className="w-full mb-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1">
+                      <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-large-text mb-1">
+                      <span>Sold: 30/40</span>
+                    </div>
+                  </div>
+                  {/* Progress Bar */}
+                  <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full mt-6">
+                    Add To Cart
+                    <LuShoppingCart
+                      size={20}
+                      className="text-current group-hover:text-white"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="relative border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-row items-center shadow-sm hover:shadow-md">
+                <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                  Sale 50%
+                </span>
+                <div className="w-1/2 h-full flex flex-col justify-between">
+                  <a
+                    href="#"
+                    className="h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+                  >
+                    <img
+                      src="33.png"
+                      alt="Product Image"
+                      className="max-w-[120px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                    />
+                  </a>
+                  <div className="flex gap-2 text-large-text font-quick-sand text-xs">
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      78 Hours
+                    </span>
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      65 Min
+                    </span>
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      43 Sec
+                    </span>
+                  </div>
+                </div>
+
+                <div className="w-1/2 h-full">
+                  {/* Pricing Section */}
+                  <div className="flex items-end gap-2 mb-2">
+                    <span className="text-2xl font-bold text-large-text">
+                      $14.99
+                    </span>
+                    <span className="text-sm text-gray-500">/Qty</span>
+                    <span className="ml-2 text-base text-gray-400 line-through">
+                      $28.99
+                    </span>
+                  </div>
+
+                  {/* Rating Section */}
+                  <div className="flex items-center gap-1 mb-3">
+                    <div className="flex items-center text-yellow-400">
+                      <FaStar size={16} />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      4.8
+                    </span>
+                    <span className="text-sm text-gray-400">(17k)</span>
+                  </div>
+
+                  {/* Product Details */}
+                  <h3 className="text-lg font-semibold text-large-text mb-2">
+                    Taylor Farms Broccoli
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Florets Vegetables
+                  </p>
+                  <div className="w-full mb-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1">
+                      <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-large-text mb-1">
+                      <span>Sold: 30/40</span>
+                    </div>
+                  </div>
+                  {/* Progress Bar */}
+                  <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full mt-6">
+                    Add To Cart
+                    <LuShoppingCart
+                      size={20}
+                      className="text-current group-hover:text-white"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="relative border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-row items-center shadow-sm hover:shadow-md">
+                <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                  Sale 50%
+                </span>
+                <div className="w-1/2 h-full flex flex-col justify-between">
+                  <a
+                    href="#"
+                    className="h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+                  >
+                    <img
+                      src="44.png"
+                      alt="Product Image"
+                      className="max-w-[120px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                    />
+                  </a>
+                  <div className="flex gap-2 text-large-text font-quick-sand text-xs">
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      78 Hours
+                    </span>
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      65 Min
+                    </span>
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      43 Sec
+                    </span>
+                  </div>
+                </div>
+
+                <div className="w-1/2 h-full">
+                  {/* Pricing Section */}
+                  <div className="flex items-end gap-2 mb-2">
+                    <span className="text-2xl font-bold text-large-text">
+                      $14.99
+                    </span>
+                    <span className="text-sm text-gray-500">/Qty</span>
+                    <span className="ml-2 text-base text-gray-400 line-through">
+                      $28.99
+                    </span>
+                  </div>
+
+                  {/* Rating Section */}
+                  <div className="flex items-center gap-1 mb-3">
+                    <div className="flex items-center text-yellow-400">
+                      <FaStar size={16} />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      4.8
+                    </span>
+                    <span className="text-sm text-gray-400">(17k)</span>
+                  </div>
+
+                  {/* Product Details */}
+                  <h3 className="text-lg font-semibold text-large-text mb-2">
+                    Taylor Farms Broccoli
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Florets Vegetables
+                  </p>
+                  <div className="w-full mb-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1">
+                      <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-large-text mb-1">
+                      <span>Sold: 30/40</span>
+                    </div>
+                  </div>
+                  {/* Progress Bar */}
+                  <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full mt-6">
+                    Add To Cart
+                    <LuShoppingCart
+                      size={20}
+                      className="text-current group-hover:text-white"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div className="relative border border-border-gray rounded-2xl hover:border-main-green transition-all duration-300 ease-in-out p-4 flex flex-row items-center shadow-sm hover:shadow-md">
+                <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
+                  Sale 50%
+                </span>
+                <div className="w-1/2 h-full flex flex-col justify-between">
+                  <a
+                    href="#"
+                    className="h-2/3 py-8 px-4 flex justify-center items-center overflow-hidden"
+                  >
+                    <img
+                      src="11.png"
+                      alt="Product Image"
+                      className="max-w-[120px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+                    />
+                  </a>
+                  <div className="flex gap-2 text-large-text font-quick-sand text-xs">
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      78 Hours
+                    </span>
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      65 Min
+                    </span>
+                    <span className="bg-add-cart px-2 py-2 rounded-lg shadow">
+                      43 Sec
+                    </span>
+                  </div>
+                </div>
+
+                <div className="w-1/2 h-full">
+                  {/* Pricing Section */}
+                  <div className="flex items-end gap-2 mb-2">
+                    <span className="text-2xl font-bold text-large-text">
+                      $14.99
+                    </span>
+                    <span className="text-sm text-gray-500">/Qty</span>
+                    <span className="ml-2 text-base text-gray-400 line-through">
+                      $28.99
+                    </span>
+                  </div>
+
+                  {/* Rating Section */}
+                  <div className="flex items-center gap-1 mb-3">
+                    <div className="flex items-center text-yellow-400">
+                      <FaStar size={16} />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">
+                      4.8
+                    </span>
+                    <span className="text-sm text-gray-400">(17k)</span>
+                  </div>
+
+                  {/* Product Details */}
+                  <h3 className="text-lg font-semibold text-large-text mb-2">
+                    Taylor Farms Broccoli
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Florets Vegetables
+                  </p>
+                  <div className="w-full mb-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1">
+                      <div className="bg-main-green h-1 rounded-full w-3/4"></div>
+                    </div>
+                    <div className="flex justify-between text-sm text-large-text mb-1">
+                      <span>Sold: 30/40</span>
+                    </div>
+                  </div>
+                  {/* Progress Bar */}
+                  <button className="group text-main-green font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-add-cart hover:bg-main-green hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-full mt-6">
+                    Add To Cart
+                    <LuShoppingCart
+                      size={20}
+                      className="text-current group-hover:text-white"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="w-2/6 h-[550px] rounded-2xl bg-card-300 relative flex flex-col z-10 items-center">
+              <div
+                className="absolute inset-0 rounded-2xl"
+                style={{
+                  backgroundImage: "url(pink_bg.png)",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              ></div>
+              <div className="relative flex items-center justify-center h-1/2 m-4 p-6">
+                <img
+                  src="2.png"
+                  alt="img"
+                  className=" h-auto object-fit rounded-lg"
+                />
+              </div>
+              <div className="relative flex flex-col gap-2 items-center">
+                <h1 className="text-[34px] font-quick-sand text-large-text font-bold leading-[1] text-center pb-6">
+                  Fresh Vegetables
+                </h1>
+                <div className="flex gap-2 items-center justify-center">
+                  <div className="flex gap-2 text-white font-quick-sand">
+                    <span className="bg-main-green px-3 py-2 rounded shadow">
+                      308 Days
+                    </span>
+                    <span className="bg-main-green px-3 py-2 rounded shadow">
+                      78 Hours
+                    </span>
+                    <span className="bg-main-green px-3 py-2 rounded shadow">
+                      65 Min
+                    </span>
+                    <span className="bg-main-green px-3 py-2 rounded shadow">
+                      43 Sec
+                    </span>
+                  </div>
+                </div>
+                <button className="text-white flex justify-center items-center gap-3 text-[16px] bg-orange-500 hover:bg-orange-600 text-gray-900 hover:text-white font-semibold h-12 px-6 py-3.5 rounded-full mt-6 max-w-[50%] transition-colors duration-200">
+                  Shop Now
+                  <FaArrowRightLong size={18} color="white" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
