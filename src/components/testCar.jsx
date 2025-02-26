@@ -1,196 +1,108 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { FaArrowRightLong } from "react-icons/fa6";
 import { LuShoppingCart } from "react-icons/lu";
 import { FaStar } from "react-icons/fa";
 
-const initialSalesItems = [
-  {
-    image: "1.png",
-    title: "Daily Snacks",
-    bgColor: "bg-card-100",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "2.png",
-    title: "Fresh Vegetables",
-    bgColor: "bg-card-200",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "3.png",
-    title: "Bakery Items",
-    bgColor: "bg-card-300",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "4.png",
-    title: "Dairy Products",
-    bgColor: "bg-card-400",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "5.png",
-    title: "Bakery Items",
-    bgColor: "bg-card-100",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "6.png",
-    title: "Dairy Products",
-    bgColor: "bg-card-200",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "7.png",
-    title: "Bakery Items",
-    bgColor: "bg-card-300",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "1.png",
-    title: "Dairy Products",
-    bgColor: "bg-card-400",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "7.png",
-    title: "Bakery Items",
-    bgColor: "bg-card-300",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-  {
-    image: "1.png",
-    title: "Dairy Products",
-    bgColor: "bg-card-400",
-    days: 308,
-    hours: 7,
-    minutes: 47,
-    seconds: 31,
-  },
-];
-
 export default function TestCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [salesItems, setSalesItems] = useState(initialSalesItems);
 
   const products = [
     {
-      name: "P 1"
+      name: "P 1",
     },
     {
-      name: "P 1"
+      name: "P 2",
     },
     {
-      name: "P 1"
+      name: "P 3",
     },
     {
-      name: "P 1"
+      name: "P 4",
     },
     {
-      name: "P 1"
+      name: "P 5",
     },
     {
-      name: "P 1"
+      name: "P 6",
     },
     {
-      name: "P 1"
+      name: "P 7",
     },
     {
-      name: "P 1"
+      name: "P 8",
     },
     {
-      name: "P 1"
+      name: "P 9",
     },
     {
-      name: "P 1"
+      name: "P 10",
     },
     {
-      name: "P 1"
+      name: "P 11",
     },
     {
-      name: "P 1"
+      name: "P 12",
     },
     {
-      name: "P 1"
+      name: "P 13",
     },
     {
-      name: "P 1"
+      name: "P 14",
     },
     {
-      name: "P 1"
+      name: "P 15",
     },
     {
-      name: "P 1"
+      name: "P 16",
     },
     {
-      name: "P 1"
+      name: "P 17",
     },
     {
-      name: "P 1"
+      name: "P 18",
     },
     {
-      name: "P 1"
+      name: "P 19",
     },
     {
-      name: "P 1"
+      name: "P 20",
     },
     {
-      name: "P 1"
+      name: "P 21",
     },
     {
-      name: "P 1"
+      name: "P 22",
     },
     {
-      name: "P 1"
+      name: "P 23",
     },
     {
-      name: "P 1"
+      name: "P 24",
     },
     {
-      name: "P 1"
+      name: "P 25",
     },
     {
-      name: "P 1"
+      name: "P 26",
     },
     {
-      name: "P 1"
+      name: "P 27",
     },
     {
-      name: "P 1"
+      name: "P 28",
     },
-  ]
+  ];
 
-  // Calculate total slides based on number of items
-  const totalSlides = salesItems.length;
+  // Split products into chunks of 4
+  const productChunks = useMemo(() => {
+    const chunks = [];
+    for (let i = 0; i < products.length; i += 4) {
+      chunks.push(products.slice(i, i + 4));
+    }
+    return chunks;
+  }, [products]);
 
+  const totalSlides = productChunks.length;
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % totalSlides);
@@ -205,49 +117,21 @@ export default function TestCarousel() {
     const interval = setInterval(() => {
       nextSlide();
     }, 3000);
-
-    // Clear interval on component unmount
     return () => clearInterval(interval);
   }, [nextSlide]);
 
-  // Timer to decrement time every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSalesItems((prevItems) =>
-        prevItems.map((item) => {
-          let { days, hours, minutes, seconds } = item;
-
-          if (seconds > 0) seconds--;
-          else {
-            seconds = 59;
-            if (minutes > 0) minutes--;
-            else {
-              minutes = 59;
-              if (hours > 0) hours--;
-              else {
-                hours = 23;
-                if (days > 0) days--;
-              }
-            }
-          }
-
-          return { ...item, days, hours, minutes, seconds };
-        })
-      );
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
   return (
-    <div className="w-1/4 px-[7%] py-4">
+    <div className="w-full border border-border-gray rounded-2xl hover:border-main-green p-4 flex flex-col items-center shadow-sm hover:shadow-md">
       {/* Heading with navigation buttons */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Organic Food</h2>
-        <div className="flex gap-4 items-center">
-          <a className="text-dark-black font-semibold hover:text-main-green hover:underline">
-            All Categories
-          </a>
+      <div className="w-full flex justify-between items-center bg-add-cart p-4 rounded-xl mb-4">
+        <div className="flex flex-col items-center gap-2">
+          <h2 className="text-2xl font-bold">Featured Products</h2>
+          <div className="w-full bg-gray-200 rounded-full h-[2px]">
+            <div className="bg-main-green h-[2px] rounded-full w-3/4"></div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 items-center">
           <button
             onClick={prevSlide}
             className="h-12 w-12 p-2 rounded-full shadow hover:bg-hover-green group border border-gray-300 flex items-center justify-center"
@@ -270,32 +154,45 @@ export default function TestCarousel() {
             className="flex transition-transform duration-500 ease-in-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {salesItems.map((item, index) => (
-              <div
-                key={index}
-                className="w-full flex-shrink-0"
-              >
-                <div className={`${item.bgColor} p-6 rounded-lg`}>
-                  <img src={item.image} alt={item.title} className="w-full h-64 object-cover rounded-lg" />
-                  <h3 className="text-xl font-bold mt-4">{item.title}</h3>
-                  <div className="flex justify-between items-center mt-2">
-                    <div className="flex items-center gap-2">
-                      <FaStar className="text-yellow-400" />
-                      <span>4.5</span>
+            {productChunks.map((chunk, index) => (
+              <div key={index} className="w-full flex-shrink-0 py-4 px-2">
+                <div className="grid grid-rows-4 gap-10">
+                  {chunk.map((product, productIndex) => (
+                    <div
+                      key={productIndex}
+                      className="flex flex-row items-center gap-6"
+                    >
+                      <div className="w-1/4 border-1 border-border-gray rounded-lg h-[90px] w-[90px] flex items-center bg-gray-50">
+                        <img
+                          src="1.png"
+                          alt={product.name}
+                          className="w-full h-auto object-fit rounded-lg"
+                        />
+                      </div>
+                      <div className="w-3/4 flex flex-col items-left">
+                        <div className="flex items-center gap-1">
+                          <div className="flex items-center text-yellow-400">
+                            <FaStar size={16} />
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">
+                            4.8
+                          </span>
+                          <span className="text-sm text-gray-400">(17k)</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-large-text">
+                          Taylor Farms Broccoli
+                        </h3>
+                        <div className="flex items-end gap-1">
+                          <span className="text-lg font-bold text-large-text">
+                            $14.99
+                          </span>
+                          <span className="ml-2 text-base text-gray-400 line-through">
+                            $28.99
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <button className="p-2 rounded-full bg-main-green hover:bg-hover-green text-white">
-                      <LuShoppingCart className="w-5 h-5" />
-                    </button>
-                  </div>
-                  <div className="mt-4">
-                    <p className="text-sm">Time Left:</p>
-                    <div className="flex gap-2">
-                      <span>{item.days}d</span>
-                      <span>{item.hours}h</span>
-                      <span>{item.minutes}m</span>
-                      <span>{item.seconds}s</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             ))}
