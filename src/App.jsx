@@ -40,7 +40,7 @@ function App() {
 
   return (
     <>
-      <div className="flex flex-col items-center overflow-y-auto">
+      <div className="flex flex-col items-center h-screen overflow-y-auto">
         <div className="h-[37px] w-full px-[calc(7%)] flex justify-between items-center bg-main-green">
           <div className="font-main-font text-white text-[14px] flex justify-between gap-5">
             <a href="#" className="hover:underline">
@@ -378,7 +378,7 @@ function App() {
           </div>
         </nav>
         <div
-          className="content max-h-[610px] min-h-[610px] w-[calc(86%)] my-8 rounded-[20px] flex"
+          className="content min-h-[calc(100vh-250px)] w-[calc(86%)] my-8 rounded-[20px] flex"
           style={{
             backgroundImage: "url(bg.png)",
             backgroundSize: "cover",
