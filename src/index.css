@@ -24,6 +24,7 @@
   --color-circle-400: #fff3cd;
   --color-add-cart: #e6f9ef;
   --color-main-purple: #7520dd;
+  --color-icon-gray: rgba(0, 0, 0, 0.75);
 }
 
 /* Dropdown container */
@@ -143,4 +144,62 @@
   background-repeat: no-repeat;
   opacity: 0.7; /* Adjust opacity (0.5 = 50% opacity) */
   z-index: -1; /* Place the background behind the content */
+}
+.nike-shoes {
+  font-size: calc(42px + 198 * (100vw - 360px) / 1600);
+  font-family: Montserrat, sans-serif;
+  font-weight: 900;
+  color: #212529;
+  display: inline-block;
+}
+.main-circle {
+  /* Responsive size calculation */
+  width: clamp(100px, calc(100px + 500 * (100vw - 360px) / 1600), 600px);
+  height: clamp(100px, calc(100px + 500 * (100vw - 360px) / 1600), 600px);
+
+  /* Circle styling */
+  border-radius: 100%;
+  background: linear-gradient(160deg, #a11d19, #9d1c1e);
+
+  /* Positioning */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  /* Animation */
+  animation: circle-rotate 20s linear infinite;
+
+  /* Optional: Prevent overflow issues */
+  overflow: hidden;
+  z-index: 10;
+}
+
+@keyframes circle-rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.main-slider-image {
+  width: calc(150px + 650 * (100vw - 360px) / 1600);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  animation: rotate-shoes 8s ease-in-out infinite alternate;
+}
+
+/* Rotating effect */
+@keyframes rotate-shoes {
+  from {
+    transform: translate(-50%, -50%) rotate(-15deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(5deg);
+  }
 }
