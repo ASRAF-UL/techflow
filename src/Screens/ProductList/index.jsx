@@ -6,18 +6,46 @@ import {
   IoIosMenu,
 } from "react-icons/io";
 import { FaPhoneVolume } from "react-icons/fa6";
-import LeftSideModal from "./components/sideModal";
-import Carousel from "./components/carousel";
-import { RiArrowDownDoubleLine } from "react-icons/ri";
-import CarouselProductList from "./components/carouselProductList";
-import { FaArrowRightLong } from "react-icons/fa6";
-import FlashSalesCarousel from "./components/flashSaleCarousel";
-import { LuShoppingCart } from "react-icons/lu";
-import { FaStar } from "react-icons/fa";
-import HotDealsCarousel from "./components/hotDealsCarousel";
-import OrganicFoodCarousel from "./components/organicFoodCarousel";
-import TestCarousel from "./components/testCar";
-import HomeCarousel from "./components/homeCarousel";
+import LeftSideModal from "../../components/sideModal";
+import Sidebar from "../../components/sidebar";
+import ProductDetails from "../../components/productDetails";
+import ProductCard from "../../components/productCard";
+
+// Sample product data
+const products = [
+  {
+    id: 1,
+    name: "Classic White T-Shirt",
+    price: 29.99,
+    image:
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    category: "Men's",
+    description: "Premium cotton t-shirt with a classic fit.",
+    rating: 4.5,
+    isNew: true,
+  },
+  {
+    id: 2,
+    name: "Denim Jacket",
+    price: 89.99,
+    image:
+      "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    category: "Men's",
+    description: "Stylish denim jacket perfect for any casual outfit.",
+    rating: 4.8,
+    isSale: true,
+  },
+  {
+    id: 3,
+    name: "Summer Dress",
+    price: 49.99,
+    image:
+      "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    category: "Women's",
+    description: "Light and breezy summer dress with floral pattern.",
+    rating: 4.2,
+  },
+];
 
 function ProductList() {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,7 +65,13 @@ function ProductList() {
     "Snacks",
     "Organic Foods",
   ];
-  const [selected, setSelected] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter((product) => product.category === selectedCategory);
 
   return (
     <>
@@ -378,6 +412,40 @@ function ProductList() {
             <span>(+88) 01784251150</span>
           </div>
         </nav>
+        <div className="flex min-h-screen w-full bg-gray-100 px-[7%]">
+          <Sidebar
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
+
+          <main className="flex-1 p-6">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-800">
+                {selectedCategory === "All" ? "All Products" : selectedCategory}
+              </h1>
+              <p className="text-gray-600">
+                {filteredProducts.length} products available
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onClick={setSelectedProduct}
+                />
+              ))}
+            </div>
+          </main>
+
+          {selectedProduct && (
+            <ProductDetails
+              product={selectedProduct}
+              onClose={() => setSelectedProduct(null)}
+            />
+          )}
+        </div>
       </div>
     </>
   );
