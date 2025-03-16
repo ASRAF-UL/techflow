@@ -21,6 +21,13 @@ import HomeCarousel from "../../components/homeCarousel";
 import ProductsByBrandCarousel from "../../components/productByBrandCarousel";
 import NewArraivalCarousel from "../../components/newArraivalCarousel";
 import { Link } from "react-router-dom";
+import {
+  MdOutlineLocalShipping,
+  MdSentimentVerySatisfied,
+  MdOutlinePayment,
+} from "react-icons/md";
+import { LuMessagesSquare } from "react-icons/lu";
+import Footer from "../../components/footer";
 
 function HomePage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -2015,6 +2022,100 @@ function HomePage() {
           <ProductsByBrandCarousel />
         </div>
         <NewArraivalCarousel />
+        <div className="h-auto w-full px-[calc(7%)] pt-20 pb-10 grid grid-cols-4 gap-6">
+          <div className="bg-light-green hover:bg-add-cart h-32 w-full rounded-xl flex flex-row items-center gap-6 px-12 py-6">
+            <span className="h-20 w-20 rounded-full bg-main-green flex items-center justify-center">
+              <MdOutlineLocalShipping size={30} color="white" />
+            </span>
+            <div className="flex flex-col items-start gap-2">
+              <h3 className="text-2xl font-semibold text-large-text">
+                Free Shipping
+              </h3>
+              <h4 className="text-md font-[400] text-large-text">
+                Free shipping all over the US
+              </h4>
+            </div>
+          </div>
+          <div className="bg-light-green hover:bg-add-cart h-32 w-full rounded-xl flex flex-row items-center gap-6 px-12 py-6">
+            <span className="h-20 w-20 rounded-full bg-main-green flex items-center justify-center">
+              <MdSentimentVerySatisfied size={30} color="white" />
+            </span>
+            <div className="flex flex-col items-start gap-2">
+              <h3 className="text-2xl font-semibold text-large-text">
+                100% Satisfaction
+              </h3>
+              <h4 className="text-md font-[400] text-large-text">
+                Free shipping all over the US
+              </h4>
+            </div>
+          </div>
+          <div className="bg-light-green hover:bg-add-cart h-32 w-full rounded-xl flex flex-row items-center gap-6 px-12 py-6">
+            <span className="h-20 w-20 rounded-full bg-main-green flex items-center justify-center">
+              <MdOutlinePayment size={30} color="white" />
+            </span>
+            <div className="flex flex-col items-start gap-2">
+              <h3 className="text-2xl font-semibold text-large-text">
+                Secure Payments
+              </h3>
+              <h4 className="text-md font-[400] text-large-text">
+                Free shipping all over the US
+              </h4>
+            </div>
+          </div>
+          <div className="bg-light-green hover:bg-add-cart h-32 w-full rounded-xl flex flex-row items-center gap-6 px-12 py-6">
+            <span className="h-20 w-20 rounded-full bg-main-green flex items-center justify-center">
+              <LuMessagesSquare size={30} color="white" />
+            </span>
+            <div className="flex flex-col items-start gap-2">
+              <h3 className="text-2xl font-semibold text-large-text">
+                24/7 Support
+              </h3>
+              <h4 className="text-md font-[400] text-large-text">
+                Free shipping all over the US
+              </h4>
+            </div>
+          </div>
+        </div>
+        <div className="h-[470px] w-full px-[calc(7%)] py-5">
+          <div className="w-full h-full rounded-2xl bg-news-teller relative flex">
+            <div
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                backgroundImage: "url(offer_bg.png)",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                opacity: 0.06, // Image opacity at 30%
+              }}
+            ></div>
+
+            <div className="w-3/5 relative flex flex-col gap-5 mt-2 items-start justify-center px-20">
+              <h1 className="text-[75px] font-quick-sand text-white font-bold leading-[1]">
+                Don't Miss Out on Grocery Deals
+              </h1>
+              <h1 className="text-[36px] font-quick-sand text-white font-bold leading-[1]">
+                SING UP FOR THE UPDATE NEWSLETTER{" "}
+              </h1>
+              <div className="flex justify-between items-center gap-2 border border-white px-2 py-2 w-full rounded-full mt-2 group focus-within:border-main-green">
+                <input
+                  type="text"
+                  placeholder="Your email address"
+                  className="border-none text-gray-100 focus:outline-none px-2 w-full"
+                />
+                <button className="bg-orange-400 text-white font-[500] hover:bg-main-orange px-6 py-4 rounded-full flex items-center justify-center">
+                  Subscribe
+                </button>
+              </div>
+            </div>
+            <div className="w-2/5 p-10 flex items-center justify-center h-full">
+              <img
+                src="1.png"
+                alt="img"
+                className="max-w-full h-auto object-fit rounded-lg"
+              />
+            </div>
+          </div>
+        </div>
+        <Footer />
       </div>
     </>
   );

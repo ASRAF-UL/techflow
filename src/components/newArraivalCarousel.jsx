@@ -154,7 +154,7 @@ export default function NewArraivalCarousel() {
   }, []);
 
   return (
-    <div className="w-full px-[7%] py-32 mx-auto">
+    <div className="w-full px-[7%] pt-32 mx-auto">
       {/* Heading with navigation buttons */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">New Arraivals</h2>
