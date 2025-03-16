@@ -61,7 +61,7 @@ const categories = [
 
 function Sidebar({ selectedCategory, onSelectCategory }) {
   return (
-    <div className="w-96 bg-white shadow-lg h-screen p-4 overflow-y-auto">
+    <div className={`w-96 bg-white shadow-lg p-4`}>
       <div className="space-y-4">
         {categories.map((category) => (
           <div key={category.name} className="space-y-0">

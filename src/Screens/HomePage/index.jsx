@@ -18,6 +18,8 @@ import HotDealsCarousel from "../../components/hotDealsCarousel";
 import OrganicFoodCarousel from "../../components/organicFoodCarousel";
 import TestCarousel from "../../components/testCar";
 import HomeCarousel from "../../components/homeCarousel";
+import ProductsByBrandCarousel from "../../components/productByBrandCarousel";
+import NewArraivalCarousel from "../../components/newArraivalCarousel";
 import { Link } from "react-router-dom";
 
 function HomePage() {
@@ -2009,6 +2011,10 @@ function HomePage() {
           <TestCarousel />
           <TestCarousel />
         </div>
+        <div className="h-72 w-full px-[calc(7%)] py-5">
+          <ProductsByBrandCarousel />
+        </div>
+        <NewArraivalCarousel />
       </div>
     </>
   );

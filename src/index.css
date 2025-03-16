@@ -25,6 +25,8 @@
   --color-add-cart: #e6f9ef;
   --color-main-purple: #7520dd;
   --color-icon-gray: rgba(0, 0, 0, 0.75);
+  --color-main-orange: #fd7e14;
+  --color-main-yellow: #ffc107;
 }
 
 /* Dropdown container */
@@ -202,4 +204,21 @@
   to {
     transform: translate(-50%, -50%) rotate(5deg);
   }
+}
+/* Custom scrollbar styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
