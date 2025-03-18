@@ -19,11 +19,11 @@ const ImageSlider = ({ product }) => {
 
   return (
     <div className="relative w-full h-full mx-auto">
-      <div className="w-[560px] h-[560px] aspect-square overflow-hidden rounded-lg shadow-lg">
+      <div className="w-full h-auto aspect-square overflow-hidden rounded-lg shadow-lg">
         <img
           src={images[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}
-          className="w-[560px] h-[560px] object-fit"
+          className="w-full h-full object-fit"
         />
       </div>
       <button

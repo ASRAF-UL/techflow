@@ -899,14 +899,11 @@ function ProductDetails() {
       </header>
 
       <div
-        className={`grid grid-cols-2 px-[7%] transition-all duration-300 h-screen w-full ${
+        className={`grid grid-cols-2 px-[15%] transition-all duration-300 h-screen w-full ${
           isScrolled ? "pt-[112px]" : "pt-[203px]"
         }`}
       >
-        <div className="image-carousel">
-          <ImageSlider product={product}/> {/* Add the ImageCarousel component here */}
-        </div>
-        <div className="image-carousel">
+        <div className="image-carousel" style={{ top: isScrolled ? "7rem" : "12.688rem" }}>
           <ImageSlider product={product}/> {/* Add the ImageCarousel component here */}
         </div>
       </div>
