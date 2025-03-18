@@ -2,7 +2,7 @@
 
 @theme {
   --color-main-green: rgb(41, 158, 96);
-  --font-main-font: "Inter, sans-serif";
+  --font-main-font: "Inter", sans-serif;
   --color-off-white: rgba(255, 255, 255, 0.4);
   --color-light-green: #f3faf2;
   --color-light-black: rgba(0, 0, 0, 0.4);
@@ -10,7 +10,7 @@
   --color-border-green: #20c997;
   --color-border-gray: #e6e6e6;
   --color-semi-transparent: rgba(0, 0, 0, 0.6);
-  --font-quick-sand: "Quicksand, sans-serif";
+  --font-quick-sand: "Quicksand", sans-serif;
   --color-large-text: #121535;
   --color-hover-green: #1b824c;
   --color-carousel-green: #e8f7e6;
@@ -28,6 +28,7 @@
   --color-main-orange: #fd7e14;
   --color-main-yellow: #ffc107;
   --color-news-teller: #121535;
+  --font-rajdhani: "Rajdhani", sans-serif;
 }
 
 /* Dropdown container */

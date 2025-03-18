@@ -4,22 +4,26 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 const ImageSlider = ({ product }) => {
   const images = [
     `https://adminecommerce.resnova.dev/${product.productImageFront}`,
-    `https://adminecommerce.resnova.dev/${product.productImageBack}`,
+    `https://adminecommerce.resnova.dev/${product.productImageFBack}`,
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
   };
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
+    setCurrentIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
   };
 
   return (
-    <div className="relative w-full h-full mx-auto">
-      <div className="w-full h-auto aspect-square overflow-hidden rounded-lg shadow-lg">
+    <div className="relative w-full mx-auto">
+      <div className="w-full h-auto aspect-square overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-gray-400">
         <img
           src={images[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}

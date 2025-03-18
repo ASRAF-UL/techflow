@@ -6,11 +6,11 @@ import { LuShoppingCart } from "react-icons/lu";
 import { Link } from "react-router-dom";
 
 function ProductCard({ product, onClick }) {
-  console.log("Product==>:", product)
+  console.log("Product==>:", product);
   return (
     <Link
       to={{
-        pathname: `/product/${product.id}`
+        pathname: `/product/${product.productName}`,
       }}
       className="w-full bg-white h-[520px] border border-border-gray rounded-2xl hover:border-main-orange transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md"
     >

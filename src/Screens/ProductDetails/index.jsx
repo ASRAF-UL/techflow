@@ -9,10 +9,12 @@ import { FaPhoneVolume } from "react-icons/fa6";
 import LeftSideModal from "../../components/sideModal";
 import ImageSlider from "../../components/imageCarousel";
 import axios from "axios";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
+import { FaPlus, FaMinus } from "react-icons/fa";
+import Footer from "../../components/footer";
 
 function ProductDetails() {
-    const { id } = useParams();
+  const { productName } = useParams();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -22,8 +24,31 @@ function ProductDetails() {
   const [showNestedThirdModal, setShowNestedThirdModal] = useState(false);
   const items = ["Shoes", "Jeans", "T-shirts", "Shirts"];
   const [product, setProduct] = useState(null); // State to store the product details
-    const [loading, setLoading] = useState(true); // State to handle loading state
-    const [error, setError] = useState(null); // State to handle errors
+  const [loading, setLoading] = useState(true); // State to handle loading state
+  const [error, setError] = useState(null); // State to handle errors
+  const [products, setProducts] = useState([]);
+
+  // Add this useEffect for fetching products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(
+          "https://adminecommerce.resnova.dev/api/productList"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data.data); // Assuming the API returns data in a 'data' property
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,19 +61,19 @@ function ProductDetails() {
   useEffect(() => {
     // Fetch product details from the API
     const fetchProduct = async () => {
-        console.log("Product name: ", id)
+      console.log("Product name: ", productName);
       try {
         const response = await axios.get(
-          `https://adminecommerce.resnova.dev/api/productInformation?id=${id}`
+          `https://adminecommerce.resnova.dev/api/productDetail?productName=${productName}`
         );
-        console.log("single product: ", response.data)
+        console.log("single product: ", response.data);
         if (response.data) {
           setProduct(response.data); // Assuming the API returns an array of products
         } else {
-          setError('Product not found!!!!');
+          setError("Product not found!!!!");
         }
       } catch (err) {
-        setError('Failed to fetch product details');
+        setError("Failed to fetch product details");
         console.error(err);
       } finally {
         setLoading(false);
@@ -56,7 +81,7 @@ function ProductDetails() {
     };
 
     fetchProduct();
-  }, [id]); // Re-run the effect when the productName changes
+  }, [productName]); // Re-run the effect when the productName changes
 
   if (loading) {
     return <div>Loading...</div>; // Display a loading message
@@ -69,6 +94,7 @@ function ProductDetails() {
   if (!product) {
     return <div>Product not found</div>; // Handle case where product is not found
   }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Fixed Header with Dynamic Height */}
@@ -321,7 +347,11 @@ function ProductDetails() {
             className={`shadow-md h-[75px] w-full px-[7%] flex justify-between items-center bg-light-green`}
           >
             <div className="h-[48px] w-full flex justify-between items-center">
-              <img src="logo.png" alt="logo" className="h-[44px]" />
+              <img
+                src="http://localhost:3000/logo.png"
+                alt="logo"
+                className="h-[44px]"
+              />
               <div className="flex border border-border-gray px-2 py-1 rounded-full gap-2 w-[700px]">
                 <div className="relative min-w-[150px] text-dark-black">
                   <button
@@ -396,7 +426,11 @@ function ProductDetails() {
             className={`h-[110px] w-full px-[7%] flex justify-between items-center bg-light-green`}
           >
             <div className="h-[48px] w-full flex justify-between items-center">
-              <img src="logo.png" alt="logo" className="h-[44px]" />
+              <img
+                src="http://localhost:3000/logo.png"
+                alt="logo"
+                className="h-[44px]"
+              />
               <div className="flex border border-border-gray px-2 py-1 rounded-full gap-2 w-[700px]">
                 <div className="relative min-w-[150px] text-dark-black">
                   <button
@@ -899,14 +933,126 @@ function ProductDetails() {
       </header>
 
       <div
-        className={`grid grid-cols-2 px-[15%] transition-all duration-300 h-screen w-full ${
-          isScrolled ? "pt-[112px]" : "pt-[203px]"
+        className={`flex flex-row gap-10 px-[10%] transition-all duration-300 h-screen w-full ${
+          isScrolled ? "pt-[112px]" : "pt-[230px]"
         }`}
       >
-        <div className="image-carousel" style={{ top: isScrolled ? "7rem" : "12.688rem" }}>
-          <ImageSlider product={product}/> {/* Add the ImageCarousel component here */}
+        <div
+          className="w-[40%] h-full image-carousel"
+          style={{ top: isScrolled ? "7rem" : "12.688rem" }}
+        >
+          <ImageSlider product={product} />{" "}
+          <div className="py-5 w-full">
+            <h1 className="font-rajdhani w-full border-b-1 border-black pb-2 text-2xl">
+              Frequently Bought Together
+            </h1>
+            <div className="grid grid-cols-4 gap-4 py-4">
+              <img
+                src={`https://adminecommerce.resnova.dev/${product.productImageFront}`}
+                alt="product"
+                className="h-auto w-full object-fit cursor-pointer"
+              />
+              <div className="col-span-3 py-2 flex flex-col gap-2">
+                <h1 className="font-rajdhani w-full text-lg">
+                  {product.productName}
+                </h1>
+                <div className="flex flex-row items-start gap-1">
+                  <h1 className="font-rajdhani text-xl">
+                    ৳{product.productSellingPrice}
+                  </h1>
+                  <span className="ml-2 text-lg text-gray-400 line-through">
+                    ৳{Number(product.productSellingPrice) + 50}
+                  </span>
+                </div>
+                <button className="flex gap-2 items-center bg-black px-2 py-1 text-white font-rajdhani w-1/3">
+                  <FaPlus size={16} color="white" /> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="w-[60%] h-full flex flex-col gap-4">
+          <h1 className="font-rajdhani w-full pb-2 text-2xl">
+            {product.productName}
+          </h1>
+          <div className="flex flex-row items-start gap-2">
+            <span className="text-lg text-gray-400 line-through">
+              ৳{Number(product.productSellingPrice) + 50}
+            </span>
+            <h1 className="font-rajdhani text-2xl">
+              ৳{product.productSellingPrice}
+            </h1>
+          </div>
+          <div className="flex flex-col gap-4">
+            <span className="font-rajdhani text-md font=[500]">
+              Select Color
+            </span>
+            <div className="flex flex-row gap-4">
+              <button className="px-4 py-1 border-1 border-gray-500 text-md font-rajdhani font-[300] hover:shadow-xl">
+                M
+              </button>
+              <button className="px-4 py-1 border-1 border-gray-500 text-md font-rajdhani font-[300] hover:shadow-xl">
+                L
+              </button>
+              <button className="px-4 py-1 border-1 border-gray-500 text-md font-rajdhani font-[200] hover:shadow-xl">
+                XL
+              </button>
+              <button className="px-4 py-1 border-1 border-gray-500 text-md font-rajdhani font-[200] hover:shadow-xl">
+                2XL
+              </button>
+            </div>
+            <div className="flex flex-row gap-4 border-b-1 border-black pb-4">
+              <div className="flex flex-row items-center justify-between gap-8 px-2 py-1 border border-gray-500">
+                <button>
+                  <FaMinus size={16} color="black" />
+                </button>
+                <span className="font-rajdhani text-lg">{1}</span>
+                <button>
+                  <FaPlus size={16} color="black" />
+                </button>
+              </div>
+              <button className="flex gap-2 items-center bg-gray-900 hover:bg-black px-4 py-1 text-white font-rajdhani">
+                <FaPlus size={16} color="white" /> Add to Cart
+              </button>
+            </div>
+            <p
+              className="font-rajdhani text-justify"
+              dangerouslySetInnerHTML={{ __html: product.productDetail }}
+            ></p>
+          </div>
         </div>
       </div>
+      <div className="w-full px-[10%] flex flex-col gap-4 py-4">
+        <h1 className="font-rajdhani w-full border-b-1 border-black pb-2 text-2xl">
+          You may also like
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="flex flex-col gap-2 w-full items-center justify-center"
+            >
+              <img
+                src={`https://adminecommerce.resnova.dev/${product.productImageFront}`}
+                alt="product"
+                className="h-[260px] w-full object-fit cursor-pointer"
+              />
+              <div className="flex flex-row items-center justify-center -mt-6 gap-2 shadow-lg rounded w-1/2">
+                <span className="text-sm text-gray-400 line-through">
+                  ৳{Number(product.productSellingPrice) + 50}
+                </span>
+                <h1 className="font-rajdhani text-md">
+                  ৳{product.productSellingPrice}
+                </h1>
+              </div>
+              <button className="w-full flex items-center justify-center gap-2 items-center bg-black px-4 py-1 text-white text-sm font-rajdhani">
+                <FaPlus size={16} color="white" /> Add to Cart
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 }

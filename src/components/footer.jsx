@@ -21,7 +21,11 @@ const Footer = () => {
           {/* Company Info */}
           <div className="lg:col-span-3">
             <div className="flex items-center space-x-2 mb-4">
-              <img src="logo.png" alt="logo" className="h-[44px]" />
+              <img
+                src="http://localhost:3000/logo.png"
+                alt="logo"
+                className="h-[44px]"
+              />
             </div>
             <p className="text-gray-500 mb-4">
               We're Grocery Shop, an innovative team of food suppliers.
