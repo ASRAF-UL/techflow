@@ -3,29 +3,31 @@ import { ShoppingCart } from "lucide-react";
 import PropTypes from "prop-types";
 import { FaStar } from "react-icons/fa6";
 import { LuShoppingCart } from "react-icons/lu";
+import { Link } from "react-router-dom";
 
 function ProductCard({ product, onClick }) {
+  console.log("Product==>:", product)
   return (
-    <div className="w-full bg-white h-[520px] border border-border-gray rounded-2xl hover:border-main-orange transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md">
+    <Link
+      to={{
+        pathname: `/product/${product.id}`
+      }}
+      className="w-full bg-white h-[520px] border border-border-gray rounded-2xl hover:border-main-orange transition-all duration-300 ease-in-out p-4 flex flex-col items-center shadow-sm hover:shadow-md"
+    >
       <span className="absolute z-10 top-4 left-4 text-white text-sm font-semibold bg-red-500 rounded-tl-full rounded-br-full h-8 px-4 flex items-center justify-center">
         Sale 50%
       </span>
-      <a
-        href="#"
-        className="w-full h-[232px] py-8 px-4 flex justify-center items-center overflow-hidden bg-border-gray rounded-xl"
-      >
+      <div className="w-full h-[232px] flex justify-center items-center overflow-hidden bg-border-gray rounded-xl">
         <img
-          src="44.png"
+          src={`https://adminecommerce.resnova.dev/${product.productImageFront}`}
           alt="Product Image"
-          className="max-w-[160px] h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
+          className="w-full h-auto object-fit rounded-lg transition-transform duration-300 ease-in-out hover:scale-110"
         />
-      </a>
+      </div>
       <div className="w-full mt-4">
-        {/* Product Details */}
         <h3 className="text-lg font-semibold text-large-text mb-2">
           {product.productName}
         </h3>
-        {/* Rating Section */}
         <div className="flex items-center gap-1 mb-3">
           <div className="flex items-center text-yellow-400">
             <FaStar size={16} />
@@ -41,7 +43,6 @@ function ProductCard({ product, onClick }) {
             <span>Sold: 30/40</span>
           </div>
         </div>
-        {/* Pricing Section */}
         <div className="flex items-end gap-2 m-2">
           <span className="text-2xl font-bold text-large-text">$14.99</span>
           <span className="text-sm text-gray-500">/Qty</span>
@@ -49,9 +50,7 @@ function ProductCard({ product, onClick }) {
             $28.99
           </span>
         </div>
-
         <p className="text-sm text-gray-500 mb-4">Florets Vegetables</p>
-        {/* Progress Bar */}
         <button className="group text-large-text font-quick-sand text-[16px] flex items-center justify-center gap-2 text-[16px] bg-border-gray hover:bg-main-orange hover:text-white font-semibold h-[43px] w-full px-[24px] py-[13px] rounded-lg">
           Add To Cart
           <LuShoppingCart
@@ -60,7 +59,7 @@ function ProductCard({ product, onClick }) {
           />
         </button>
       </div>
-    </div>
+    </Link>
   );
 }
 

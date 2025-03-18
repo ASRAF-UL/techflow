@@ -1,0 +1,45 @@
+import { useState } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+const ImageSlider = ({ product }) => {
+  const images = [
+    `https://adminecommerce.resnova.dev/${product.productImageFront}`,
+    `https://adminecommerce.resnova.dev/${product.productImageBack}`,
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+  };
+
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
+  };
+
+  return (
+    <div className="relative w-full h-full mx-auto">
+      <div className="w-[560px] h-[560px] aspect-square overflow-hidden rounded-lg shadow-lg">
+        <img
+          src={images[currentIndex]}
+          alt={`Slide ${currentIndex + 1}`}
+          className="w-[560px] h-[560px] object-fit"
+        />
+      </div>
+      <button
+        onClick={prevSlide}
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow-lg"
+      >
+        <FaChevronLeft size={20} />
+      </button>
+      <button
+        onClick={nextSlide}
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full shadow-lg"
+      >
+        <FaChevronRight size={20} />
+      </button>
+    </div>
+  );
+};
+
+export default ImageSlider;

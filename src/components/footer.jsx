@@ -10,8 +10,8 @@ import {
   Apple,
   ShoppingBag,
 } from "lucide-react";
-import FooterSection from "./FooterSection";
-import FooterLink from "./FooterLink";
+import FooterSection from "./footerSection";
+import FooterLink from "./footerLink";
 
 const Footer = () => {
   return (
