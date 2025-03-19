@@ -1,39 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
+import { Link } from "react-router-dom";
 
 const CarouselProductList = () => {
   const itemsPerSlide = 8; // Exactly 10 items per slide
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const products = [
-    { id: 1, image: "1.png", category: "Category 01", quantity: 125 },
-    { id: 2, image: "2.png", category: "Category 02", quantity: 125 },
-    { id: 3, image: "3.png", category: "Category 03", quantity: 125 },
-    { id: 4, image: "4.png", category: "Category 04", quantity: 125 },
-    { id: 5, image: "5.png", category: "Category 05", quantity: 125 },
-    { id: 6, image: "6.png", category: "Category 06", quantity: 125 },
-    { id: 7, image: "7.png", category: "Category 07", quantity: 125 },
-    { id: 8, image: "1.png", category: "Category 08", quantity: 125 },
-    { id: 9, image: "2.png", category: "Category 09", quantity: 125 },
-    { id: 10, image: "3.png", category: "Category 10", quantity: 125 },
-    { id: 11, image: "4.png", category: "Category 11", quantity: 125 },
-    { id: 12, image: "5.png", category: "Category 12", quantity: 125 },
-    { id: 13, image: "6.png", category: "Category 13", quantity: 125 },
-    { id: 14, image: "1.png", category: "Category 14", quantity: 125 },
-    { id: 15, image: "3.png", category: "Category 15", quantity: 125 },
-    { id: 16, image: "5.png", category: "Category 16", quantity: 125 },
-    { id: 17, image: "1.png", category: "Category 17", quantity: 125 },
-    { id: 18, image: "2.png", category: "Category 18", quantity: 125 },
-    { id: 19, image: "3.png", category: "Category 19", quantity: 125 },
-    { id: 20, image: "4.png", category: "Category 20", quantity: 125 },
-    { id: 21, image: "5.png", category: "Category 21", quantity: 125 },
-    { id: 22, image: "6.png", category: "Category 22", quantity: 125 },
-    { id: 23, image: "7.png", category: "Category 23", quantity: 125 },
-    { id: 24, image: "1.png", category: "Category 24", quantity: 125 },
-  ];
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const totalSlides = Math.ceil(products.length / itemsPerSlide);
+  // Add this useEffect for fetching products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(
+          "https://adminecommerce.resnova.dev/api/productList"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data.data); // Assuming the API returns data in a 'data' property
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchProducts();
+  }, []);
   // Previous Slide
   const prevSlide = () => {
     setCurrentIndex((prevIndex) =>
@@ -66,24 +64,25 @@ const CarouselProductList = () => {
                 (slideIndex + 1) * itemsPerSlide
               )
               .map((product) => (
-                <div
+                <Link
+                  to={{
+                    pathname: `/product/${product.productName}`,
+                  }}
                   key={product.id}
                   className="w-[203px] h-[222px] p-4 text-center carousel-item group"
                 >
                   <div className="h-[153px] w-[153px] flex items-center justify-center rounded-full bg-carousel-green mx-auto overflow-hidden">
                     <img
-                      src={product.image}
-                      alt={product.category}
+                      src={`https://adminecommerce.resnova.dev/${product.productImageFront}`}
+                      alt={product.productName}
                       className="h-auto transition-transform duration-300 ease-in-out group-hover:scale-110"
                     />
                   </div>
                   <h2 className="text-sm font-semibold hover:text-hover-green">
-                    {product.category}
+                    {product.categoryName}
                   </h2>
-                  <span className="text-gray-500 text-xs">
-                    {product.quantity}+ products
-                  </span>
-                </div>
+                  <span className="text-gray-500 text-xs">300 products</span>
+                </Link>
               ))}
           </div>
         ))}
