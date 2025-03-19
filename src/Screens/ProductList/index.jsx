@@ -21,6 +21,7 @@ import Sidebar from "../../components/sidebar";
 import ProductDetails from "../../components/productDetails";
 import ProductCard from "../../components/productCard";
 import { LuShoppingCart, LuHeart } from "react-icons/lu";
+import { Link } from "react-router-dom";
 
 const categories = [
   { name: "Mega Deal", icon: <Zap size={18} />, count: 43 },
@@ -508,20 +509,24 @@ function ProductList() {
               </LeftSideModal>
               <div className="flex flex-row justify-between items-center gap-10 h-full">
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                  <a
-                    href="/"
+                  <Link
+                    to={{
+                      pathname: `/`,
+                    }}
                     className="whitespace-nowrap hover:text-logo-gold"
                   >
                     Home
-                  </a>
+                  </Link>
                 </div>
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                  <a
-                    href="/products"
+                  <Link
+                    to={{
+                      pathname: `/products`,
+                    }}
                     className="whitespace-nowrap hover:text-logo-gold"
                   >
                     Sneakers
-                  </a>
+                  </Link>
                 </div>
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
                   <a
@@ -591,20 +596,24 @@ function ProductList() {
               </LeftSideModal>
               <div className="flex flex-row justify-between items-center gap-10 h-full">
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                  <a
-                    href="/"
+                  <Link
+                    to={{
+                      pathname: `/`,
+                    }}
                     className="whitespace-nowrap hover:text-logo-gold"
                   >
                     Home
-                  </a>
+                  </Link>
                 </div>
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                  <a
-                    href="/products"
+                  <Link
+                    to={{
+                      pathname: `/products`,
+                    }}
                     className="whitespace-nowrap hover:text-logo-gold"
                   >
                     Sneakers
-                  </a>
+                  </Link>
                 </div>
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
                   <a

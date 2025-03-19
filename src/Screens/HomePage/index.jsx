@@ -291,17 +291,24 @@ function HomePage() {
             </LeftSideModal>
             <div className="flex flex-row justify-between items-center gap-10 h-full">
               <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                <a href="/" className="whitespace-nowrap hover:text-logo-gold">
+                <Link
+                  to={{
+                    pathname: `/`,
+                  }}
+                  className="whitespace-nowrap hover:text-logo-gold"
+                >
                   Home
-                </a>
+                </Link>
               </div>
               <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                <a
-                  href="/products"
+                <Link
+                  to={{
+                    pathname: `/products`,
+                  }}
                   className="whitespace-nowrap hover:text-logo-gold"
                 >
                   Sneakers
-                </a>
+                </Link>
               </div>
               <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
                 <a href="#" className="whitespace-nowrap hover:text-logo-gold">

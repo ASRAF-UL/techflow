@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import Footer from "../../components/footer";
 import { LuShoppingCart, LuHeart } from "react-icons/lu";
+import { Link } from "react-router-dom";
 
 function ProductDetails() {
   const { productName } = useParams();
@@ -507,20 +508,24 @@ function ProductDetails() {
               </LeftSideModal>
               <div className="flex flex-row justify-between items-center gap-10 h-full">
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                  <a
-                    href="/"
+                  <Link
+                    to={{
+                      pathname: `/`,
+                    }}
                     className="whitespace-nowrap hover:text-logo-gold"
                   >
                     Home
-                  </a>
+                  </Link>
                 </div>
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                  <a
-                    href="/products"
+                  <Link
+                    to={{
+                      pathname: `/products`,
+                    }}
                     className="whitespace-nowrap hover:text-logo-gold"
                   >
                     Sneakers
-                  </a>
+                  </Link>
                 </div>
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
                   <a
@@ -590,20 +595,24 @@ function ProductDetails() {
               </LeftSideModal>
               <div className="flex flex-row justify-between items-center gap-10 h-full">
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                  <a
-                    href="/"
+                  <Link
+                    to={{
+                      pathname: `/`,
+                    }}
                     className="whitespace-nowrap hover:text-logo-gold"
                   >
                     Home
-                  </a>
+                  </Link>
                 </div>
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
-                  <a
-                    href="/products"
+                  <Link
+                    to={{
+                      pathname: `/products`,
+                    }}
                     className="whitespace-nowrap hover:text-logo-gold"
                   >
                     Sneakers
-                  </a>
+                  </Link>
                 </div>
                 <div className="h-full flex flex-row items-center font-semibold text-light-black text-[16px]">
                   <a

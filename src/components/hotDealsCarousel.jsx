@@ -58,7 +58,7 @@ export default function HotDealsCarousel() {
   //   Timer to decrement time every second
   useEffect(() => {
     const timer = setInterval(() => {
-      setSalesItems((prevItems) =>
+      setProducts((prevItems) =>
         prevItems.map((item) => {
           let { days, hours, minutes, seconds } = item;
 
