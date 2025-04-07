@@ -6,16 +6,16 @@ import { useNavigate } from "react-router-dom";
 const LoginPage = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [authForm, setAuthForm] = useState({
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleAuthSubmit = (loginType = "user") => (e) => {
-    if (e) e.preventDefault();
-    
+  const handleAuthSubmit = async (loginType = "user") => {
     if (loginType === "user") {
       // Basic validation for user login/registration
       if (isRegistering && authForm.password !== authForm.confirmPassword) {
@@ -23,21 +23,68 @@ const LoginPage = () => {
         return;
       }
       
-      if (!authForm.email || !authForm.password) {
+      if (!authForm.email || !authForm.password || (isRegistering && !authForm.name)) {
         setError("Please fill in all fields");
         return;
       }
-    }
 
-    console.log("Auth form submitted:", authForm);
-    
-    // In a real app, you would handle authentication here
-    // For demo purposes, we'll just redirect to the home page with login type
-    navigate("/", { state: { loginType } });
+      try {
+        setIsLoading(true);
+        setError("");
+
+        let response;
+        if (isRegistering) {
+          // Handle registration
+          response = await fetch("https://backend.tecflow.kr/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: authForm.name,
+              email: authForm.email,
+              password: authForm.password,
+              confirm_password: authForm.confirmPassword,
+            }),
+          });
+        } else {
+          // Handle login
+          response = await fetch("https://backend.tecflow.kr/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: authForm.email,
+              password: authForm.password,
+            }),
+          });
+        }
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Authentication failed");
+        }
+
+        // Store the token (you might want to use a more secure storage in production)
+        localStorage.setItem("authToken", data.token);
+        
+        // Redirect to home page
+        navigate("/", { state: { loginType: "user" } });
+      } catch (err) {
+        setError(err.message || "An error occurred during authentication");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // Guest login
+      navigate("/", { state: { loginType: "guest" } });
+    }
   };
 
   const handleGuestLogin = () => {
-    handleAuthSubmit("guest")();
+    handleAuthSubmit("guest");
   };
 
   const handleAuthChange = (e) => {
@@ -65,6 +112,7 @@ const LoginPage = () => {
           <button 
             onClick={handleGuestLogin}
             className="bg-gray-200 text-blue-500 text-xs font-small py-2 px-4 m-2 rounded-full hover:bg-gray-300 transition duration-200"
+            disabled={isLoading}
           >
             Continue as Guest
           </button>
@@ -76,7 +124,33 @@ const LoginPage = () => {
           </div>
         )}
 
-        <form onSubmit={handleAuthSubmit("user")} className="space-y-4">
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleAuthSubmit("user");
+        }} className="space-y-4">
+          {isRegistering && (
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Full Name
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={authForm.name}
+                  onChange={handleAuthChange}
+                  className="w-full px-4 py-2 outline-none border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="email"
@@ -94,7 +168,7 @@ const LoginPage = () => {
                 onChange={handleAuthChange}
                 className="w-full pl-10 pr-4 py-2 outline-none border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your email"
-                required={!isRegistering}
+                required
               />
             </div>
           </div>
@@ -116,7 +190,7 @@ const LoginPage = () => {
                 onChange={handleAuthChange}
                 className="w-full pl-10 pr-4 py-2 outline-none border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your password"
-                required={!isRegistering}
+                required
                 minLength={6}
               />
             </div>
@@ -149,9 +223,16 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-[#648cdc] transition-colors font-medium"
+            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-[#648cdc] transition-colors font-medium disabled:opacity-70"
+            disabled={isLoading}
           >
-            {isRegistering ? "Create Account" : "Sign In"}
+            {isLoading ? (
+              "Processing..."
+            ) : isRegistering ? (
+              "Create Account"
+            ) : (
+              "Sign In"
+            )}
           </button>
 
           <div className="relative my-6">
@@ -167,8 +248,9 @@ const LoginPage = () => {
 
           <button
             type="button"
-            onClick={handleAuthSubmit("user")}
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            onClick={() => handleAuthSubmit("user")}
+            className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-70"
+            disabled={isLoading}
           >
             <img
               src="https://www.google.com/favicon.ico"
@@ -189,6 +271,7 @@ const LoginPage = () => {
                 setError("");
               }}
               className="text-blue-600 hover:text-blue-700 font-medium"
+              disabled={isLoading}
             >
               {isRegistering ? "Sign in" : "Create one"}
             </button>
