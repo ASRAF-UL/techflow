@@ -1,22 +1,19 @@
-// App.js
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import HomePage from "./Screens/HomePage";
-import ProductList from "./Screens/ProductList";
-import ProductDetails from "./Screens/ProductDetails";
+// src/App.jsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Homepage from './Screens/HomePage';
+import GeneratePage from './Screens/GeneratePage';
+import LoginPage from './Screens/login';
 
-function App() {
+const App = () => {
   return (
     <Router>
-      <div className="App">
-        {/* Route configuration */}
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/products" element={<ProductList />} />
-          <Route path="/product/:productName" element={<ProductDetails />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<GeneratePage />} />
+        <Route path="/tecflow-overview" element={<Homepage />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
     </Router>
   );
-}
+};
 
 export default App;
