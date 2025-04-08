@@ -2,8 +2,11 @@
 import { useState } from "react";
 import { Mail, Lock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setToken, setUser } from "../../store/authSlice";
 
 const LoginPage = () => {
+  const dispatch = useDispatch();
   const [isRegistering, setIsRegistering] = useState(false);
   const [authForm, setAuthForm] = useState({
     name: "",
@@ -15,6 +18,25 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const fetchCurrentUser = async (token) => {
+    try {
+      const response = await fetch("https://backend.tecflow.kr/current-user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      throw error;
+    }
+  };
+
   const handleAuthSubmit = async (loginType = "user") => {
     if (loginType === "user") {
       // Basic validation for user login/registration
@@ -22,8 +44,12 @@ const LoginPage = () => {
         setError("Passwords don't match");
         return;
       }
-      
-      if (!authForm.email || !authForm.password || (isRegistering && !authForm.name)) {
+
+      if (
+        !authForm.email ||
+        !authForm.password ||
+        (isRegistering && !authForm.name)
+      ) {
         setError("Please fill in all fields");
         return;
       }
@@ -67,9 +93,13 @@ const LoginPage = () => {
           throw new Error(data.message || "Authentication failed");
         }
 
-        // Store the token (you might want to use a more secure storage in production)
-        localStorage.setItem("authToken", data.token);
-        
+        // Store the token
+        dispatch(setToken(data.token));
+
+        // Fetch and store user data
+        const userData = await fetchCurrentUser(data.token);
+        dispatch(setUser(userData.user));
+
         // Redirect to home page
         navigate("/", { state: { loginType: "user" } });
       } catch (err) {
@@ -77,6 +107,14 @@ const LoginPage = () => {
       } finally {
         setIsLoading(false);
       }
+    } else {
+      // Guest login
+      navigate("/", { state: { loginType: "guest" } });
+    }
+  };
+  const handleAuthSubmitWithGoogle = async (loginType = "user") => {
+    if (loginType === "user") {
+      window.open("https://backend.tecflow.kr/auth/google", "_self");
     } else {
       // Guest login
       navigate("/", { state: { loginType: "guest" } });
@@ -109,7 +147,7 @@ const LoginPage = () => {
           </h2>
 
           {/* Guest Login Button */}
-          <button 
+          <button
             onClick={handleGuestLogin}
             className="bg-gray-200 text-blue-500 text-xs font-small py-2 px-4 m-2 rounded-full hover:bg-gray-300 transition duration-200"
             disabled={isLoading}
@@ -124,10 +162,13 @@ const LoginPage = () => {
           </div>
         )}
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          handleAuthSubmit("user");
-        }} className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleAuthSubmit("user");
+          }}
+          className="space-y-4"
+        >
           {isRegistering && (
             <div>
               <label
@@ -226,13 +267,11 @@ const LoginPage = () => {
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-[#648cdc] transition-colors font-medium disabled:opacity-70"
             disabled={isLoading}
           >
-            {isLoading ? (
-              "Processing..."
-            ) : isRegistering ? (
-              "Create Account"
-            ) : (
-              "Sign In"
-            )}
+            {isLoading
+              ? "Processing..."
+              : isRegistering
+              ? "Create Account"
+              : "Sign In"}
           </button>
 
           <div className="relative my-6">
@@ -248,7 +287,7 @@ const LoginPage = () => {
 
           <button
             type="button"
-            onClick={() => handleAuthSubmit("user")}
+            onClick={() => handleAuthSubmitWithGoogle("user")}
             className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-70"
             disabled={isLoading}
           >

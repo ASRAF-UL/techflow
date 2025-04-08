@@ -21,6 +21,8 @@ import {
 import axios from "axios";
 import { jsPDF } from "jspdf";
 import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { clearAuth } from "../../store/authSlice";
 
 const documentTypes = [
   {
@@ -160,7 +162,10 @@ Use Markdown formatting with [DIAGRAM] placeholders for visual elements.`,
 
 const GeneratePage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const loggedUser = useSelector((state) => state.auth.user);
+  console.log("Logged user: ", loggedUser);
   const [prompt, setPrompt] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -432,7 +437,12 @@ const GeneratePage = () => {
     setEditedContent(generatedContent);
     setIsEditing(false);
   };
-
+  // Add this logout function (you can place it with other handler functions)
+  const handleLogout = () => {
+    console.log("Hello world");
+    dispatch(clearAuth());
+    navigate("/login"); // Redirect to login page after logout
+  };
   return (
     <div className="min-h-screen flex bg-gray-50">
       <div
@@ -558,16 +568,21 @@ const GeneratePage = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      User Name
+                      {loggedUser ? loggedUser.name : ""}
                     </p>
-                    <p className="text-xs text-gray-500">user@example.com</p>
+                    <p className="text-xs text-gray-500">
+                      {loggedUser ? loggedUser.email : ""}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <Settings className="w-4 h-4 text-gray-500" />
                   </button>
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <button
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    onClick={handleLogout}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       width="16"
@@ -597,7 +612,9 @@ const GeneratePage = () => {
             <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
               Add account
             </button>
-          ) : ""}
+          ) : (
+            ""
+          )}
         </div>
       </div>
 
