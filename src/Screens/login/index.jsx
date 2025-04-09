@@ -1,5 +1,5 @@
 // src/pages/LoginPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Lock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -17,6 +17,61 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Add this useEffect to check for Google auth response when component mounts
+  useEffect(() => {
+    console.log("Here in the google login")
+    const handleGoogleAuthResponse = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      const error = params.get("error");
+      const userJson = params.get("user");
+      console.log("data===>: ", params, token, error, userJson);
+      if (error) {
+        setError(decodeURIComponent(error));
+        // Clean the URL
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+        return;
+      }
+
+      if (token && userJson) {
+        try {
+          setIsLoading(true);
+          const user = JSON.parse(decodeURIComponent(userJson));
+          console.log("User: ", user);
+
+          // Dispatch login success
+          dispatch(
+            loginSuccess({
+              token: token,
+              user: user,
+            })
+          );
+
+          // Clean the URL
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+
+          // Redirect to home
+          navigate("/", { state: { loginType: "user" } });
+        } catch (err) {
+          setError("Failed to process Google login");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    handleGoogleAuthResponse();
+  }, [dispatch, navigate]);
+
 
   const fetchCurrentUser = async (token) => {
     try {
@@ -117,7 +172,15 @@ const LoginPage = () => {
   };
   const handleAuthSubmitWithGoogle = async (loginType = "user") => {
     if (loginType === "user") {
-      window.open("https://backend.tecflow.kr/auth/google", "_self");
+      setError(""); // Clear any previous errors
+      setIsLoading(true);
+      try {
+        // Open Google auth in same tab
+        window.location.href = "https://backend.tecflow.kr/auth/google";
+      } catch (err) {
+        setError("Failed to initiate Google login");
+        setIsLoading(false);
+      }
     } else {
       // Guest login
       navigate("/", { state: { loginType: "guest" } });
@@ -294,12 +357,18 @@ const LoginPage = () => {
             className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-70"
             disabled={isLoading}
           >
-            <img
-              src="https://www.google.com/favicon.ico"
-              alt="Google"
-              className="w-5 h-5"
-            />
-            Continue with Google
+            {isLoading ? (
+              "Processing..."
+            ) : (
+              <>
+                <img
+                  src="https://www.google.com/favicon.ico"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                Continue with Google
+              </>
+            )}
           </button>
 
           <p className="text-center text-sm text-gray-600 mt-6">

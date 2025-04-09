@@ -20,9 +20,10 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { jsPDF } from "jspdf";
-import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
+import { resetChats, setCurrentChat, setChats } from "../../features/chats/chatSlice";
+import { fetchChats, createNewChat } from "../../features/chats/chatThunks";
 
 const documentTypes = [
   {
@@ -164,8 +165,9 @@ const GeneratePage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { token, user } = useSelector((state) => state.auth);
-  console.log("Logged user: ", user);
+  const { user } = useSelector((state) => state.auth);
+  const { chats } = useSelector((state) => state.chats);
+  console.log("Logged user chat: ", chats);
   const [prompt, setPrompt] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -177,8 +179,9 @@ const GeneratePage = () => {
   const selectedDocument = documentTypes.find(
     (type) => type.id === selectedType
   );
-  const location = useLocation();
-  const loginType = location.state?.loginType || "guest";
+useEffect(() => {
+  dispatch(fetchChats());
+}, [dispatch]);
 
   useEffect(() => {
     if (generatedContent) {
@@ -439,6 +442,7 @@ const GeneratePage = () => {
   };
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(resetChats())
     navigate("/login");
   };
   return (
@@ -488,7 +492,7 @@ const GeneratePage = () => {
         <div className="flex-1 overflow-y-auto">
           {!sidebarCollapsed && (
             <div className="space-y-6">
-              {loginType === "guest" ? (
+              {user === null ? (
                 ""
               ) : (
                 <div>
@@ -510,7 +514,7 @@ const GeneratePage = () => {
                   Recent
                   <Clock className="w-4 h-4" />
                 </h2>
-                {loginType === "guest" ? (
+                {user === null ? (
                   <div className="space-y-1">
                     <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
                       <div className="space-y-2">
@@ -532,17 +536,21 @@ const GeneratePage = () => {
                     </div>
                   </div>
                 ) : (
+                  // Replace the hardcoded array with your actual chats
                   <div className="space-y-1">
-                    {[
-                      "API Documentation",
-                      "Technical Spec v2",
-                      "Architecture Overview",
-                    ].map((doc) => (
+                    {chats?.map((chat, index) => (
                       <button
-                        key={doc}
-                        className="w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                        key={index}
+                        className="w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
+                        onClick={() => {
+                          // Set this chat as current chat if needed
+                          dispatch(setCurrentChat(chat));
+                          // Or navigate to the chat view
+                          // navigate(`/chat/${chat.id}`);
+                        }}
                       >
-                        {doc}
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                        {chat.title || "Untitled Chat"}
                       </button>
                     ))}
                   </div>
@@ -606,7 +614,7 @@ const GeneratePage = () => {
             )}
           </div>
 
-          {!sidebarCollapsed && loginType === "guest" ? (
+          {!sidebarCollapsed && user === null ? (
             <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
               Add account
             </button>
@@ -644,10 +652,56 @@ const GeneratePage = () => {
             )}
           </div>
           <div className="flex items-center gap-3">
+            <button
+              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+              title="About Us"
+              onClick={() => navigate("/tecflow-overview")}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </button>
+
+            {user !== null && (
+              <button
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-1 rounded-xl hover:opacity-90 transition-opacity"
+                title="Upgrade Plan"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="M12 5v14"></path>
+                </svg>
+                <span>Upgrade</span>
+              </button>
+            )}
+
             <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
               <Settings className="w-5 h-5" />
             </button>
-            {loginType === "guest" ? (
+
+            {user === null ? (
               <button
                 onClick={() => navigate("/login")}
                 className="bg-blue-600 text-white h-10 px-5 py-2 rounded-xl hover:bg-blue-700 transition-colors font-medium"

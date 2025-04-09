@@ -1,17 +1,44 @@
 // src/app/store.js
-import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../features/auth/authSlice';
-import chatsReducer from '../features/chats/chatSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage
+import authReducer from "../features/auth/authSlice";
+import chatsReducer from "../features/chats/chatSlice";
+
+// Persist config for auth
+const authPersistConfig = {
+  key: "auth",
+  storage,
+  whitelist: ["token", "user"],
+};
+
+// Persist config for chats
+const chatsPersistConfig = {
+  key: "chats",
+  storage,
+  whitelist: ["chats", "currentChat"], // persist these fields
+};
 
 export const store = configureStore({
   reducer: {
-    auth: authReducer,
-    chats: chatsReducer,
+    auth: persistReducer(authPersistConfig, authReducer),
+    chats: persistReducer(chatsPersistConfig, chatsReducer),
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false,
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
     }),
 });
 
-export default store;
+export const persistor = persistStore(store);
