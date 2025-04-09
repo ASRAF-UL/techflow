@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Mail, Lock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setToken, setUser } from "../../store/authSlice";
+import { loginSuccess } from "../../features/auth/authSlice";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -93,12 +93,15 @@ const LoginPage = () => {
           throw new Error(data.message || "Authentication failed");
         }
 
-        // Store the token
-        dispatch(setToken(data.token));
-
         // Fetch and store user data
         const userData = await fetchCurrentUser(data.token);
-        dispatch(setUser(userData.user));
+
+        dispatch(
+          loginSuccess({
+            token: data.token,
+            user: userData.user,
+          })
+        );
 
         // Redirect to home page
         navigate("/", { state: { loginType: "user" } });

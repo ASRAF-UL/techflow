@@ -1,0 +1,82 @@
+// src/services/api.js
+import axios from 'axios';
+import store from '../store/store';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor to add auth token
+api.interceptors.request.use((config) => {
+  const state = store.getState();
+  const token = state.auth.token;
+  
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+// Response interceptor to handle errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      store.dispatch(logout());
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Chat History API
+export const createChatHistory = async (data) => {
+  try {
+    const response = await api.post('/chat-history', data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to create chat');
+  }
+};
+
+export const getChatHistory = async () => {
+  try {
+    const response = await api.get('/chat-history');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch chats');
+  }
+};
+
+export const getSingleChatHistory = async (id) => {
+  try {
+    const response = await api.get(`/chat-history/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch chat');
+  }
+};
+
+export const updateChatHistory = async (id, data) => {
+  try {
+    const response = await api.put(`/chat-history/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to update chat');
+  }
+};
+
+export const deleteChatHistory = async (id) => {
+  try {
+    await api.delete(`/chat-history/${id}`);
+    return id;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to delete chat');
+  }
+};

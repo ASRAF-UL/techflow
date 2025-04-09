@@ -22,7 +22,7 @@ import axios from "axios";
 import { jsPDF } from "jspdf";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clearAuth } from "../../store/authSlice";
+import { logout } from "../../features/auth/authSlice";
 
 const documentTypes = [
   {
@@ -164,8 +164,8 @@ const GeneratePage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const loggedUser = useSelector((state) => state.auth.user);
-  console.log("Logged user: ", loggedUser);
+  const { token, user } = useSelector((state) => state.auth);
+  console.log("Logged user: ", user);
   const [prompt, setPrompt] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -437,11 +437,9 @@ const GeneratePage = () => {
     setEditedContent(generatedContent);
     setIsEditing(false);
   };
-  // Add this logout function (you can place it with other handler functions)
   const handleLogout = () => {
-    console.log("Hello world");
-    dispatch(clearAuth());
-    navigate("/login"); // Redirect to login page after logout
+    dispatch(logout());
+    navigate("/login");
   };
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -568,10 +566,10 @@ const GeneratePage = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">
-                      {loggedUser ? loggedUser.name : ""}
+                      {user ? user.name : ""}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {loggedUser ? loggedUser.email : ""}
+                      {user ? user.email : ""}
                     </p>
                   </div>
                 </div>
