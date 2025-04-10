@@ -45,7 +45,8 @@ api.interceptors.response.use(
 export const createChatHistory = async (data) => {
   try {
     const response = await api.post("/chat-history", data);
-    return response.data;
+    console.log("Response data for new chat: ", response.data.chat)
+    return response.data.chat;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to create chat");
   }

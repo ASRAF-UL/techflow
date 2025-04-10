@@ -23,7 +23,7 @@ import { jsPDF } from "jspdf";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
 import { resetChats, setCurrentChat, setChats } from "../../features/chats/chatSlice";
-import { fetchChats, createNewChat } from "../../features/chats/chatThunks";
+import { fetchChats, createNewChat, editChat } from "../../features/chats/chatThunks";
 
 const documentTypes = [
   {
@@ -166,8 +166,6 @@ const GeneratePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const { chats } = useSelector((state) => state.chats);
-  console.log("Logged user chat: ", chats);
   const [prompt, setPrompt] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -179,9 +177,25 @@ const GeneratePage = () => {
   const selectedDocument = documentTypes.find(
     (type) => type.id === selectedType
   );
-useEffect(() => {
-  dispatch(fetchChats());
-}, [dispatch]);
+  const { chats, currentChat } = useSelector((state) => state.chats);
+  useEffect(() => {
+    dispatch(fetchChats());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (currentChat) {
+      setSelectedType(currentChat.type);
+      setPrompt(currentChat.prompt);
+      setGeneratedContent(currentChat.content);
+      setShowPreview(true);
+    } else {
+      // Reset if no current chat
+      setSelectedType(null);
+      setPrompt("");
+      setGeneratedContent("");
+      setShowPreview(false);
+    }
+  }, [currentChat]);
 
   useEffect(() => {
     if (generatedContent) {
@@ -245,33 +259,45 @@ useEffect(() => {
     }
   };
 
-  const handleGenerate = async () => {
-    if (!prompt.trim()) {
-      setError("Please enter a prompt");
-      return;
-    }
-    if (!selectedType) {
-      setError("Please select a document type");
-      return;
-    }
+const handleGenerate = async () => {
+  if (!prompt.trim()) {
+    setError("Please enter a prompt");
+    return;
+  }
+  if (!selectedType) {
+    setError("Please select a document type");
+    return;
+  }
 
-    try {
-      setIsGenerating(true);
-      setShowPreview(true);
-      setError("");
-      setGeneratedContent("");
+  try {
+    setIsGenerating(true);
+    setShowPreview(true);
+    setError("");
 
-      const content = await callOpenAIWithBackoff(prompt);
-      setGeneratedContent(content);
-    } catch (error) {
-      console.error("Generation failed:", error);
-      if (!error) {
-        setError("Failed to generate content. Please try again later.");
-      }
-    } finally {
-      setIsGenerating(false);
+    const content = await callOpenAIWithBackoff(prompt);
+    setGeneratedContent(content);
+
+    const chatData = {
+      title: selectedDocument?.title,
+      content: content,
+      type: selectedType,
+      prompt: prompt,
+    };
+
+    if (currentChat) {
+      // Update existing chat
+       dispatch(editChat({ id: currentChat.id, ...chatData }));
+    } else {
+      // Create new chat - this will automatically set it as current
+       dispatch(createNewChat(chatData));
     }
-  };
+  } catch (error) {
+    console.error("Generation failed:", error);
+    setError(error.message || "Failed to generate content");
+  } finally {
+    setIsGenerating(false);
+  }
+};
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(isEditing ? editedContent : generatedContent);
@@ -442,7 +468,7 @@ useEffect(() => {
   };
   const handleLogout = () => {
     dispatch(logout());
-    dispatch(resetChats())
+    dispatch(resetChats());
     navigate("/login");
   };
   return (
@@ -479,6 +505,13 @@ useEffect(() => {
         </div>
 
         <button
+          onClick={() => {
+            dispatch(setCurrentChat(null));
+            setSelectedType(null);
+            setPrompt("");
+            setGeneratedContent("");
+            setShowPreview(false);
+          }}
           className={`flex items-center gap-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-200 mb-6 ${
             sidebarCollapsed
               ? "justify-center w-full px-4 py-3"
@@ -492,7 +525,7 @@ useEffect(() => {
         <div className="flex-1 overflow-y-auto">
           {!sidebarCollapsed && (
             <div className="space-y-6">
-              {user === null ? (
+              {/* {user === null ? (
                 ""
               ) : (
                 <div>
@@ -507,7 +540,7 @@ useEffect(() => {
                     </button>
                   </div>
                 </div>
-              )}
+              )} */}
 
               <div>
                 <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
@@ -538,19 +571,24 @@ useEffect(() => {
                 ) : (
                   // Replace the hardcoded array with your actual chats
                   <div className="space-y-1">
-                    {chats?.map((chat, index) => (
+                    {chats?.map((chat) => (
                       <button
-                        key={index}
-                        className="w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-2"
-                        onClick={() => {
-                          // Set this chat as current chat if needed
-                          dispatch(setCurrentChat(chat));
-                          // Or navigate to the chat view
-                          // navigate(`/chat/${chat.id}`);
-                        }}
+                        key={chat.id}
+                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                          currentChat?.id === chat.id
+                            ? "bg-blue-50 text-blue-700 font-medium"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                        onClick={() => dispatch(setCurrentChat(chat))}
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
-                        {chat.title || "Untitled Chat"}
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            currentChat?.id === chat.id
+                              ? "bg-blue-600"
+                              : "bg-blue-400"
+                          }`}
+                        ></div>
+                        <span className="truncate">{chat.title}</span>
                       </button>
                     ))}
                   </div>
