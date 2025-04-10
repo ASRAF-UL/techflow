@@ -31,5 +31,6 @@
   --font-rajdhani: "Rajdhani", sans-serif;
   --color-logo-gold: #8c6c4c;
   --color-logo-light: #e2d2a9;
+  --breakpoint-xs: 480px;
 }
 
