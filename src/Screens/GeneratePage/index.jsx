@@ -245,21 +245,33 @@ const GeneratePage = () => {
   }, [generatedContent]);
 
   const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
-    try {
-      const response = await axios.post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-4", // Using GPT-4 for better quality
-          messages: [
-            {
-              role: "system",
-              content: selectedDocument?.systemPrompt
-                ? `${selectedDocument.systemPrompt}\n\nIMPORTANT INSTRUCTIONS:\n- Be extremely thorough and detailed\n- Include all relevant technical specifications\n- Provide comprehensive explanations\n- Use professional technical writing style\n- Format with clear hierarchy and structure\n- Add examples where appropriate\n- Include all standard sections plus any relevant subsections`
-                : "Generate professional, highly detailed technical documentation with comprehensive explanations, examples, and proper formatting.",
-            },
-            {
-              role: "user",
-              content: `Create a comprehensive ${selectedDocument?.title} document with the following requirements:\n\n${prompt}\n\nDOCUMENT REQUIREMENTS:
+  try {
+    // Detect if the prompt is in Korean (check for Korean characters)
+    const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(prompt);
+    
+    // System prompt in English or Korean based on detection
+    const systemPrompt = isKorean 
+      ? selectedDocument?.systemPrompt 
+        ? `${selectedDocument.systemPrompt}\n\n중요한 지침:\n- 매우 철저하고 상세하게 작성하세요\n- 모든 관련 기술 사양을 포함하세요\n- 포괄적인 설명을 제공하세요\n- 전문적인 기술 문서 스타일을 사용하세요\n- 명확한 계층 구조와 형식으로 작성하세요\n- 적절한 곳에 예시를 추가하세요\n- 모든 표준 섹션과 관련 하위 섹션을 포함하세요\n- 한국어로 문서를 생성하세요`
+        : "전문적이고 매우 상세한 기술 문서를 생성하세요. 포괄적인 설명, 예시 및 적절한 형식을 사용하세요. 한국어로 작성하세요."
+      : selectedDocument?.systemPrompt 
+        ? `${selectedDocument.systemPrompt}\n\nIMPORTANT INSTRUCTIONS:\n- Be extremely thorough and detailed\n- Include all relevant technical specifications\n- Provide comprehensive explanations\n- Use professional technical writing style\n- Format with clear hierarchy and structure\n- Add examples where appropriate\n- Include all standard sections plus any relevant subsections`
+        : "Generate professional, highly detailed technical documentation with comprehensive explanations, examples, and proper formatting.";
+
+    // User prompt in English or Korean based on detection
+    const userPrompt = isKorean
+      ? `다음 요구사항에 따라 ${selectedDocument?.title} 문서를 작성하세요:\n\n${prompt}\n\n문서 요구사항:
+1. 모든 표준 섹션과 하위 섹션을 포함하세요
+2. 상세한 기술 설명을 제공하세요
+3. 주요 섹션마다 구체적인 예시를 추가하세요 (최소 2-3개)
+4. 전문 용어를 사용하세요
+5. 명확한 계층 구조로 작성하세요 (제목, 소제목, 목록)
+6. 필요한 곳에 다이어그램 설명을 포함하세요 ([DIAGRAM]으로 표시)
+7. 가능한 한 철저하게 작성하세요
+8. 상세한 내용으로 최소 2500단어 이상 작성하세요
+9. 모든 요구사항에 번호를 매기세요 (예: FR-001, NFR-001)
+10. 모든 요구사항에 대한 검증 기준을 포함하세요`
+      : `Create a comprehensive ${selectedDocument?.title} document with the following requirements:\n\n${prompt}\n\nDOCUMENT REQUIREMENTS:
 1. Include ALL standard sections and subsections
 2. Provide detailed technical descriptions
 3. Add concrete examples where applicable (minimum 2-3 per major section)
@@ -269,45 +281,59 @@ const GeneratePage = () => {
 7. Be as thorough as possible
 8. Aim for at least 2500 words of detailed content
 9. Number all requirements (e.g., FR-001, NFR-001)
-10. Include validation criteria for all requirements`,
-            },
-          ],
-          max_tokens: 4000,
-          temperature: 0.3,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
-            "Content-Type": "application/json",
+10. Include validation criteria for all requirements`;
+
+    const response = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-3.5-turbo", // Using GPT-4 for better quality
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
           },
-        }
-      );
-      return (
-        response.data.choices[0]?.message?.content || "No content generated"
-      );
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("OpenAI API Error:", error.response?.data);
-        setError(
-          `API Error: ${error.response?.data?.error?.message || error.message}`
-        );
-      } else {
-        console.error("Error:", error);
-        setError("An unexpected error occurred");
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+        max_tokens: 4000,
+        temperature: 0.3,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
       }
+    );
 
-      if (
-        retries > 0 &&
-        axios.isAxiosError(error) &&
-        error.response?.status === 429
-      ) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return callOpenAIWithBackoff(prompt, retries - 1, delay * 2);
-      }
-
-      throw error;
+    return (
+      response.data.choices[0]?.message?.content || "No content generated"
+    );
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error("OpenAI API Error:", error.response?.data);
+      setError(
+        `API Error: ${error.response?.data?.error?.message || error.message}`
+      );
+    } else {
+      console.error("Error:", error);
+      setError("An unexpected error occurred");
     }
-  };
+
+    if (
+      retries > 0 &&
+      axios.isAxiosError(error) &&
+      error.response?.status === 429
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return callOpenAIWithBackoff(prompt, retries - 1, delay * 2);
+    }
+
+    throw error;
+  }
+};
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
