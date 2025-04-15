@@ -224,7 +224,6 @@ const GeneratePage = () => {
     dispatch(fetchChats());
   }, [dispatch]);
 
-
   useEffect(() => {
     if (currentChat) {
       setSelectedType(currentChat.type);
@@ -586,43 +585,188 @@ ${isEditing ? editedContent : generatedContent}
           <Menu className="w-5 h-5 text-gray-500" />
         </button>
       )}
-
-      {/* Sidebar - modified for mobile responsiveness */}
-      <div
-        className={`${sidebarCollapsed ? "w-18" : "w-72"} 
+      {isMobile ? (
+        <div
+          className={`${sidebarCollapsed ? "w-18" : "w-72"} 
         bg-white border-r border-gray-200 p-4 
         flex flex-col transition-all duration-300 ease-in-out 
         fixed h-full overflow-hidden z-40
-        ${
-          isMobile
-            ? isMobileSidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-            : ""
-        }
+        ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0`}
-        style={{ width: sidebarCollapsed && !isMobile ? "4.5rem" : "18rem" }}
-      >
-        <div
-          className={`flex items-center gap-3 mb-8 px-2 w-full ${
-            sidebarCollapsed ? "justify-center" : "justify-between"
-          }`}
+          style={{ width: "18rem" }}
         >
-          {isMobile && (
+          <div
+            className={`flex items-center gap-3 mb-8 px-2 w-full ${
+              sidebarCollapsed ? "justify-center" : "justify-between"
+            }`}
+          >
             <img
               src="techflow_logo.png"
               className="h-5 ml-12 mt-2 w-auto"
               alt="TecFlow Logo"
             />
-          )}
-          {sidebarCollapsed && !isMobile && (
-            <img
-              src="techflow_logo.png"
-              className="w-[80%] h-auto"
-              alt="TecFlow Logo"
-            />
-          )}
-          {!isMobile && (
+          </div>
+
+          <button
+            onClick={() => {
+              dispatch(setCurrentChat(null));
+              setSelectedType(null);
+              setPrompt("");
+              setGeneratedContent("");
+              setShowPreview(false);
+            }}
+            className={`flex items-center gap-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-200 mb-6 ${
+              sidebarCollapsed
+                ? "justify-center w-full px-4 py-3"
+                : "font-medium px-4 py-3"
+            }`}
+          >
+            <Sparkles className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && "New AI Document"}
+          </button>
+
+          <div className="flex-1 overflow-y-auto">
+            {!sidebarCollapsed && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
+                    Recent
+                    <Clock className="w-4 h-4" />
+                  </h2>
+                  {user === null ? (
+                    <div className="space-y-1">
+                      <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
+                        <div className="space-y-2">
+                          <h2 className="text-lg font-semibold text-gray-900">
+                            Sign in to start saving your chats
+                          </h2>
+                          <p className="text-sm text-gray-600">
+                            Once you're signed in, you can access your recent
+                            chats here.
+                          </p>
+                        </div>
+
+                        <button
+                          className="w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                          onClick={() => navigate("/login")}
+                        >
+                          Sign in
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // Replace the hardcoded array with your actual chats
+                    <div className="space-y-1">
+                      {chats?.map((chat) => (
+                        <button
+                          key={chat.id}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                            currentChat?.id === chat.id
+                              ? "bg-blue-50 text-blue-700 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                          onClick={() => dispatch(setCurrentChat(chat))}
+                        >
+                          <div
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              currentChat?.id === chat.id
+                                ? "bg-blue-600"
+                                : "bg-blue-400"
+                            }`}
+                          ></div>
+                          <span className="truncate">{chat.title}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="border-t border-gray-200 pt-4 mt-auto">
+            <div
+              className={`flex items-center ${
+                sidebarCollapsed ? "justify-center" : "justify-between"
+              }`}
+            >
+              {!sidebarCollapsed ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                      U
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {user ? user.name : ""}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {user ? user.email : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                      <Settings className="w-4 h-4 text-gray-500" />
+                    </button>
+                    <button
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={handleLogout}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                  U
+                </div>
+              )}
+            </div>
+
+            {!sidebarCollapsed && user === null ? (
+              <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
+                Add account
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`${sidebarCollapsed ? "w-18" : "w-72"} 
+        bg-white border-r border-gray-200 p-4 
+        flex flex-col transition-all duration-300 ease-in-out 
+        fixed h-full overflow-hidden`}
+          style={{ width: sidebarCollapsed ? "4.5rem" : "18rem" }}
+        >
+          <div
+            className={`flex items-center gap-3 mb-8 px-2 w-full ${
+              sidebarCollapsed ? "justify-center" : "justify-between"
+            }`}
+          >
+            {!sidebarCollapsed && (
+              <img
+                src="techflow_logo.png"
+                className="w-[80%] h-auto"
+                alt="TecFlow Logo"
+              />
+            )}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className="bg-white border border-gray-200 rounded-full hover:bg-blue-100 p-2 shadow-sm hover:shadow-md transition-all duration-200"
@@ -633,31 +777,30 @@ ${isEditing ? editedContent : generatedContent}
                 }`}
               />
             </button>
-          )}
-        </div>
+          </div>
 
-        <button
-          onClick={() => {
-            dispatch(setCurrentChat(null));
-            setSelectedType(null);
-            setPrompt("");
-            setGeneratedContent("");
-            setShowPreview(false);
-          }}
-          className={`flex items-center gap-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-200 mb-6 ${
-            sidebarCollapsed
-              ? "justify-center w-full px-4 py-3"
-              : "font-medium px-4 py-3"
-          }`}
-        >
-          <Sparkles className="w-4 h-4 flex-shrink-0" />
-          {!sidebarCollapsed && "New AI Document"}
-        </button>
+          <button
+            onClick={() => {
+              dispatch(setCurrentChat(null));
+              setSelectedType(null);
+              setPrompt("");
+              setGeneratedContent("");
+              setShowPreview(false);
+            }}
+            className={`flex items-center gap-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-200 mb-6 ${
+              sidebarCollapsed
+                ? "justify-center w-full px-4 py-3"
+                : "font-medium px-4 py-3"
+            }`}
+          >
+            <Sparkles className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && "New AI Document"}
+          </button>
 
-        <div className="flex-1 overflow-y-auto">
-          {!sidebarCollapsed && (
-            <div className="space-y-6">
-              {/* {user === null ? (
+          <div className="flex-1 overflow-y-auto">
+            {!sidebarCollapsed && (
+              <div className="space-y-6">
+                {/* {user === null ? (
                 ""
               ) : (
                 <div>
@@ -674,125 +817,126 @@ ${isEditing ? editedContent : generatedContent}
                 </div>
               )} */}
 
-              <div>
-                <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
-                  Recent
-                  <Clock className="w-4 h-4" />
-                </h2>
-                {user === null ? (
-                  <div className="space-y-1">
-                    <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
-                      <div className="space-y-2">
-                        <h2 className="text-lg font-semibold text-gray-900">
-                          Sign in to start saving your chats
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          Once you're signed in, you can access your recent
-                          chats here.
-                        </p>
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
+                    Recent
+                    <Clock className="w-4 h-4" />
+                  </h2>
+                  {user === null ? (
+                    <div className="space-y-1">
+                      <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
+                        <div className="space-y-2">
+                          <h2 className="text-lg font-semibold text-gray-900">
+                            Sign in to start saving your chats
+                          </h2>
+                          <p className="text-sm text-gray-600">
+                            Once you're signed in, you can access your recent
+                            chats here.
+                          </p>
+                        </div>
+
+                        <button
+                          className="w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                          onClick={() => navigate("/login")}
+                        >
+                          Sign in
+                        </button>
                       </div>
-
-                      <button
-                        className="w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                        onClick={() => navigate("/login")}
-                      >
-                        Sign in
-                      </button>
                     </div>
-                  </div>
-                ) : (
-                  // Replace the hardcoded array with your actual chats
-                  <div className="space-y-1">
-                    {chats?.map((chat) => (
-                      <button
-                        key={chat.id}
-                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                          currentChat?.id === chat.id
-                            ? "bg-blue-50 text-blue-700 font-medium"
-                            : "text-gray-700 hover:bg-gray-50"
-                        }`}
-                        onClick={() => dispatch(setCurrentChat(chat))}
-                      >
-                        <div
-                          className={`w-1.5 h-1.5 rounded-full ${
+                  ) : (
+                    // Replace the hardcoded array with your actual chats
+                    <div className="space-y-1">
+                      {chats?.map((chat) => (
+                        <button
+                          key={chat.id}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
                             currentChat?.id === chat.id
-                              ? "bg-blue-600"
-                              : "bg-blue-400"
+                              ? "bg-blue-50 text-blue-700 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
                           }`}
-                        ></div>
-                        <span className="truncate">{chat.title}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="border-t border-gray-200 pt-4 mt-auto">
-          <div
-            className={`flex items-center ${
-              sidebarCollapsed ? "justify-center" : "justify-between"
-            }`}
-          >
-            {!sidebarCollapsed ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                    U
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {user ? user.name : ""}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {user ? user.email : ""}
-                    </p>
-                  </div>
+                          onClick={() => dispatch(setCurrentChat(chat))}
+                        >
+                          <div
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              currentChat?.id === chat.id
+                                ? "bg-blue-600"
+                                : "bg-blue-400"
+                            }`}
+                          ></div>
+                          <span className="truncate">{chat.title}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-1">
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <Settings className="w-4 h-4 text-gray-500" />
-                  </button>
-                  <button
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    onClick={handleLogout}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                      <polyline points="16 17 21 12 16 7"></polyline>
-                      <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                U
               </div>
             )}
           </div>
 
-          {!sidebarCollapsed && user === null ? (
-            <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
-              Add account
-            </button>
-          ) : (
-            ""
-          )}
+          <div className="border-t border-gray-200 pt-4 mt-auto">
+            <div
+              className={`flex items-center ${
+                sidebarCollapsed ? "justify-center" : "justify-between"
+              }`}
+            >
+              {!sidebarCollapsed ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                      U
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {user ? user.name : ""}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {user ? user.email : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                      <Settings className="w-4 h-4 text-gray-500" />
+                    </button>
+                    <button
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={handleLogout}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                  U
+                </div>
+              )}
+            </div>
+
+            {!sidebarCollapsed && user === null ? (
+              <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
+                Add account
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Overlay for mobile sidebar */}
       {isMobile && isMobileSidebarOpen && (
