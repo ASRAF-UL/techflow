@@ -393,31 +393,79 @@ ${isEditing ? editedContent : generatedContent}
     doc.setFont("helvetica");
     doc.setFontSize(11);
 
-    // Title Page
+    /* ==================== */
+    /* IMPROVED TITLE PAGE */
+    /* ==================== */
+
+    // Calculate available width (A4 page is 210mm wide)
+    const pageWidth = 210;
+    const margin = 20;
+    const contentWidth = pageWidth - 2 * margin;
+
+    // Title with automatic wrapping
+    const title = selectedDocument?.title || "Generated Document";
     doc.setFontSize(24);
     doc.setTextColor(15, 23, 42);
-    doc.text(selectedDocument?.title || "Generated Document", 105, 40, {
-      align: "center",
+
+    // Split title into multiple lines if needed
+    const titleLines = doc.splitTextToSize(title, contentWidth);
+
+    // Calculate starting Y position to center vertically
+    const lineHeight = 10; // Approximate line height for title
+    const titleBlockHeight = titleLines.length * lineHeight;
+    const additionalElementsHeight = 40; // Space for version, date, author
+    const totalHeight = titleBlockHeight + additionalElementsHeight;
+
+    let yPosition = (297 - totalHeight) / 2; // A4 height is 297mm
+
+    // Draw title lines
+    titleLines.forEach((line, i) => {
+      doc.text(line, pageWidth / 2, yPosition + i * lineHeight, {
+        align: "center",
+        maxWidth: contentWidth,
+      });
     });
 
+    // Version information
+    yPosition += titleBlockHeight + 10;
     doc.setFontSize(16);
-    doc.text(`Version: 1.0`, 105, 60, { align: "center" });
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 70, {
-      align: "center",
-    });
-    doc.text(`Author: ${user?.name || "TecFlow AI"}`, 105, 80, {
-      align: "center",
-    });
+    doc.text(`Version: 1.0`, pageWidth / 2, yPosition, { align: "center" });
+
+    // Date information
+    yPosition += 10;
+    doc.text(
+      `Date: ${new Date().toLocaleDateString()}`,
+      pageWidth / 2,
+      yPosition,
+      {
+        align: "center",
+      }
+    );
+
+    // Author information
+    yPosition += 10;
+    doc.text(
+      `Author: ${user?.name || "TecFlow AI"}`,
+      pageWidth / 2,
+      yPosition,
+      {
+        align: "center",
+      }
+    );
+
+    /* ==================== */
+    /* DOCUMENT CONTENT */
+    /* ==================== */
 
     // Add new page for content
     doc.addPage();
 
-    // Content formatting
+    // Reset position and settings for content
     const leftMargin = 15;
     const rightMargin = 195;
-    const pageWidth = rightMargin - leftMargin;
-    let yPosition = 20;
-    const lineHeight = 7;
+    const contentPageWidth = rightMargin - leftMargin;
+    yPosition = 20;
+    const contentLineHeight = 7;
     const sectionGap = 10;
 
     const processLine = (line) => {
@@ -428,7 +476,7 @@ ${isEditing ? editedContent : generatedContent}
 
       // Skip empty lines
       if (line.trim() === "") {
-        yPosition += lineHeight / 2;
+        yPosition += contentLineHeight / 2;
         return;
       }
 
@@ -436,8 +484,12 @@ ${isEditing ? editedContent : generatedContent}
       if (line.startsWith("# ")) {
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
-        doc.text(line.substring(2), leftMargin, yPosition);
-        yPosition += lineHeight + 2;
+        const headingLines = doc.splitTextToSize(
+          line.substring(2),
+          contentPageWidth
+        );
+        doc.text(headingLines, leftMargin, yPosition);
+        yPosition += (contentLineHeight + 2) * headingLines.length;
         doc.setDrawColor(200, 200, 200);
         doc.line(leftMargin, yPosition, rightMargin, yPosition);
         yPosition += sectionGap;
@@ -449,8 +501,12 @@ ${isEditing ? editedContent : generatedContent}
       if (line.startsWith("## ")) {
         doc.setFontSize(16);
         doc.setFont("helvetica", "bold");
-        doc.text(line.substring(3), leftMargin, yPosition);
-        yPosition += lineHeight + sectionGap / 2;
+        const headingLines = doc.splitTextToSize(
+          line.substring(3),
+          contentPageWidth
+        );
+        doc.text(headingLines, leftMargin, yPosition);
+        yPosition += (contentLineHeight + sectionGap / 2) * headingLines.length;
         doc.setFontSize(11);
         doc.setFont("helvetica", "normal");
         return;
@@ -459,8 +515,12 @@ ${isEditing ? editedContent : generatedContent}
       if (line.startsWith("### ")) {
         doc.setFontSize(14);
         doc.setFont("helvetica", "bold");
-        doc.text(line.substring(4), leftMargin, yPosition);
-        yPosition += lineHeight;
+        const headingLines = doc.splitTextToSize(
+          line.substring(4),
+          contentPageWidth
+        );
+        doc.text(headingLines, leftMargin, yPosition);
+        yPosition += contentLineHeight * headingLines.length;
         doc.setFontSize(11);
         doc.setFont("helvetica", "normal");
         return;
@@ -469,8 +529,18 @@ ${isEditing ? editedContent : generatedContent}
       // Handle lists
       if (line.startsWith("- ") || line.startsWith("* ")) {
         doc.setFontSize(11);
-        doc.text("• " + line.substring(2), leftMargin + 5, yPosition);
-        yPosition += lineHeight;
+        const listItemLines = doc.splitTextToSize(
+          line.substring(2),
+          contentPageWidth - 5
+        );
+        listItemLines.forEach((text, i) => {
+          doc.text(
+            i === 0 ? "• " + text : "  " + text,
+            leftMargin + 5,
+            yPosition
+          );
+          yPosition += contentLineHeight;
+        });
         return;
       }
 
@@ -478,53 +548,23 @@ ${isEditing ? editedContent : generatedContent}
       if (line.includes("[DIAGRAM]")) {
         doc.setFontSize(10);
         doc.setTextColor(100, 100, 100);
-        doc.text("[Diagram placeholder]", leftMargin, yPosition);
-        yPosition += lineHeight;
-        doc.rect(leftMargin, yPosition, pageWidth, 40, "S");
+        const diagramLines = doc.splitTextToSize(
+          "[Diagram placeholder]",
+          contentPageWidth
+        );
+        doc.text(diagramLines, leftMargin, yPosition);
+        yPosition += contentLineHeight * diagramLines.length;
+        doc.rect(leftMargin, yPosition, contentPageWidth, 40, "S");
         doc.setTextColor(15, 23, 42);
         yPosition += 45;
         return;
       }
 
-      // Handle tables (simple markdown table support)
-      if (line.includes("|") && line.includes("-")) {
-        const rows = contentToUse
-          .split("\n")
-          .slice(
-            contentToUse.split("\n").indexOf(line) - 1,
-            contentToUse.split("\n").indexOf(line) + 3
-          )
-          .filter((r) => r.includes("|"));
-
-        if (rows.length > 1) {
-          const tableData = rows.map((row) =>
-            row
-              .split("|")
-              .map((cell) => cell.trim())
-              .filter((cell) => cell)
-          );
-
-          // Simple table drawing (for more complex tables consider using autoTable plugin)
-          doc.setFontSize(10);
-          tableData.forEach((row, rowIndex) => {
-            row.forEach((cell, cellIndex) => {
-              doc.text(
-                cell,
-                leftMargin + cellIndex * 40,
-                yPosition + rowIndex * 7
-              );
-            });
-          });
-          yPosition += tableData.length * 7 + 10;
-          return;
-        }
-      }
-
       // Handle regular text with word wrap
       doc.setFontSize(11);
-      const splitText = doc.splitTextToSize(line, pageWidth);
+      const splitText = doc.splitTextToSize(line, contentPageWidth);
       doc.text(splitText, leftMargin, yPosition);
-      yPosition += lineHeight * splitText.length;
+      yPosition += contentLineHeight * splitText.length;
     };
 
     // Process all content lines
@@ -538,7 +578,9 @@ ${isEditing ? editedContent : generatedContent}
       doc.setPage(i);
       doc.setFontSize(10);
       doc.setTextColor(100, 100, 100);
-      doc.text(`Page ${i} of ${pageCount}`, 105, 287, { align: "center" });
+      doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 287, {
+        align: "center",
+      });
     }
 
     // Save the PDF
