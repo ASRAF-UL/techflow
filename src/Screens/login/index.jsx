@@ -20,13 +20,11 @@ const LoginPage = () => {
 
   // Add this useEffect to check for Google auth response when component mounts
   useEffect(() => {
-    console.log("Here in the google login")
     const handleGoogleAuthResponse = async () => {
       const params = new URLSearchParams(window.location.search);
       const token = params.get("token");
       const error = params.get("error");
       const userJson = params.get("user");
-      console.log("data===>: ", params, token, error, userJson);
       if (error) {
         setError(decodeURIComponent(error));
         // Clean the URL
@@ -42,7 +40,6 @@ const LoginPage = () => {
         try {
           setIsLoading(true);
           const user = JSON.parse(decodeURIComponent(userJson));
-          console.log("User: ", user);
 
           // Dispatch login success
           dispatch(

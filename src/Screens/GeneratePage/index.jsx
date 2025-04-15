@@ -282,10 +282,6 @@ const GeneratePage = () => {
           },
         }
       );
-      console.log(
-        "Generated response: ",
-        response.data.choices[0]?.message?.content
-      );
       return (
         response.data.choices[0]?.message?.content || "No content generated"
       );
