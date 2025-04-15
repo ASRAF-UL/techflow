@@ -282,7 +282,10 @@ const GeneratePage = () => {
           },
         }
       );
-
+      console.log(
+        "Generated response: ",
+        response.data.choices[0]?.message?.content
+      );
       return (
         response.data.choices[0]?.message?.content || "No content generated"
       );
@@ -555,11 +558,15 @@ ${isEditing ? editedContent : generatedContent}
     setIsEditing(false);
 
     if (currentChat) {
+      const dataToUpdate = {
+        id: currentChat.id,
+        prompt: prompt,
+        title: currentChat.title,
+        type: currentChat.type,
+        content: editedContent,
+      };
       dispatch(
-        editChat({
-          id: currentChat.id,
-          content: editedContent,
-        })
+        editChat(dataToUpdate)
       );
     }
   };

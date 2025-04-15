@@ -59,11 +59,13 @@ export const createNewChat = (chatData) => async (dispatch) => {
   }
 };
 
-export const editChat = (id, chatData) => async (dispatch) => {
+export const editChat = (data) => async (dispatch) => {
   dispatch(setLoading(true));
   dispatch(setError(null));
   try {
-    const updatedChat = await updateChatHistory(id, chatData);
+    const updatedChat = await updateChatHistory(data);
+
+    
     dispatch(updateChat(updatedChat));
     return updatedChat;
   } catch (error) {

@@ -72,9 +72,15 @@ export const getSingleChatHistory = async (id) => {
   }
 };
 
-export const updateChatHistory = async (id, data) => {
+export const updateChatHistory = async (data) => {
   try {
-    const response = await api.put(`/chat-history/${id}`, data);
+    console.log("Chat-- data: ", data);
+    const response = await api.put(`/chat-history/${data.id}`, {
+      title: data.title,
+      prompt: data.prompt,
+      type: data.type,
+      content: data.content
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to update chat");
