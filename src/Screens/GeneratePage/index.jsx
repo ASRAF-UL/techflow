@@ -25,13 +25,14 @@ import { logout } from "../../features/auth/authSlice";
 import {
   resetChats,
   setCurrentChat,
-  setChats,
 } from "../../features/chats/chatSlice";
 import {
   fetchChats,
   createNewChat,
   editChat,
 } from "../../features/chats/chatThunks";
+import NotoSansKR from "../../assets/fonts/NotoSansKR-Regular-normal.js"
+import NotoSansKRBold from "../../assets/fonts/NotoSansKR-Bold.js"
 
 const documentTypes = [
   {
@@ -128,7 +129,7 @@ const documentTypes = [
    - Consistent numbering throughout
 
 4. DETAIL LEVEL:
-   - Minimum 2500 words
+   - Minimum 2000 words
    - Each requirement must be testable
    - No ambiguous language
    - Technical precision required`,
@@ -244,33 +245,53 @@ const GeneratePage = () => {
     }
   }, [generatedContent]);
 
-  const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
+const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
   try {
     // Detect if the prompt is in Korean (check for Korean characters)
     const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(prompt);
-    
-    // System prompt in English or Korean based on detection
-    const systemPrompt = isKorean 
-      ? selectedDocument?.systemPrompt 
-        ? `${selectedDocument.systemPrompt}\n\n중요한 지침:\n- 매우 철저하고 상세하게 작성하세요\n- 모든 관련 기술 사양을 포함하세요\n- 포괄적인 설명을 제공하세요\n- 전문적인 기술 문서 스타일을 사용하세요\n- 명확한 계층 구조와 형식으로 작성하세요\n- 적절한 곳에 예시를 추가하세요\n- 모든 표준 섹션과 관련 하위 섹션을 포함하세요\n- 한국어로 문서를 생성하세요`
-        : "전문적이고 매우 상세한 기술 문서를 생성하세요. 포괄적인 설명, 예시 및 적절한 형식을 사용하세요. 한국어로 작성하세요."
-      : selectedDocument?.systemPrompt 
-        ? `${selectedDocument.systemPrompt}\n\nIMPORTANT INSTRUCTIONS:\n- Be extremely thorough and detailed\n- Include all relevant technical specifications\n- Provide comprehensive explanations\n- Use professional technical writing style\n- Format with clear hierarchy and structure\n- Add examples where appropriate\n- Include all standard sections plus any relevant subsections`
-        : "Generate professional, highly detailed technical documentation with comprehensive explanations, examples, and proper formatting.";
 
-    // User prompt in English or Korean based on detection
+    console.log("Language detection - Is Korean:", isKorean);
+
+    // System prompt with explicit language instructions
+    const systemPrompt = isKorean
+      ? selectedDocument?.systemPrompt
+        ? `[중요] 이 문서는 반드시 한국어로 작성해야 합니다. 아래 지침을 엄격히 따르세요:\n\n${selectedDocument.systemPrompt}\n\n추가 지침:
+- 반드시 한국어로만 작성할 것
+- 전문적인 기술 문서 스타일 유지
+- 모든 섹션과 하위 섹션 포함
+- 구체적인 예시 2-3개 포함
+- 기술 용어 정확히 사용
+- 명확한 계층 구조 유지
+- 다이어그램 설명 추가 ([DIAGRAM] 표시)
+- 최소 2000단어 이상 작성
+- 모든 요구사항에 번호 부여 (FR-001, NFR-001 등)
+- 각 요구사항에 검증 기준 포함`
+        : "[중요] 이 문서는 반드시 한국어로 작성해야 합니다. 전문적이고 상세한 기술 문서를 생성하되 다음을 준수하세요:\n- 한국어로만 작성\n- 전문적인 기술 문서 스타일\n- 포괄적인 설명과 예시\n- 명확한 구조\n- 최소 2000단어"
+      : selectedDocument?.systemPrompt
+      ? `${selectedDocument.systemPrompt}\n\nIMPORTANT INSTRUCTIONS:
+- Be extremely thorough and detailed
+- Include all relevant technical specifications
+- Provide comprehensive explanations
+- Use professional technical writing style
+- Format with clear hierarchy and structure
+- Add examples where appropriate
+- Include all standard sections plus any relevant subsections`
+      : "Generate professional, highly detailed technical documentation with comprehensive explanations, examples, and proper formatting.";
+
+    // User prompt with language-specific requirements
     const userPrompt = isKorean
-      ? `다음 요구사항에 따라 ${selectedDocument?.title} 문서를 작성하세요:\n\n${prompt}\n\n문서 요구사항:
-1. 모든 표준 섹션과 하위 섹션을 포함하세요
-2. 상세한 기술 설명을 제공하세요
-3. 주요 섹션마다 구체적인 예시를 추가하세요 (최소 2-3개)
-4. 전문 용어를 사용하세요
-5. 명확한 계층 구조로 작성하세요 (제목, 소제목, 목록)
-6. 필요한 곳에 다이어그램 설명을 포함하세요 ([DIAGRAM]으로 표시)
-7. 가능한 한 철저하게 작성하세요
-8. 상세한 내용으로 최소 2500단어 이상 작성하세요
-9. 모든 요구사항에 번호를 매기세요 (예: FR-001, NFR-001)
-10. 모든 요구사항에 대한 검증 기준을 포함하세요`
+      ? `다음 요구사항에 따라 ${selectedDocument?.title} 문서를 한국어로 작성하세요:\n\n${prompt}\n\n문서 작성 시 반드시 다음을 준수하세요:
+1. 모든 표준 섹션과 하위 섹션 포함
+2. 상세한 기술 설명 제공
+3. 주요 섹션마다 구체적인 예시 2-3개 포함
+4. 전문 용어 사용
+5. 명확한 계층 구조 유지 (제목, 소제목, 목록)
+6. 필요한 곳에 다이어그램 설명 포함 ([DIAGRAM] 표시)
+7. 가능한 한 철저하게 작성
+8. 최소 2000단어 이상 작성
+9. 모든 요구사항에 번호 부여 (예: FR-001, NFR-001)
+10. 모든 요구사항에 대한 검증 기준 포함
+11. 반드시 한국어로만 작성`
       : `Create a comprehensive ${selectedDocument?.title} document with the following requirements:\n\n${prompt}\n\nDOCUMENT REQUIREMENTS:
 1. Include ALL standard sections and subsections
 2. Provide detailed technical descriptions
@@ -279,56 +300,90 @@ const GeneratePage = () => {
 5. Format with clear hierarchy (headings, subheadings, lists)
 6. Include diagrams descriptions where needed (mark as [DIAGRAM])
 7. Be as thorough as possible
-8. Aim for at least 2500 words of detailed content
+8. Aim for at least 2000 words of detailed content
 9. Number all requirements (e.g., FR-001, NFR-001)
 10. Include validation criteria for all requirements`;
 
+    console.log("System prompt being sent:", systemPrompt);
+    console.log("User prompt being sent:", userPrompt);
+
+    const requestData = {
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: userPrompt,
+        },
+      ],
+      max_tokens: 4000,
+      temperature: isKorean ? 0.1 : 0.3, // Lower temperature for Korean
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    };
+
+    console.log("Full request payload:", JSON.stringify(requestData, null, 2));
+
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
-      {
-        model: "gpt-3.5-turbo", // Using GPT-4 for better quality
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
-        max_tokens: 4000,
-        temperature: 0.3,
-      },
+      requestData,
       {
         headers: {
           Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
           "Content-Type": "application/json",
         },
+        timeout: 30000, // 30 seconds timeout
       }
     );
 
-    return (
-      response.data.choices[0]?.message?.content || "No content generated"
-    );
+    console.log("API response:", response.data);
+
+    const generatedContent =
+      response.data.choices[0]?.message?.content || "No content generated";
+    console.log("Generated content:", generatedContent);
+
+    // Verify the response is in Korean if expected
+    if (isKorean && !/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(generatedContent)) {
+      console.warn("Expected Korean content but received non-Korean response");
+      throw new Error("API did not return Korean content as requested");
+    }
+
+    return generatedContent;
   } catch (error) {
+    console.error("API call error:", error);
+
     if (axios.isAxiosError(error)) {
-      console.error("OpenAI API Error:", error.response?.data);
+      console.error("Axios error details:", {
+        message: error.message,
+        code: error.code,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+
       setError(
         `API Error: ${error.response?.data?.error?.message || error.message}`
       );
     } else {
-      console.error("Error:", error);
+      console.error("Unexpected error:", error);
       setError("An unexpected error occurred");
     }
 
     if (
       retries > 0 &&
       axios.isAxiosError(error) &&
-      error.response?.status === 429
+      (error.response?.status === 429 || // Too many requests
+        error.response?.status === 502 || // Bad gateway
+        error.response?.status === 503 || // Service unavailable
+        error.response?.status === 504) // Gateway timeout
     ) {
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      return callOpenAIWithBackoff(prompt, retries - 1, delay * 2);
+      const nextDelay = delay * 2;
+      console.log(`Retrying in ${nextDelay}ms... (${retries} retries left)`);
+      await new Promise((resolve) => setTimeout(resolve, nextDelay));
+      return callOpenAIWithBackoff(prompt, retries - 1, nextDelay);
     }
 
     throw error;
@@ -405,46 +460,300 @@ ${isEditing ? editedContent : generatedContent}
     URL.revokeObjectURL(url);
   };
 
+  // const generatePDF = () => {
+  //   const contentToUse = isEditing ? editedContent : generatedContent;
+  //   if (!contentToUse) return;
+
+  //   const doc = new jsPDF({
+  //     unit: "mm",
+  //     format: "a4",
+  //     orientation: "portrait",
+  //   });
+
+  //   // Set default font
+  //   doc.setFont("helvetica");
+  //   doc.setFontSize(11);
+
+  //   /* ==================== */
+  //   /* IMPROVED TITLE PAGE */
+  //   /* ==================== */
+
+  //   // Calculate available width (A4 page is 210mm wide)
+  //   const pageWidth = 210;
+  //   const margin = 20;
+  //   const contentWidth = pageWidth - 2 * margin;
+
+  //   // Title with automatic wrapping
+  //   const title = selectedDocument?.title || "Generated Document";
+  //   doc.setFontSize(24);
+  //   doc.setTextColor(15, 23, 42);
+
+  //   // Split title into multiple lines if needed
+  //   const titleLines = doc.splitTextToSize(title, contentWidth);
+
+  //   // Calculate starting Y position to center vertically
+  //   const lineHeight = 10; // Approximate line height for title
+  //   const titleBlockHeight = titleLines.length * lineHeight;
+  //   const additionalElementsHeight = 40; // Space for version, date, author
+  //   const totalHeight = titleBlockHeight + additionalElementsHeight;
+
+  //   let yPosition = (297 - totalHeight) / 2; // A4 height is 297mm
+
+  //   // Draw title lines
+  //   titleLines.forEach((line, i) => {
+  //     doc.text(line, pageWidth / 2, yPosition + i * lineHeight, {
+  //       align: "center",
+  //       maxWidth: contentWidth,
+  //     });
+  //   });
+
+  //   // Version information
+  //   yPosition += titleBlockHeight + 10;
+  //   doc.setFontSize(16);
+  //   doc.text(`Version: 1.0`, pageWidth / 2, yPosition, { align: "center" });
+
+  //   // Date information
+  //   yPosition += 10;
+  //   doc.text(
+  //     `Date: ${new Date().toLocaleDateString()}`,
+  //     pageWidth / 2,
+  //     yPosition,
+  //     {
+  //       align: "center",
+  //     }
+  //   );
+
+  //   // Author information
+  //   yPosition += 10;
+  //   doc.text(
+  //     `Author: ${user?.name || "TecFlow AI"}`,
+  //     pageWidth / 2,
+  //     yPosition,
+  //     {
+  //       align: "center",
+  //     }
+  //   );
+
+  //   /* ==================== */
+  //   /* DOCUMENT CONTENT */
+  //   /* ==================== */
+
+  //   // Add new page for content
+  //   doc.addPage();
+
+  //   // Reset position and settings for content
+  //   const leftMargin = 15;
+  //   const rightMargin = 195;
+  //   const contentPageWidth = rightMargin - leftMargin;
+  //   yPosition = 20;
+  //   const contentLineHeight = 7;
+  //   const sectionGap = 10;
+
+  //   const processLine = (line) => {
+  //     if (yPosition > 270) {
+  //       doc.addPage();
+  //       yPosition = 20;
+  //     }
+
+  //     // Skip empty lines
+  //     if (line.trim() === "") {
+  //       yPosition += contentLineHeight / 2;
+  //       return;
+  //     }
+
+  //     // Handle headings
+  //     if (line.startsWith("# ")) {
+  //       doc.setFontSize(18);
+  //       doc.setFont("helvetica", "bold");
+  //       const headingLines = doc.splitTextToSize(
+  //         line.substring(2),
+  //         contentPageWidth
+  //       );
+  //       doc.text(headingLines, leftMargin, yPosition);
+  //       yPosition += (contentLineHeight + 2) * headingLines.length;
+  //       doc.setDrawColor(200, 200, 200);
+  //       doc.line(leftMargin, yPosition, rightMargin, yPosition);
+  //       yPosition += sectionGap;
+  //       doc.setFontSize(11);
+  //       doc.setFont("helvetica", "normal");
+  //       return;
+  //     }
+
+  //     if (line.startsWith("## ")) {
+  //       doc.setFontSize(16);
+  //       doc.setFont("helvetica", "bold");
+  //       const headingLines = doc.splitTextToSize(
+  //         line.substring(3),
+  //         contentPageWidth
+  //       );
+  //       doc.text(headingLines, leftMargin, yPosition);
+  //       yPosition += (contentLineHeight + sectionGap / 2) * headingLines.length;
+  //       doc.setFontSize(11);
+  //       doc.setFont("helvetica", "normal");
+  //       return;
+  //     }
+
+  //     if (line.startsWith("### ")) {
+  //       doc.setFontSize(14);
+  //       doc.setFont("helvetica", "bold");
+  //       const headingLines = doc.splitTextToSize(
+  //         line.substring(4),
+  //         contentPageWidth
+  //       );
+  //       doc.text(headingLines, leftMargin, yPosition);
+  //       yPosition += contentLineHeight * headingLines.length;
+  //       doc.setFontSize(11);
+  //       doc.setFont("helvetica", "normal");
+  //       return;
+  //     }
+
+  //     // Handle lists
+  //     if (line.startsWith("- ") || line.startsWith("* ")) {
+  //       doc.setFontSize(11);
+  //       const listItemLines = doc.splitTextToSize(
+  //         line.substring(2),
+  //         contentPageWidth - 5
+  //       );
+  //       listItemLines.forEach((text, i) => {
+  //         doc.text(
+  //           i === 0 ? "• " + text : "  " + text,
+  //           leftMargin + 5,
+  //           yPosition
+  //         );
+  //         yPosition += contentLineHeight;
+  //       });
+  //       return;
+  //     }
+
+  //     // Handle diagram placeholders
+  //     if (line.includes("[DIAGRAM]")) {
+  //       doc.setFontSize(10);
+  //       doc.setTextColor(100, 100, 100);
+  //       const diagramLines = doc.splitTextToSize(
+  //         "[Diagram placeholder]",
+  //         contentPageWidth
+  //       );
+  //       doc.text(diagramLines, leftMargin, yPosition);
+  //       yPosition += contentLineHeight * diagramLines.length;
+  //       doc.rect(leftMargin, yPosition, contentPageWidth, 40, "S");
+  //       doc.setTextColor(15, 23, 42);
+  //       yPosition += 45;
+  //       return;
+  //     }
+
+  //     // Handle regular text with word wrap
+  //     doc.setFontSize(11);
+  //     const splitText = doc.splitTextToSize(line, contentPageWidth);
+  //     doc.text(splitText, leftMargin, yPosition);
+  //     yPosition += contentLineHeight * splitText.length;
+  //   };
+
+  //   // Process all content lines
+  //   contentToUse.split("\n").forEach((line) => {
+  //     processLine(line);
+  //   });
+
+  //   // Add page numbers
+  //   const pageCount = doc.internal.getNumberOfPages();
+  //   for (let i = 1; i <= pageCount; i++) {
+  //     doc.setPage(i);
+  //     doc.setFontSize(10);
+  //     doc.setTextColor(100, 100, 100);
+  //     doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 287, {
+  //       align: "center",
+  //     });
+  //   }
+
+  //   // Save the PDF
+  //   doc.save(
+  //     `${selectedDocument?.title || "document"}_${new Date()
+  //       .toISOString()
+  //       .slice(0, 10)}.pdf`
+  //   );
+  // };
+
   const generatePDF = () => {
     const contentToUse = isEditing ? editedContent : generatedContent;
     if (!contentToUse) return;
 
+    // Detect if content is in Korean
+    const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(contentToUse);
+
+    // Initialize PDF
     const doc = new jsPDF({
       unit: "mm",
       format: "a4",
       orientation: "portrait",
     });
 
-    // Set default font
-    doc.setFont("helvetica");
+    // Set default font (fallback)
+    let currentFont = "helvetica";
+    doc.setFont(currentFont);
     doc.setFontSize(11);
 
-    /* ==================== */
-    /* IMPROVED TITLE PAGE */
-    /* ==================== */
+    // Try to set Korean font if available
+    if (isKorean) {
+      const availableFonts = doc.getFontList();
 
-    // Calculate available width (A4 page is 210mm wide)
+      // Check for various possible Korean fonts
+      const koreanFonts = [
+        "NotoSansKR",
+        "malgun",
+        "gulim",
+        "batang",
+        "dotum",
+        "gungsuh",
+        "HYHeadLine",
+        "HYGothic",
+        "HYMyeongJo",
+      ];
+
+      const availableKoreanFont = koreanFonts.find(
+        (font) => availableFonts[font]
+      );
+
+      if (availableKoreanFont) {
+        currentFont = availableKoreanFont;
+        doc.setFont(currentFont);
+      } else {
+        // Try to load NotoSansKR dynamically if not found
+        try {
+          // This would require you to have the font file available
+          // and properly imported/loaded in your application
+          doc.addFileToVFS("NotoSansKR-Regular.ttf", NotoSansKR);
+          doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
+          doc.addFileToVFS("NotoSansKR-Bold.ttf", NotoSansKRBold);
+          doc.addFont("NotoSansKR-Bold.ttf", "NotoSansKR", "bold");
+          doc.setFont("NotoSansKR");
+          currentFont = "NotoSansKR";
+        } catch (e) {
+          console.error("Failed to load Korean font:", e);
+        }
+      }
+    }
+
+    /* ==================== */
+    /* TITLE PAGE */
+    /* ==================== */
     const pageWidth = 210;
     const margin = 20;
     const contentWidth = pageWidth - 2 * margin;
 
     // Title with automatic wrapping
-    const title = selectedDocument?.title || "Generated Document";
+    const title =
+      selectedDocument?.title ||
+      (isKorean ? "생성된 문서" : "Generated Document");
     doc.setFontSize(24);
     doc.setTextColor(15, 23, 42);
 
-    // Split title into multiple lines if needed
     const titleLines = doc.splitTextToSize(title, contentWidth);
-
-    // Calculate starting Y position to center vertically
-    const lineHeight = 10; // Approximate line height for title
+    const lineHeight = 10;
     const titleBlockHeight = titleLines.length * lineHeight;
-    const additionalElementsHeight = 40; // Space for version, date, author
+    const additionalElementsHeight = 40;
     const totalHeight = titleBlockHeight + additionalElementsHeight;
 
-    let yPosition = (297 - totalHeight) / 2; // A4 height is 297mm
+    let yPosition = (297 - totalHeight) / 2;
 
-    // Draw title lines
     titleLines.forEach((line, i) => {
       doc.text(line, pageWidth / 2, yPosition + i * lineHeight, {
         align: "center",
@@ -455,38 +764,40 @@ ${isEditing ? editedContent : generatedContent}
     // Version information
     yPosition += titleBlockHeight + 10;
     doc.setFontSize(16);
-    doc.text(`Version: 1.0`, pageWidth / 2, yPosition, { align: "center" });
+    doc.text(
+      isKorean ? `버전: 1.0` : `Version: 1.0`,
+      pageWidth / 2,
+      yPosition,
+      { align: "center" }
+    );
 
     // Date information
     yPosition += 10;
     doc.text(
-      `Date: ${new Date().toLocaleDateString()}`,
+      isKorean
+        ? `날짜: ${new Date().toLocaleDateString("ko-KR")}`
+        : `Date: ${new Date().toLocaleDateString()}`,
       pageWidth / 2,
       yPosition,
-      {
-        align: "center",
-      }
+      { align: "center" }
     );
 
     // Author information
     yPosition += 10;
     doc.text(
-      `Author: ${user?.name || "TecFlow AI"}`,
+      isKorean
+        ? `작성자: ${user?.name || "TecFlow AI"}`
+        : `Author: ${user?.name || "TecFlow AI"}`,
       pageWidth / 2,
       yPosition,
-      {
-        align: "center",
-      }
+      { align: "center" }
     );
 
     /* ==================== */
     /* DOCUMENT CONTENT */
     /* ==================== */
-
-    // Add new page for content
     doc.addPage();
 
-    // Reset position and settings for content
     const leftMargin = 15;
     const rightMargin = 195;
     const contentPageWidth = rightMargin - leftMargin;
@@ -509,7 +820,7 @@ ${isEditing ? editedContent : generatedContent}
       // Handle headings
       if (line.startsWith("# ")) {
         doc.setFontSize(18);
-        doc.setFont("helvetica", "bold");
+        doc.setFont(currentFont, "bold");
         const headingLines = doc.splitTextToSize(
           line.substring(2),
           contentPageWidth
@@ -520,13 +831,13 @@ ${isEditing ? editedContent : generatedContent}
         doc.line(leftMargin, yPosition, rightMargin, yPosition);
         yPosition += sectionGap;
         doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
+        doc.setFont(currentFont, "normal");
         return;
       }
 
       if (line.startsWith("## ")) {
         doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
+        doc.setFont(currentFont, "bold");
         const headingLines = doc.splitTextToSize(
           line.substring(3),
           contentPageWidth
@@ -534,13 +845,13 @@ ${isEditing ? editedContent : generatedContent}
         doc.text(headingLines, leftMargin, yPosition);
         yPosition += (contentLineHeight + sectionGap / 2) * headingLines.length;
         doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
+        doc.setFont(currentFont, "normal");
         return;
       }
 
       if (line.startsWith("### ")) {
         doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
+        doc.setFont(currentFont, "bold");
         const headingLines = doc.splitTextToSize(
           line.substring(4),
           contentPageWidth
@@ -548,7 +859,7 @@ ${isEditing ? editedContent : generatedContent}
         doc.text(headingLines, leftMargin, yPosition);
         yPosition += contentLineHeight * headingLines.length;
         doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
+        doc.setFont(currentFont, "normal");
         return;
       }
 
@@ -574,10 +885,10 @@ ${isEditing ? editedContent : generatedContent}
       if (line.includes("[DIAGRAM]")) {
         doc.setFontSize(10);
         doc.setTextColor(100, 100, 100);
-        const diagramLines = doc.splitTextToSize(
-          "[Diagram placeholder]",
-          contentPageWidth
-        );
+        const diagramText = isKorean
+          ? "[다이어그램 자리표시자]"
+          : "[Diagram placeholder]";
+        const diagramLines = doc.splitTextToSize(diagramText, contentPageWidth);
         doc.text(diagramLines, leftMargin, yPosition);
         yPosition += contentLineHeight * diagramLines.length;
         doc.rect(leftMargin, yPosition, contentPageWidth, 40, "S");
@@ -604,19 +915,25 @@ ${isEditing ? editedContent : generatedContent}
       doc.setPage(i);
       doc.setFontSize(10);
       doc.setTextColor(100, 100, 100);
-      doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 287, {
-        align: "center",
-      });
+      doc.text(
+        isKorean ? `페이지 ${i} / ${pageCount}` : `Page ${i} of ${pageCount}`,
+        pageWidth / 2,
+        287,
+        { align: "center" }
+      );
     }
 
-    // Save the PDF
-    doc.save(
-      `${selectedDocument?.title || "document"}_${new Date()
-        .toISOString()
-        .slice(0, 10)}.pdf`
-    );
-  };
+    // Save the PDF with appropriate filename
+    const fileName = isKorean
+      ? `${selectedDocument?.title || "문서"}_${new Date()
+          .toISOString()
+          .slice(0, 10)}.pdf`
+      : `${selectedDocument?.title || "document"}_${new Date()
+          .toISOString()
+          .slice(0, 10)}.pdf`;
 
+    doc.save(fileName);
+  };
   const handleSaveEdit = () => {
     setGeneratedContent(editedContent);
     setIsEditing(false);
