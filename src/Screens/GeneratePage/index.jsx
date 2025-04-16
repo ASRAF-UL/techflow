@@ -1071,7 +1071,38 @@ ${isEditing ? editedContent : generatedContent}
               </div>
             )}
           </div>
-
+          <div className="flex flex-col my-2">
+            <button
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
+              title="About Us"
+              onClick={() => navigate("/tecflow-overview")}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              {!sidebarCollapsed && "Help"}
+            </button>
+            <button
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
+              title="Settings"
+              onClick={() => navigate("/")}
+            >
+              <Settings className="w-5 h-5" />
+              {!sidebarCollapsed && "Settings"}
+            </button>
+          </div>
           <div className="border-t border-gray-200 pt-4 mt-auto">
             <div
               className={`flex items-center ${
@@ -1261,6 +1292,39 @@ ${isEditing ? editedContent : generatedContent}
             )}
           </div>
 
+          <div className="flex flex-col my-2">
+            <button
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
+              title="About Us"
+              onClick={() => navigate("/tecflow-overview")}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              {!sidebarCollapsed && "Help"}
+            </button>
+            <button
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
+              title="Settings"
+              onClick={() => navigate("/")}
+            >
+              <Settings className="w-5 h-5" />
+              {!sidebarCollapsed && "Settings"}
+            </button>
+          </div>
+
           <div className="border-t border-gray-200 pt-4 mt-auto">
             <div
               className={`flex items-center ${
@@ -1375,28 +1439,6 @@ ${isEditing ? editedContent : generatedContent}
             )}
           </div>
           <div className="flex items-center gap-2 md:gap-3">
-            <button
-              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-              title="About Us"
-              onClick={() => navigate("/tecflow-overview")}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-            </button>
-
             {user !== null && (
               <button
                 className="flex items-center gap-1 md:gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-3 py-1 md:px-4 rounded-xl hover:opacity-90 transition-opacity text-sm md:text-base"
@@ -1416,13 +1458,9 @@ ${isEditing ? editedContent : generatedContent}
                   <path d="M5 12h14"></path>
                   <path d="M12 5v14"></path>
                 </svg>
-                <span className="hidden sm:inline">Upgrade</span>
+                <span className="hidden sm:inline">Upgrade Plan</span>
               </button>
             )}
-
-            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
-              <Settings className="w-5 h-5" />
-            </button>
 
             {user === null ? (
               <button
@@ -1432,7 +1470,13 @@ ${isEditing ? editedContent : generatedContent}
                 Sign in
               </button>
             ) : (
-              ""
+              <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium overflow-hidden">
+                <img
+                  src={user ? user.profilePic : ""}
+                  alt={user ? user.name : "pp"}
+                  className="w-full h-full object-fit"
+                />
+              </div>
             )}
           </div>
         </header>
@@ -1587,12 +1631,12 @@ ${isEditing ? editedContent : generatedContent}
                             >
                               <Copy className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
-                            <button
+                            {/* <button
                               className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Share document"
                             >
                               <Share2 className="w-3 h-3 md:w-4 md:h-4" />
-                            </button>
+                            </button> */}
                             <button
                               className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Download as Markdown"
