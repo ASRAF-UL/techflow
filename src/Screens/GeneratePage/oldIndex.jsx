@@ -22,16 +22,14 @@ import axios from "axios";
 import { jsPDF } from "jspdf";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
-import {
-  resetChats,
-  setCurrentChat,
-  setChats,
-} from "../../features/chats/chatSlice";
+import { resetChats, setCurrentChat } from "../../features/chats/chatSlice";
 import {
   fetchChats,
   createNewChat,
   editChat,
 } from "../../features/chats/chatThunks";
+import NotoSansKR from "../../assets/fonts/NotoSansKR-Regular-normal.js";
+import NotoSansKRBold from "../../assets/fonts/NotoSansKR-Bold.js";
 
 const documentTypes = [
   {
@@ -128,7 +126,7 @@ const documentTypes = [
    - Consistent numbering throughout
 
 4. DETAIL LEVEL:
-   - Minimum 2500 words
+   - Minimum 2000 words
    - Each requirement must be testable
    - No ambiguous language
    - Technical precision required`,
@@ -189,6 +187,7 @@ const documentTypes = [
 
 const GeneratePage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -204,6 +203,20 @@ const GeneratePage = () => {
     (type) => type.id === selectedType
   );
   const { chats, currentChat } = useSelector((state) => state.chats);
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setIsMobileSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchChats());
@@ -231,20 +244,52 @@ const GeneratePage = () => {
 
   const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
     try {
-      const response = await axios.post(
-        "https://api.openai.com/v1/chat/completions",
-        {
-          model: "gpt-4", // Using GPT-4 for better quality
-          messages: [
-            {
-              role: "system",
-              content: selectedDocument?.systemPrompt
-                ? `${selectedDocument.systemPrompt}\n\nIMPORTANT INSTRUCTIONS:\n- Be extremely thorough and detailed\n- Include all relevant technical specifications\n- Provide comprehensive explanations\n- Use professional technical writing style\n- Format with clear hierarchy and structure\n- Add examples where appropriate\n- Include all standard sections plus any relevant subsections`
-                : "Generate professional, highly detailed technical documentation with comprehensive explanations, examples, and proper formatting.",
-            },
-            {
-              role: "user",
-              content: `Create a comprehensive ${selectedDocument?.title} document with the following requirements:\n\n${prompt}\n\nDOCUMENT REQUIREMENTS:
+      // Detect if the prompt is in Korean (check for Korean characters)
+      const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(prompt);
+
+      console.log("Language detection - Is Korean:", isKorean);
+
+      // System prompt with explicit language instructions
+      const systemPrompt = isKorean
+        ? selectedDocument?.systemPrompt
+          ? `[중요] 이 문서는 반드시 한국어로 작성해야 합니다. 아래 지침을 엄격히 따르세요:\n\n${selectedDocument.systemPrompt}\n\n추가 지침:
+- 반드시 한국어로만 작성할 것
+- 전문적인 기술 문서 스타일 유지
+- 모든 섹션과 하위 섹션 포함
+- 구체적인 예시 2-3개 포함
+- 기술 용어 정확히 사용
+- 명확한 계층 구조 유지
+- 다이어그램 설명 추가 ([DIAGRAM] 표시)
+- 최소 2000단어 이상 작성
+- 모든 요구사항에 번호 부여 (FR-001, NFR-001 등)
+- 각 요구사항에 검증 기준 포함`
+          : "[중요] 이 문서는 반드시 한국어로 작성해야 합니다. 전문적이고 상세한 기술 문서를 생성하되 다음을 준수하세요:\n- 한국어로만 작성\n- 전문적인 기술 문서 스타일\n- 포괄적인 설명과 예시\n- 명확한 구조\n- 최소 2000단어"
+        : selectedDocument?.systemPrompt
+        ? `${selectedDocument.systemPrompt}\n\nIMPORTANT INSTRUCTIONS:
+- Be extremely thorough and detailed
+- Include all relevant technical specifications
+- Provide comprehensive explanations
+- Use professional technical writing style
+- Format with clear hierarchy and structure
+- Add examples where appropriate
+- Include all standard sections plus any relevant subsections`
+        : "Generate professional, highly detailed technical documentation with comprehensive explanations, examples, and proper formatting.";
+
+      // User prompt with language-specific requirements
+      const userPrompt = isKorean
+        ? `다음 요구사항에 따라 ${selectedDocument?.title} 문서를 한국어로 작성하세요:\n\n${prompt}\n\n문서 작성 시 반드시 다음을 준수하세요:
+1. 모든 표준 섹션과 하위 섹션 포함
+2. 상세한 기술 설명 제공
+3. 주요 섹션마다 구체적인 예시 2-3개 포함
+4. 전문 용어 사용
+5. 명확한 계층 구조 유지 (제목, 소제목, 목록)
+6. 필요한 곳에 다이어그램 설명 포함 ([DIAGRAM] 표시)
+7. 가능한 한 철저하게 작성
+8. 최소 2000단어 이상 작성
+9. 모든 요구사항에 번호 부여 (예: FR-001, NFR-001)
+10. 모든 요구사항에 대한 검증 기준 포함
+11. 반드시 한국어로만 작성`
+        : `Create a comprehensive ${selectedDocument?.title} document with the following requirements:\n\n${prompt}\n\nDOCUMENT REQUIREMENTS:
 1. Include ALL standard sections and subsections
 2. Provide detailed technical descriptions
 3. Add concrete examples where applicable (minimum 2-3 per major section)
@@ -252,43 +297,95 @@ const GeneratePage = () => {
 5. Format with clear hierarchy (headings, subheadings, lists)
 6. Include diagrams descriptions where needed (mark as [DIAGRAM])
 7. Be as thorough as possible
-8. Aim for at least 2500 words of detailed content
+8. Aim for at least 2000 words of detailed content
 9. Number all requirements (e.g., FR-001, NFR-001)
-10. Include validation criteria for all requirements`,
-            },
-          ],
-          max_tokens: 4000,
-          temperature: 0.3,
-        },
+10. Include validation criteria for all requirements`;
+
+      console.log("System prompt being sent:", systemPrompt);
+      console.log("User prompt being sent:", userPrompt);
+
+      const requestData = {
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+        max_tokens: 4000,
+        temperature: isKorean ? 0.1 : 0.3, // Lower temperature for Korean
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+      };
+
+      console.log(
+        "Full request payload:",
+        JSON.stringify(requestData, null, 2)
+      );
+
+      const response = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        requestData,
         {
           headers: {
             Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
             "Content-Type": "application/json",
           },
+          timeout: 30000, // 30 seconds timeout
         }
       );
 
-      return (
-        response.data.choices[0]?.message?.content || "No content generated"
-      );
+      console.log("API response:", response.data);
+
+      const generatedContent =
+        response.data.choices[0]?.message?.content || "No content generated";
+      console.log("Generated content:", generatedContent);
+
+      // Verify the response is in Korean if expected
+      if (isKorean && !/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(generatedContent)) {
+        console.warn(
+          "Expected Korean content but received non-Korean response"
+        );
+        throw new Error("API did not return Korean content as requested");
+      }
+
+      return generatedContent;
     } catch (error) {
+      console.error("API call error:", error);
+
       if (axios.isAxiosError(error)) {
-        console.error("OpenAI API Error:", error.response?.data);
+        console.error("Axios error details:", {
+          message: error.message,
+          code: error.code,
+          status: error.response?.status,
+          data: error.response?.data,
+        });
+
         setError(
           `API Error: ${error.response?.data?.error?.message || error.message}`
         );
       } else {
-        console.error("Error:", error);
+        console.error("Unexpected error:", error);
         setError("An unexpected error occurred");
       }
 
       if (
         retries > 0 &&
         axios.isAxiosError(error) &&
-        error.response?.status === 429
+        (error.response?.status === 429 || // Too many requests
+          error.response?.status === 502 || // Bad gateway
+          error.response?.status === 503 || // Service unavailable
+          error.response?.status === 504) // Gateway timeout
       ) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-        return callOpenAIWithBackoff(prompt, retries - 1, delay * 2);
+        const nextDelay = delay * 2;
+        console.log(`Retrying in ${nextDelay}ms... (${retries} retries left)`);
+        await new Promise((resolve) => setTimeout(resolve, nextDelay));
+        return callOpenAIWithBackoff(prompt, retries - 1, nextDelay);
       }
 
       throw error;
@@ -365,10 +462,275 @@ ${isEditing ? editedContent : generatedContent}
     URL.revokeObjectURL(url);
   };
 
-  const generatePDF = () => {
-    const contentToUse = isEditing ? editedContent : generatedContent;
+  // const generatePDF = () => {
+  //   const contentToUse = isEditing ? editedContent : generatedContent;
+  //   if (!contentToUse) return;
+
+  //   const doc = new jsPDF({
+  //     unit: "mm",
+  //     format: "a4",
+  //     orientation: "portrait",
+  //   });
+
+  //   // Set default font
+  //   doc.setFont("helvetica");
+  //   doc.setFontSize(11);
+
+  //   /* ==================== */
+  //   /* IMPROVED TITLE PAGE */
+  //   /* ==================== */
+
+  //   // Calculate available width (A4 page is 210mm wide)
+  //   const pageWidth = 210;
+  //   const margin = 20;
+  //   const contentWidth = pageWidth - 2 * margin;
+
+  //   // Title with automatic wrapping
+  //   const title = selectedDocument?.title || "Generated Document";
+  //   doc.setFontSize(24);
+  //   doc.setTextColor(15, 23, 42);
+
+  //   // Split title into multiple lines if needed
+  //   const titleLines = doc.splitTextToSize(title, contentWidth);
+
+  //   // Calculate starting Y position to center vertically
+  //   const lineHeight = 10; // Approximate line height for title
+  //   const titleBlockHeight = titleLines.length * lineHeight;
+  //   const additionalElementsHeight = 40; // Space for version, date, author
+  //   const totalHeight = titleBlockHeight + additionalElementsHeight;
+
+  //   let yPosition = (297 - totalHeight) / 2; // A4 height is 297mm
+
+  //   // Draw title lines
+  //   titleLines.forEach((line, i) => {
+  //     doc.text(line, pageWidth / 2, yPosition + i * lineHeight, {
+  //       align: "center",
+  //       maxWidth: contentWidth,
+  //     });
+  //   });
+
+  //   // Version information
+  //   yPosition += titleBlockHeight + 10;
+  //   doc.setFontSize(16);
+  //   doc.text(`Version: 1.0`, pageWidth / 2, yPosition, { align: "center" });
+
+  //   // Date information
+  //   yPosition += 10;
+  //   doc.text(
+  //     `Date: ${new Date().toLocaleDateString()}`,
+  //     pageWidth / 2,
+  //     yPosition,
+  //     {
+  //       align: "center",
+  //     }
+  //   );
+
+  //   // Author information
+  //   yPosition += 10;
+  //   doc.text(
+  //     `Author: ${user?.name || "TecFlow AI"}`,
+  //     pageWidth / 2,
+  //     yPosition,
+  //     {
+  //       align: "center",
+  //     }
+  //   );
+
+  //   /* ==================== */
+  //   /* DOCUMENT CONTENT */
+  //   /* ==================== */
+
+  //   // Add new page for content
+  //   doc.addPage();
+
+  //   // Reset position and settings for content
+  //   const leftMargin = 15;
+  //   const rightMargin = 195;
+  //   const contentPageWidth = rightMargin - leftMargin;
+  //   yPosition = 20;
+  //   const contentLineHeight = 7;
+  //   const sectionGap = 10;
+
+  //   const processLine = (line) => {
+  //     if (yPosition > 270) {
+  //       doc.addPage();
+  //       yPosition = 20;
+  //     }
+
+  //     // Skip empty lines
+  //     if (line.trim() === "") {
+  //       yPosition += contentLineHeight / 2;
+  //       return;
+  //     }
+
+  //     // Handle headings
+  //     if (line.startsWith("# ")) {
+  //       doc.setFontSize(18);
+  //       doc.setFont("helvetica", "bold");
+  //       const headingLines = doc.splitTextToSize(
+  //         line.substring(2),
+  //         contentPageWidth
+  //       );
+  //       doc.text(headingLines, leftMargin, yPosition);
+  //       yPosition += (contentLineHeight + 2) * headingLines.length;
+  //       doc.setDrawColor(200, 200, 200);
+  //       doc.line(leftMargin, yPosition, rightMargin, yPosition);
+  //       yPosition += sectionGap;
+  //       doc.setFontSize(11);
+  //       doc.setFont("helvetica", "normal");
+  //       return;
+  //     }
+
+  //     if (line.startsWith("## ")) {
+  //       doc.setFontSize(16);
+  //       doc.setFont("helvetica", "bold");
+  //       const headingLines = doc.splitTextToSize(
+  //         line.substring(3),
+  //         contentPageWidth
+  //       );
+  //       doc.text(headingLines, leftMargin, yPosition);
+  //       yPosition += (contentLineHeight + sectionGap / 2) * headingLines.length;
+  //       doc.setFontSize(11);
+  //       doc.setFont("helvetica", "normal");
+  //       return;
+  //     }
+
+  //     if (line.startsWith("### ")) {
+  //       doc.setFontSize(14);
+  //       doc.setFont("helvetica", "bold");
+  //       const headingLines = doc.splitTextToSize(
+  //         line.substring(4),
+  //         contentPageWidth
+  //       );
+  //       doc.text(headingLines, leftMargin, yPosition);
+  //       yPosition += contentLineHeight * headingLines.length;
+  //       doc.setFontSize(11);
+  //       doc.setFont("helvetica", "normal");
+  //       return;
+  //     }
+
+  //     // Handle lists
+  //     if (line.startsWith("- ") || line.startsWith("* ")) {
+  //       doc.setFontSize(11);
+  //       const listItemLines = doc.splitTextToSize(
+  //         line.substring(2),
+  //         contentPageWidth - 5
+  //       );
+  //       listItemLines.forEach((text, i) => {
+  //         doc.text(
+  //           i === 0 ? "• " + text : "  " + text,
+  //           leftMargin + 5,
+  //           yPosition
+  //         );
+  //         yPosition += contentLineHeight;
+  //       });
+  //       return;
+  //     }
+
+  //     // Handle diagram placeholders
+  //     if (line.includes("[DIAGRAM]")) {
+  //       doc.setFontSize(10);
+  //       doc.setTextColor(100, 100, 100);
+  //       const diagramLines = doc.splitTextToSize(
+  //         "[Diagram placeholder]",
+  //         contentPageWidth
+  //       );
+  //       doc.text(diagramLines, leftMargin, yPosition);
+  //       yPosition += contentLineHeight * diagramLines.length;
+  //       doc.rect(leftMargin, yPosition, contentPageWidth, 40, "S");
+  //       doc.setTextColor(15, 23, 42);
+  //       yPosition += 45;
+  //       return;
+  //     }
+
+  //     // Handle regular text with word wrap
+  //     doc.setFontSize(11);
+  //     const splitText = doc.splitTextToSize(line, contentPageWidth);
+  //     doc.text(splitText, leftMargin, yPosition);
+  //     yPosition += contentLineHeight * splitText.length;
+  //   };
+
+  //   // Process all content lines
+  //   contentToUse.split("\n").forEach((line) => {
+  //     processLine(line);
+  //   });
+
+  //   // Add page numbers
+  //   const pageCount = doc.internal.getNumberOfPages();
+  //   for (let i = 1; i <= pageCount; i++) {
+  //     doc.setPage(i);
+  //     doc.setFontSize(10);
+  //     doc.setTextColor(100, 100, 100);
+  //     doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 287, {
+  //       align: "center",
+  //     });
+  //   }
+
+  //   // Save the PDF
+  //   doc.save(
+  //     `${selectedDocument?.title || "document"}_${new Date()
+  //       .toISOString()
+  //       .slice(0, 10)}.pdf`
+  //   );
+  // };
+  // function isMostlyKorean(text) {
+  //   const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+  //   const nonKoreanRegex = /[a-zA-Z]/; // English letters
+
+  //   let koreanCount = 0;
+  //   let englishCount = 0;
+
+  //   for (let char of text) {
+  //     if (koreanRegex.test(char)) koreanCount++;
+  //     if (nonKoreanRegex.test(char)) englishCount++;
+  //   }
+
+  //   // Consider it Korean only if there are more Korean than English characters
+  //   return koreanCount > englishCount;
+  // }
+
+  // Add this near your other utility functions
+
+  const detectContentLanguage = (content) => {
+    const koreanCharCount = (content.match(/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g) || [])
+      .length;
+    const englishCharCount = (content.match(/[a-zA-Z]/g) || []).length;
+
+    return koreanCharCount > englishCharCount ? "ko" : "en";
+  };
+
+  const generatePDF = async (targetLanguage = null) => {
+    let contentToUse = isEditing ? editedContent : generatedContent;
     if (!contentToUse) return;
 
+    // Detect original language if no target specified
+    const originalLanguage = detectContentLanguage(contentToUse);
+    const shouldTranslate =
+      targetLanguage && targetLanguage !== originalLanguage;
+
+    if (shouldTranslate) {
+      try {
+        setIsGenerating(true);
+        const translationPrompt =
+          targetLanguage === "ko"
+            ? `Translate the following technical document to Korean while maintaining all formatting, structure, and technical accuracy:\n\n${contentToUse}`
+            : `Translate the following technical document to English while maintaining all formatting, structure, and technical accuracy:\n\n${contentToUse}`;
+
+        contentToUse = await callOpenAIWithBackoff(translationPrompt);
+      } catch (error) {
+        console.error("Translation failed:", error);
+        setError("Failed to translate document");
+        return;
+      } finally {
+        setIsGenerating(false);
+      }
+    }
+
+    // Rest of your existing PDF generation code...
+    const isKorean = detectContentLanguage(contentToUse) === "ko";
+    console.log("Selected language:", isKorean ? "Korean" : "English");
+
+    // Initialize PDF
     const doc = new jsPDF({
       unit: "mm",
       format: "a4",
@@ -376,163 +738,259 @@ ${isEditing ? editedContent : generatedContent}
     });
 
     // Set default font
-    doc.setFont("helvetica");
+    let currentFont = "helvetica";
+    doc.setFont(currentFont);
     doc.setFontSize(11);
 
-    // Title Page
+    // Try to set Korean font if needed
+    if (isKorean) {
+      const availableFonts = doc.getFontList();
+      const koreanFonts = [
+        "NotoSansKR",
+        "malgun",
+        "gulim",
+        "batang",
+        "dotum",
+        "gungsuh",
+        "HYHeadLine",
+        "HYGothic",
+        "HYMyeongJo",
+      ];
+      const availableKoreanFont = koreanFonts.find(
+        (font) => availableFonts[font]
+      );
+
+      if (availableKoreanFont) {
+        currentFont = availableKoreanFont;
+        doc.setFont(currentFont);
+      } else {
+        try {
+          doc.addFileToVFS("NotoSansKR-Regular.ttf", NotoSansKR);
+          doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
+          doc.addFileToVFS("NotoSansKR-Bold.ttf", NotoSansKRBold);
+          doc.addFont("NotoSansKR-Bold.ttf", "NotoSansKR", "bold");
+          doc.setFont("NotoSansKR");
+          currentFont = "NotoSansKR";
+        } catch (e) {
+          console.error("Failed to load Korean font:", e);
+        }
+      }
+    }
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const margin = 20;
+    const contentWidth = pageWidth - 2 * margin;
+
+    // Watermark helper
+    const addWatermarkToPage = (pageNum) => {
+      doc.setPage(pageNum);
+      doc.saveGraphicsState();
+      doc.setGState(new doc.GState({ opacity: 0.2 }));
+      doc.setFont(currentFont, "bold");
+      doc.setFontSize(60);
+      doc.setTextColor(0, 0, 0);
+
+      // Calculate text dimensions
+      const watermarkText = "TecFlow";
+
+      // Get exact center of page
+      const centerX = pageWidth / 2;
+      const centerY = pageHeight / 2 + margin;
+
+      // Save current state, rotate, then restore
+      doc.text(watermarkText, centerX, centerY, {
+        angle: 35,
+        align: "center",
+        baseline: "middle",
+      });
+
+      doc.restoreGraphicsState();
+    };
+    /* TITLE PAGE */
+    const title =
+      selectedDocument?.title ||
+      (isKorean ? "생성된 문서" : "Generated Document");
     doc.setFontSize(24);
     doc.setTextColor(15, 23, 42);
-    doc.text(selectedDocument?.title || "Generated Document", 105, 40, {
-      align: "center",
+
+    const titleLines = doc.splitTextToSize(title, contentWidth);
+    const lineHeight = 10;
+    const titleBlockHeight = titleLines.length * lineHeight;
+    const additionalElementsHeight = 40;
+    const totalHeight = titleBlockHeight + additionalElementsHeight;
+
+    let yPosition = (297 - totalHeight) / 2;
+
+    titleLines.forEach((line, i) => {
+      doc.text(line, pageWidth / 2, yPosition + i * lineHeight, {
+        align: "center",
+        maxWidth: contentWidth,
+      });
     });
 
+    yPosition += titleBlockHeight + 10;
     doc.setFontSize(16);
-    doc.text(`Version: 1.0`, 105, 60, { align: "center" });
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 70, {
-      align: "center",
-    });
-    doc.text(`Author: ${user?.name || "TecFlow AI"}`, 105, 80, {
-      align: "center",
-    });
+    doc.text(
+      isKorean ? `버전: 1.0` : `Version: 1.0`,
+      pageWidth / 2,
+      yPosition,
+      { align: "center" }
+    );
 
-    // Add new page for content
+    yPosition += 10;
+    doc.text(
+      isKorean
+        ? `날짜: ${new Date().toLocaleDateString("ko-KR")}`
+        : `Date: ${new Date().toLocaleDateString()}`,
+      pageWidth / 2,
+      yPosition,
+      { align: "center" }
+    );
+
+    yPosition += 10;
+    doc.text(
+      isKorean
+        ? `작성자: ${user?.name || "TecFlow AI"}`
+        : `Author: ${user?.name || "TecFlow AI"}`,
+      pageWidth / 2,
+      yPosition,
+      { align: "center" }
+    );
+
+    /* DOCUMENT CONTENT */
     doc.addPage();
+    addWatermarkToPage(doc.internal.getNumberOfPages());
 
-    // Content formatting
     const leftMargin = 15;
     const rightMargin = 195;
-    const pageWidth = rightMargin - leftMargin;
-    let yPosition = 20;
-    const lineHeight = 7;
+    const contentPageWidth = rightMargin - leftMargin;
+    yPosition = 20;
+    const contentLineHeight = 7;
     const sectionGap = 10;
 
     const processLine = (line) => {
       if (yPosition > 270) {
         doc.addPage();
+        addWatermarkToPage(doc.internal.getNumberOfPages());
         yPosition = 20;
       }
 
-      // Skip empty lines
       if (line.trim() === "") {
-        yPosition += lineHeight / 2;
+        yPosition += contentLineHeight / 2;
         return;
       }
 
-      // Handle headings
       if (line.startsWith("# ")) {
         doc.setFontSize(18);
-        doc.setFont("helvetica", "bold");
-        doc.text(line.substring(2), leftMargin, yPosition);
-        yPosition += lineHeight + 2;
+        doc.setFont(currentFont, "bold");
+        const headingLines = doc.splitTextToSize(
+          line.substring(2),
+          contentPageWidth
+        );
+        doc.text(headingLines, leftMargin, yPosition);
+        yPosition += (contentLineHeight + 2) * headingLines.length;
         doc.setDrawColor(200, 200, 200);
         doc.line(leftMargin, yPosition, rightMargin, yPosition);
         yPosition += sectionGap;
         doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
+        doc.setFont(currentFont, "normal");
         return;
       }
 
       if (line.startsWith("## ")) {
         doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
-        doc.text(line.substring(3), leftMargin, yPosition);
-        yPosition += lineHeight + sectionGap / 2;
+        doc.setFont(currentFont, "bold");
+        const headingLines = doc.splitTextToSize(
+          line.substring(3),
+          contentPageWidth
+        );
+        doc.text(headingLines, leftMargin, yPosition);
+        yPosition += (contentLineHeight + sectionGap / 2) * headingLines.length;
         doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
+        doc.setFont(currentFont, "normal");
         return;
       }
 
       if (line.startsWith("### ")) {
         doc.setFontSize(14);
-        doc.setFont("helvetica", "bold");
-        doc.text(line.substring(4), leftMargin, yPosition);
-        yPosition += lineHeight;
+        doc.setFont(currentFont, "bold");
+        const headingLines = doc.splitTextToSize(
+          line.substring(4),
+          contentPageWidth
+        );
+        doc.text(headingLines, leftMargin, yPosition);
+        yPosition += contentLineHeight * headingLines.length;
         doc.setFontSize(11);
-        doc.setFont("helvetica", "normal");
+        doc.setFont(currentFont, "normal");
         return;
       }
 
-      // Handle lists
       if (line.startsWith("- ") || line.startsWith("* ")) {
         doc.setFontSize(11);
-        doc.text("• " + line.substring(2), leftMargin + 5, yPosition);
-        yPosition += lineHeight;
+        const listItemLines = doc.splitTextToSize(
+          line.substring(2),
+          contentPageWidth - 5
+        );
+        listItemLines.forEach((text, i) => {
+          doc.text(
+            i === 0 ? "• " + text : "  " + text,
+            leftMargin + 5,
+            yPosition
+          );
+          yPosition += contentLineHeight;
+        });
         return;
       }
 
-      // Handle diagram placeholders
       if (line.includes("[DIAGRAM]")) {
         doc.setFontSize(10);
         doc.setTextColor(100, 100, 100);
-        doc.text("[Diagram placeholder]", leftMargin, yPosition);
-        yPosition += lineHeight;
-        doc.rect(leftMargin, yPosition, pageWidth, 40, "S");
+        const diagramText = isKorean
+          ? "[다이어그램 자리표시자]"
+          : "[Diagram placeholder]";
+        const diagramLines = doc.splitTextToSize(diagramText, contentPageWidth);
+        doc.text(diagramLines, leftMargin, yPosition);
+        yPosition += contentLineHeight * diagramLines.length;
+        doc.rect(leftMargin, yPosition, contentPageWidth, 40, "S");
         doc.setTextColor(15, 23, 42);
         yPosition += 45;
         return;
       }
 
-      // Handle tables (simple markdown table support)
-      if (line.includes("|") && line.includes("-")) {
-        const rows = contentToUse
-          .split("\n")
-          .slice(
-            contentToUse.split("\n").indexOf(line) - 1,
-            contentToUse.split("\n").indexOf(line) + 3
-          )
-          .filter((r) => r.includes("|"));
-
-        if (rows.length > 1) {
-          const tableData = rows.map((row) =>
-            row
-              .split("|")
-              .map((cell) => cell.trim())
-              .filter((cell) => cell)
-          );
-
-          // Simple table drawing (for more complex tables consider using autoTable plugin)
-          doc.setFontSize(10);
-          tableData.forEach((row, rowIndex) => {
-            row.forEach((cell, cellIndex) => {
-              doc.text(
-                cell,
-                leftMargin + cellIndex * 40,
-                yPosition + rowIndex * 7
-              );
-            });
-          });
-          yPosition += tableData.length * 7 + 10;
-          return;
-        }
-      }
-
-      // Handle regular text with word wrap
+      // Regular text
       doc.setFontSize(11);
-      const splitText = doc.splitTextToSize(line, pageWidth);
+      const splitText = doc.splitTextToSize(line, contentPageWidth);
       doc.text(splitText, leftMargin, yPosition);
-      yPosition += lineHeight * splitText.length;
+      yPosition += contentLineHeight * splitText.length;
     };
 
-    // Process all content lines
     contentToUse.split("\n").forEach((line) => {
       processLine(line);
     });
 
-    // Add page numbers
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(10);
       doc.setTextColor(100, 100, 100);
-      doc.text(`Page ${i} of ${pageCount}`, 105, 287, { align: "center" });
+      doc.text(
+        isKorean ? `페이지 ${i} / ${pageCount}` : `Page ${i} of ${pageCount}`,
+        pageWidth / 2,
+        287,
+        { align: "center" }
+      );
     }
 
-    // Save the PDF
-    doc.save(
-      `${selectedDocument?.title || "document"}_${new Date()
-        .toISOString()
-        .slice(0, 10)}.pdf`
-    );
+    const fileName = isKorean
+      ? `${selectedDocument?.title || "문서"}_${new Date()
+          .toISOString()
+          .slice(0, 10)}.pdf`
+      : `${selectedDocument?.title || "document"}_${new Date()
+          .toISOString()
+          .slice(0, 10)}.pdf`;
+
+    doc.save(fileName);
   };
 
   const handleSaveEdit = () => {
@@ -540,12 +998,14 @@ ${isEditing ? editedContent : generatedContent}
     setIsEditing(false);
 
     if (currentChat) {
-      dispatch(
-        editChat({
-          id: currentChat.id,
-          content: editedContent,
-        })
-      );
+      const dataToUpdate = {
+        id: currentChat.id,
+        prompt: prompt,
+        title: currentChat.title,
+        type: currentChat.type,
+        content: editedContent,
+      };
+      dispatch(editChat(dataToUpdate));
     }
   };
 
@@ -561,59 +1021,262 @@ ${isEditing ? editedContent : generatedContent}
   };
   return (
     <div className="min-h-screen flex bg-gray-50">
-      <div
-        className={`${sidebarCollapsed ? "w-18" : "w-72"} 
+      {/* Mobile sidebar toggle button */}
+      {isMobile && (
+        <button
+          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          className="fixed top-4 left-4 z-50 bg-white border border-gray-200 rounded-full hover:bg-blue-100 p-2 shadow-sm hover:shadow-md transition-all duration-200 md:hidden"
+        >
+          <Menu className="w-5 h-5 text-gray-500" />
+        </button>
+      )}
+      {isMobile ? (
+        <div
+          className={`${sidebarCollapsed ? "w-18" : "w-72"} 
+        bg-white border-r border-gray-200 p-4 
+        flex flex-col transition-all duration-300 ease-in-out 
+        fixed h-full overflow-hidden z-40
+        ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0`}
+          style={{ width: "18rem" }}
+        >
+          <div
+            className={`flex items-center gap-3 mb-8 px-2 w-full ${
+              sidebarCollapsed ? "justify-center" : "justify-between"
+            }`}
+          >
+            <img
+              src="techflow_logo.png"
+              className="h-5 ml-12 mt-2 w-auto"
+              alt="TecFlow Logo"
+            />
+          </div>
+
+          <button
+            onClick={() => {
+              dispatch(setCurrentChat(null));
+              setSelectedType(null);
+              setPrompt("");
+              setGeneratedContent("");
+              setShowPreview(false);
+            }}
+            className={`flex items-center gap-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-200 mb-6 ${
+              sidebarCollapsed
+                ? "justify-center w-full px-4 py-3"
+                : "font-medium px-4 py-3"
+            }`}
+          >
+            <Sparkles className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && "New AI Document"}
+          </button>
+
+          <div className="flex-1 overflow-y-auto">
+            {!sidebarCollapsed && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
+                    Recent
+                    <Clock className="w-4 h-4" />
+                  </h2>
+                  {user === null ? (
+                    <div className="space-y-1">
+                      <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
+                        <div className="space-y-2">
+                          <h2 className="text-lg font-semibold text-gray-900">
+                            Sign in to start saving your chats
+                          </h2>
+                          <p className="text-sm text-gray-600">
+                            Once you're signed in, you can access your recent
+                            chats here.
+                          </p>
+                        </div>
+
+                        <button
+                          className="w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                          onClick={() => navigate("/login")}
+                        >
+                          Sign in
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // Replace the hardcoded array with your actual chats
+                    <div className="space-y-1">
+                      {chats?.map((chat) => (
+                        <button
+                          key={chat.id}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                            currentChat?.id === chat.id
+                              ? "bg-blue-50 text-blue-700 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                          onClick={() => dispatch(setCurrentChat(chat))}
+                        >
+                          <div
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              currentChat?.id === chat.id
+                                ? "bg-blue-600"
+                                : "bg-blue-400"
+                            }`}
+                          ></div>
+                          <span className="truncate">{chat.title}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col my-2">
+            <button
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
+              title="About Us"
+              onClick={() => navigate("/tecflow-overview")}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              {!sidebarCollapsed && "Help"}
+            </button>
+            <button
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
+              title="Settings"
+              onClick={() => navigate("/")}
+            >
+              <Settings className="w-5 h-5" />
+              {!sidebarCollapsed && "Settings"}
+            </button>
+          </div>
+          <div className="border-t border-gray-200 pt-4 mt-auto">
+            <div
+              className={`flex items-center ${
+                sidebarCollapsed ? "justify-center" : "justify-between"
+              }`}
+            >
+              {!sidebarCollapsed ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                      U
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {user ? user.name : ""}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {user ? user.email : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                      <Settings className="w-4 h-4 text-gray-500" />
+                    </button>
+                    <button
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={handleLogout}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                  U
+                </div>
+              )}
+            </div>
+
+            {!sidebarCollapsed && user === null ? (
+              <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
+                Add account
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`${sidebarCollapsed ? "w-18" : "w-72"} 
         bg-white border-r border-gray-200 p-4 
         flex flex-col transition-all duration-300 ease-in-out 
         fixed h-full overflow-hidden`}
-        style={{ width: sidebarCollapsed ? "4.5rem" : "18rem" }}
-      >
-        <div
-          className={`flex items-center gap-3 mb-8 px-2 w-full ${
-            sidebarCollapsed ? "justify-center" : "justify-between"
-          }`}
+          style={{ width: sidebarCollapsed ? "4.5rem" : "18rem" }}
         >
-          {!sidebarCollapsed && (
-            <img
-              src="techflow_logo.png"
-              className="w-[80%] h-auto"
-              alt="TecFlow Logo"
-            />
-          )}
-          <button
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="bg-white border border-gray-200 rounded-full hover:bg-blue-100 p-2 shadow-sm hover:shadow-md transition-all duration-200"
+          <div
+            className={`flex items-center gap-3 mb-8 px-2 w-full ${
+              sidebarCollapsed ? "justify-center" : "justify-between"
+            }`}
           >
-            <Menu
-              className={`w-5 h-5 text-gray-500 ${
-                sidebarCollapsed ? "rotate-90" : ""
-              }`}
-            />
+            {!sidebarCollapsed && (
+              <img
+                src="techflow_logo.png"
+                className="w-[80%] h-auto"
+                alt="TecFlow Logo"
+              />
+            )}
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="bg-white border border-gray-200 rounded-full hover:bg-blue-100 p-2 shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              <Menu
+                className={`w-5 h-5 text-gray-500 ${
+                  sidebarCollapsed ? "rotate-90" : ""
+                }`}
+              />
+            </button>
+          </div>
+
+          <button
+            onClick={() => {
+              dispatch(setCurrentChat(null));
+              setSelectedType(null);
+              setPrompt("");
+              setGeneratedContent("");
+              setShowPreview(false);
+            }}
+            className={`flex items-center gap-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-200 mb-6 ${
+              sidebarCollapsed
+                ? "justify-center w-full px-4 py-3"
+                : "font-medium px-4 py-3"
+            }`}
+          >
+            <Sparkles className="w-4 h-4 flex-shrink-0" />
+            {!sidebarCollapsed && "New AI Document"}
           </button>
-        </div>
 
-        <button
-          onClick={() => {
-            dispatch(setCurrentChat(null));
-            setSelectedType(null);
-            setPrompt("");
-            setGeneratedContent("");
-            setShowPreview(false);
-          }}
-          className={`flex items-center gap-2 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-200 mb-6 ${
-            sidebarCollapsed
-              ? "justify-center w-full px-4 py-3"
-              : "font-medium px-4 py-3"
-          }`}
-        >
-          <Sparkles className="w-4 h-4 flex-shrink-0" />
-          {!sidebarCollapsed && "New AI Document"}
-        </button>
-
-        <div className="flex-1 overflow-y-auto">
-          {!sidebarCollapsed && (
-            <div className="space-y-6">
-              {/* {user === null ? (
+          <div className="flex-1 overflow-y-auto">
+            {!sidebarCollapsed && (
+              <div className="space-y-6">
+                {/* {user === null ? (
                 ""
               ) : (
                 <div>
@@ -630,163 +1293,72 @@ ${isEditing ? editedContent : generatedContent}
                 </div>
               )} */}
 
-              <div>
-                <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
-                  Recent
-                  <Clock className="w-4 h-4" />
-                </h2>
-                {user === null ? (
-                  <div className="space-y-1">
-                    <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
-                      <div className="space-y-2">
-                        <h2 className="text-lg font-semibold text-gray-900">
-                          Sign in to start saving your chats
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          Once you're signed in, you can access your recent
-                          chats here.
-                        </p>
+                <div>
+                  <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
+                    Recent
+                    <Clock className="w-4 h-4" />
+                  </h2>
+                  {user === null ? (
+                    <div className="space-y-1">
+                      <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
+                        <div className="space-y-2">
+                          <h2 className="text-lg font-semibold text-gray-900">
+                            Sign in to start saving your chats
+                          </h2>
+                          <p className="text-sm text-gray-600">
+                            Once you're signed in, you can access your recent
+                            chats here.
+                          </p>
+                        </div>
+
+                        <button
+                          className="w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                          onClick={() => navigate("/login")}
+                        >
+                          Sign in
+                        </button>
                       </div>
-
-                      <button
-                        className="w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                        onClick={() => navigate("/login")}
-                      >
-                        Sign in
-                      </button>
                     </div>
-                  </div>
-                ) : (
-                  // Replace the hardcoded array with your actual chats
-                  <div className="space-y-1">
-                    {chats?.map((chat) => (
-                      <button
-                        key={chat.id}
-                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                          currentChat?.id === chat.id
-                            ? "bg-blue-50 text-blue-700 font-medium"
-                            : "text-gray-700 hover:bg-gray-50"
-                        }`}
-                        onClick={() => dispatch(setCurrentChat(chat))}
-                      >
-                        <div
-                          className={`w-1.5 h-1.5 rounded-full ${
+                  ) : (
+                    // Replace the hardcoded array with your actual chats
+                    <div className="space-y-1">
+                      {chats?.map((chat) => (
+                        <button
+                          key={chat.id}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
                             currentChat?.id === chat.id
-                              ? "bg-blue-600"
-                              : "bg-blue-400"
+                              ? "bg-blue-50 text-blue-700 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
                           }`}
-                        ></div>
-                        <span className="truncate">{chat.title}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="border-t border-gray-200 pt-4 mt-auto">
-          <div
-            className={`flex items-center ${
-              sidebarCollapsed ? "justify-center" : "justify-between"
-            }`}
-          >
-            {!sidebarCollapsed ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                    U
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {user ? user.name : ""}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {user ? user.email : ""}
-                    </p>
-                  </div>
+                          onClick={() => dispatch(setCurrentChat(chat))}
+                        >
+                          <div
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              currentChat?.id === chat.id
+                                ? "bg-blue-600"
+                                : "bg-blue-400"
+                            }`}
+                          ></div>
+                          <span className="truncate">{chat.title}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-1">
-                  <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                    <Settings className="w-4 h-4 text-gray-500" />
-                  </button>
-                  <button
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    onClick={handleLogout}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                      <polyline points="16 17 21 12 16 7"></polyline>
-                      <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-                U
               </div>
             )}
           </div>
 
-          {!sidebarCollapsed && user === null ? (
-            <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
-              Add account
-            </button>
-          ) : (
-            ""
-          )}
-        </div>
-      </div>
-
-      <div
-        className="flex-1 flex flex-col"
-        style={{
-          marginLeft: sidebarCollapsed ? "4.5rem" : "18rem",
-          width: sidebarCollapsed
-            ? "calc(100% - 4.5rem)"
-            : "calc(100% - 18rem)",
-        }}
-      >
-        <header
-          className="h-16 bg-white px-6 flex items-center justify-between fixed top-0 z-10"
-          style={{
-            left: sidebarCollapsed ? "4.5rem" : "18rem",
-            width: sidebarCollapsed
-              ? "calc(100% - 4.5rem)"
-              : "calc(100% - 18rem)",
-          }}
-        >
-          <div className="flex items-center gap-4">
-            {sidebarCollapsed && (
-              <img
-                src="techflow_logo.png"
-                className="w-[11%] h-auto"
-                alt="TecFlow Logo"
-              />
-            )}
-          </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col my-2">
             <button
-              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
               title="About Us"
               onClick={() => navigate("/tecflow-overview")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
+                width="24"
+                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -798,11 +1370,135 @@ ${isEditing ? editedContent : generatedContent}
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
+              {!sidebarCollapsed && "Help"}
             </button>
+            <button
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
+              title="Settings"
+              onClick={() => navigate("/")}
+            >
+              <Settings className="w-5 h-5" />
+              {!sidebarCollapsed && "Settings"}
+            </button>
+          </div>
 
+          <div className="border-t border-gray-200 pt-4 mt-auto">
+            <div
+              className={`flex items-center ${
+                sidebarCollapsed ? "justify-center" : "justify-between"
+              }`}
+            >
+              {!sidebarCollapsed ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                      U
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {user ? user.name : ""}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {user ? user.email : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                      <Settings className="w-4 h-4 text-gray-500" />
+                    </button>
+                    <button
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      onClick={handleLogout}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                      </svg>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                  U
+                </div>
+              )}
+            </div>
+
+            {!sidebarCollapsed && user === null ? (
+              <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
+                Add account
+              </button>
+            ) : (
+              ""
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Overlay for mobile sidebar */}
+      {isMobile && isMobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-10 z-30 md:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main content area */}
+      <div
+        className="flex-1 flex flex-col transition-all duration-300"
+        style={{
+          marginLeft: isMobile ? "0" : sidebarCollapsed ? "4.5rem" : "18rem",
+          width: isMobile
+            ? "100%"
+            : sidebarCollapsed
+            ? "calc(100% - 4.5rem)"
+            : "calc(100% - 18rem)",
+        }}
+      >
+        {/* Header - modified for mobile */}
+        <header
+          className="h-16 bg-white pl-16 pr-4  md:px-6 flex items-center justify-between fixed top-0 z-10 shadow-sm"
+          style={{
+            left: isMobile ? "0" : sidebarCollapsed ? "4.5rem" : "18rem",
+            width: isMobile
+              ? "100%"
+              : sidebarCollapsed
+              ? "calc(100% - 4.5rem)"
+              : "calc(100% - 18rem)",
+          }}
+        >
+          <div className="flex items-center gap-4">
+            {isMobile && (
+              <img
+                src="techflow_logo.png"
+                className="h-5 w-auto"
+                alt="TecFlow Logo"
+              />
+            )}
+            {sidebarCollapsed && !isMobile && (
+              <img
+                src="techflow_logo.png"
+                className="w-[11%] h-auto"
+                alt="TecFlow Logo"
+              />
+            )}
+          </div>
+          <div className="flex items-center gap-2 md:gap-3">
             {user !== null && (
               <button
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-1 rounded-xl hover:opacity-90 transition-opacity"
+                className="flex items-center gap-1 md:gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-3 py-1 md:px-4 rounded-xl hover:opacity-90 transition-opacity text-sm md:text-base"
                 title="Upgrade Plan"
               >
                 <svg
@@ -819,71 +1515,80 @@ ${isEditing ? editedContent : generatedContent}
                   <path d="M5 12h14"></path>
                   <path d="M12 5v14"></path>
                 </svg>
-                <span>Upgrade</span>
+                <span
+                  className="hidden sm:inline"
+                  onClick={() => navigate("/subscription")}
+                >
+                  Upgrade Plan
+                </span>
               </button>
             )}
-
-            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
-              <Settings className="w-5 h-5" />
-            </button>
 
             {user === null ? (
               <button
                 onClick={() => navigate("/login")}
-                className="bg-blue-600 text-white h-10 px-5 py-2 rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                className="bg-blue-600 text-white h-8 md:h-10 px-3 md:px-5 py-1 md:py-2 rounded-xl hover:bg-blue-700 transition-colors font-medium text-sm md:text-base"
               >
                 Sign in
               </button>
             ) : (
-              ""
+              <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium overflow-hidden">
+                <img
+                  src={user ? user.profilePic : ""}
+                  alt={user ? user.name : "pp"}
+                  className="w-full h-full object-fit"
+                />
+              </div>
             )}
           </div>
         </header>
 
         <div
-          className="flex-1 overflow-auto p-6"
+          className="flex-1 overflow-auto p-4 md:p-6"
           style={{
             marginTop: "4.5rem",
             height: "calc(100vh - 4.5rem)",
           }}
         >
-          <div className="max-w-[70%] mx-auto">
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
+          <div className="max-w-full md:max-w-[90%] lg:max-w-[80%] xl:max-w-[70%] mx-auto">
+            <div className="text-center mb-8 md:mb-12">
+              <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4 bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
                 AI-Powered Document Generation
               </h1>
-              <p className="text-lg text-gray-600">
+              <p className="text-base md:text-lg text-gray-600">
                 Transform your ideas into professional technical documentation
                 in seconds.
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-lg">
+              <div className="mb-4 md:mb-6 p-3 md:p-4 bg-red-50 text-red-600 rounded-lg text-sm md:text-base">
                 {error}
               </div>
             )}
 
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 mb-8 md:mb-12">
               {documentTypes.map((type) => (
                 <button
                   key={type.id}
                   onClick={() => setSelectedType(type.id)}
-                  className={`relative p-6 bg-white rounded-xl shadow-md transition-all duration-300 hover:shadow-lg ${
+                  className={`relative p-4 md:p-6 bg-white rounded-xl shadow-md transition-all duration-300 hover:shadow-lg ${
                     selectedType === type.id ? "ring-2 ring-blue-500" : ""
                   }`}
                 >
-                  <div className={`inline-flex p-3 rounded-lg ${type.color}`}>
-                    <type.icon className="h-6 w-6 text-white" />
+                  <div
+                    className={`inline-flex p-2 md:p-3 rounded-lg ${type.color}`}
+                  >
+                    <type.icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold text-gray-900">
+                  <h3 className="mt-3 md:mt-4 text-base md:text-lg font-semibold text-gray-900">
                     {type.title}
                   </h3>
-                  <p className="mt-2 text-sm text-gray-600">
+                  <p className="mt-1 md:mt-2 text-xs md:text-sm text-gray-600">
                     {type.description}
                   </p>
                   <ArrowRight
-                    className={`absolute bottom-4 right-4 h-5 w-5 transition-opacity duration-300 ${
+                    className={`absolute bottom-3 right-3 md:bottom-4 md:right-4 h-4 w-4 md:h-5 md:w-5 transition-opacity duration-300 ${
                       selectedType === type.id ? "opacity-100" : "opacity-0"
                     }`}
                   />
@@ -892,54 +1597,54 @@ ${isEditing ? editedContent : generatedContent}
             </div>
 
             {selectedType && (
-              <div className="bg-transparent flex flex-col gap-4 rounded-xl">
-                <div className="bg-white rounded-xl shadow-md p-8">
-                  <div className="flex items-center gap-3 mb-6">
+              <div className="bg-transparent flex flex-col gap-3 md:gap-4 rounded-xl">
+                <div className="bg-white rounded-xl shadow-md p-4 md:p-6 lg:p-8">
+                  <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
                     <div
-                      className={`p-2 rounded-lg ${selectedDocument?.color}`}
+                      className={`p-1 md:p-2 rounded-lg ${selectedDocument?.color}`}
                     >
-                      <selectedDocument.icon className="h-5 w-5 text-white" />
+                      <selectedDocument.icon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900">
+                    <h3 className="text-lg md:text-xl font-semibold text-gray-900">
                       Generate {selectedDocument?.title}
                     </h3>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     <div className="relative">
                       <textarea
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         placeholder="Describe your requirements"
-                        className="w-full min-h-20 p-4 outline-none border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:border-transparent bg-gray-50 placeholder-gray-400 text-gray-600 transition-all duration-200"
+                        className="w-full min-h-20 p-3 md:p-4 outline-none border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:border-transparent bg-gray-50 placeholder-gray-400 text-gray-600 transition-all duration-200 text-sm md:text-base"
                       />
-                      <div className="absolute right-4 bottom-4 flex items-center gap-2 text-sm text-gray-400">
-                        <Wand2 className="h-4 w-4" />
-                        AI-Powered
+                      <div className="absolute right-3 bottom-3 md:right-4 md:bottom-4 flex items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-400">
+                        <Wand2 className="h-3 w-3 md:h-4 md:w-4" />
+                        <span className="hidden sm:inline">AI-Powered</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      <div className="text-sm text-gray-500">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-3 md:pt-4 border-t border-gray-100 gap-2 md:gap-0">
+                      <div className="text-xs md:text-sm text-gray-500">
                         Your document will be generated in PDF format
                       </div>
                       <button
                         onClick={handleGenerate}
                         disabled={isGenerating || !prompt.trim()}
-                        className={`inline-flex items-center px-6 py-3 rounded-xl text-white font-medium transition-all duration-300 ${
+                        className={`inline-flex items-center px-4 py-2 md:px-6 md:py-3 rounded-xl text-white font-medium transition-all duration-300 text-sm md:text-base ${
                           isGenerating || !prompt.trim()
                             ? "bg-gray-400 cursor-not-allowed"
                             : selectedDocument?.color
-                        } hover:opacity-90`}
+                        } hover:opacity-90 w-full sm:w-auto justify-center`}
                       >
                         {isGenerating ? (
                           <>
-                            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2" />
+                            <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-2 border-white border-t-transparent mr-2" />
                             Generating...
                           </>
                         ) : (
                           <>
-                            <Download className="h-5 w-5 mr-2" />
+                            <Download className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
                             Generate Document
                           </>
                         )}
@@ -950,75 +1655,92 @@ ${isEditing ? editedContent : generatedContent}
 
                 {showPreview && (
                   <div className="border border-gray-200 rounded-xl">
-                    <div className="p-4 flex items-center justify-between bg-gray-50 rounded-t-lg">
-                      <h3 className="font-medium text-gray-900">
+                    <div className="p-3 md:p-4 flex items-center justify-between bg-gray-50 rounded-t-lg">
+                      <h3 className="font-medium text-gray-900 text-sm md:text-base">
                         {selectedDocument?.title} Preview
                       </h3>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 md:gap-2">
                         {isEditing ? (
                           <>
                             <button
                               onClick={handleSaveEdit}
-                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                              className="p-1 md:p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                               title="Save changes"
                             >
-                              <Save className="w-4 h-4" />
+                              <Save className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
                             <button
                               onClick={handleCancelEdit}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-1 md:p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               title="Cancel editing"
                             >
-                              <X className="w-4 h-4" />
+                              <X className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
                           </>
                         ) : (
                           <>
                             <button
                               onClick={() => setIsEditing(true)}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              className="p-1 md:p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                               title="Edit document"
                             >
-                              <Edit className="w-4 h-4" />
+                              <Edit className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
                             <button
                               onClick={handleCopyToClipboard}
-                              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+                              className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Copy to clipboard"
                             >
-                              <Copy className="w-4 h-4" />
+                              <Copy className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
                             <button
-                              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-                              title="Share document"
-                            >
-                              <Share2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+                              className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Download as Markdown"
                               onClick={handleDownloadMarkdown}
                             >
-                              <FileText className="w-4 h-4" />
+                              <FileText className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
+                            {generatedContent && (
+                              <button
+                                onClick={() => {
+                                  const currentLanguage =
+                                    detectContentLanguage(generatedContent);
+                                  generatePDF(
+                                    currentLanguage === "ko" ? "en" : "ko"
+                                  );
+                                }}
+                                className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-xs"
+                                title={
+                                  detectContentLanguage(generatedContent) ===
+                                  "ko"
+                                    ? "Download English PDF"
+                                    : "Download Korean PDF"
+                                }
+                              >
+                                {detectContentLanguage(generatedContent) ===
+                                "ko"
+                                  ? "EN PDF"
+                                  : "KO PDF"}
+                              </button>
+                            )}
                             <button
-                              className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+                              className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Download as PDF"
-                              onClick={generatePDF}
+                              onClick={() => generatePDF()}
                             >
-                              <Download className="w-4 h-4" />
+                              <Download className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
                           </>
                         )}
                       </div>
                     </div>
-                    <div className="p-4 bg-white">
+                    <div className="p-3 md:p-4 bg-white">
                       {isGenerating ? (
-                        <div className="animate-pulse space-y-4">
+                        <div className="animate-pulse space-y-3 md:space-y-4">
                           {[...Array(8)].map((_, i) => (
                             <div
                               key={i}
-                              className={`h-4 bg-gray-200 rounded ${
+                              className={`h-3 md:h-4 bg-gray-200 rounded ${
                                 i % 2 ? "w-3/4" : "w-5/6"
                               }`}
                             ></div>
@@ -1029,11 +1751,11 @@ ${isEditing ? editedContent : generatedContent}
                           <textarea
                             value={editedContent}
                             onChange={(e) => setEditedContent(e.target.value)}
-                            className="w-full min-h-[500px] p-4 outline-none border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:border-transparent bg-white placeholder-gray-400 text-gray-600 transition-all duration-200 font-mono text-sm"
+                            className="w-full min-h-[300px] md:min-h-[500px] p-3 md:p-4 outline-none border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:border-transparent bg-white placeholder-gray-400 text-gray-600 transition-all duration-200 font-mono text-xs md:text-sm"
                           />
                         ) : (
                           <div
-                            className={`prose max-w-none ${
+                            className={`prose max-w-none text-sm md:text-base ${
                               selectedType === "tech-spec"
                                 ? "prose-blue"
                                 : selectedType === "srs"
@@ -1041,7 +1763,7 @@ ${isEditing ? editedContent : generatedContent}
                                 : "prose-green"
                             }`}
                           >
-                            <div className="p-6 border border-gray-200 rounded-lg">
+                            <div className="p-3 md:p-6 border border-gray-200 rounded-lg">
                               {generatedContent
                                 .split("\n")
                                 .map((line, index) => {
@@ -1049,7 +1771,7 @@ ${isEditing ? editedContent : generatedContent}
                                     return (
                                       <h1
                                         key={index}
-                                        className="text-2xl font-bold mb-4 border-b pb-2"
+                                        className="text-xl md:text-2xl font-bold mb-3 md:mb-4 border-b pb-1 md:pb-2"
                                       >
                                         {line.substring(2)}
                                       </h1>
@@ -1058,7 +1780,7 @@ ${isEditing ? editedContent : generatedContent}
                                     return (
                                       <h2
                                         key={index}
-                                        className="text-xl font-semibold mt-6 mb-3"
+                                        className="text-lg md:text-xl font-semibold mt-4 md:mt-6 mb-2 md:mb-3"
                                       >
                                         {line.substring(3)}
                                       </h2>
@@ -1067,7 +1789,7 @@ ${isEditing ? editedContent : generatedContent}
                                     return (
                                       <h3
                                         key={index}
-                                        className="text-lg font-medium mt-4 mb-2"
+                                        className="text-base md:text-lg font-medium mt-3 md:mt-4 mb-1 md:mb-2"
                                       >
                                         {line.substring(4)}
                                       </h3>
@@ -1079,7 +1801,7 @@ ${isEditing ? editedContent : generatedContent}
                                     return (
                                       <ul
                                         key={index}
-                                        className="list-disc pl-5 my-2"
+                                        className="list-disc pl-4 md:pl-5 my-1 md:my-2"
                                       >
                                         <li>{line.substring(2)}</li>
                                       </ul>
@@ -1088,9 +1810,9 @@ ${isEditing ? editedContent : generatedContent}
                                     return (
                                       <div
                                         key={index}
-                                        className="my-4 p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 text-center"
+                                        className="my-2 md:my-4 p-2 md:p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 text-center"
                                       >
-                                        <p className="text-gray-500 text-sm">
+                                        <p className="text-gray-500 text-xs md:text-sm">
                                           [Diagram:{" "}
                                           {line.replace("[DIAGRAM]", "")}]
                                         </p>
@@ -1102,14 +1824,14 @@ ${isEditing ? editedContent : generatedContent}
                                     return (
                                       <p
                                         key={index}
-                                        className="my-3 leading-relaxed"
+                                        className="my-2 md:my-3 leading-relaxed"
                                       >
                                         {line}
                                       </p>
                                     );
                                   }
                                 })}
-                              <div className="mt-8 pt-4 border-t text-sm text-gray-500 text-center">
+                              <div className="mt-4 md:mt-8 pt-2 md:pt-4 border-t text-xs md:text-sm text-gray-500 text-center">
                                 Generated by TecFlow AI •{" "}
                                 {new Date().toLocaleDateString()}
                               </div>
@@ -1117,7 +1839,7 @@ ${isEditing ? editedContent : generatedContent}
                           </div>
                         )
                       ) : (
-                        <div className="text-gray-500 text-center py-8">
+                        <div className="text-gray-500 text-center py-4 md:py-8 text-sm md:text-base">
                           Your generated content will appear here
                         </div>
                       )}

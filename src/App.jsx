@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Homepage from './Screens/HomePage';
 import GeneratePage from './Screens/GeneratePage';
 import LoginPage from './Screens/login';
+import SubscriptionPlans from './Screens/SubscriptionPlans';
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
         <Route path="/" element={<GeneratePage />} />
         <Route path="/tecflow-overview" element={<Homepage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/subscription" element={<SubscriptionPlans />} />
       </Routes>
     </Router>
   );

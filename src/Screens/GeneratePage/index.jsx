@@ -671,13 +671,30 @@ ${isEditing ? editedContent : generatedContent}
   //       .slice(0, 10)}.pdf`
   //   );
   // };
+function isMostlyKorean(text) {
+  const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+  const nonKoreanRegex = /[a-zA-Z]/; // English letters
+
+  let koreanCount = 0;
+  let englishCount = 0;
+
+  for (let char of text) {
+    if (koreanRegex.test(char)) koreanCount++;
+    if (nonKoreanRegex.test(char)) englishCount++;
+  }
+
+  // Consider it Korean only if there are more Korean than English characters
+  return koreanCount > englishCount;
+}
 
   const generatePDF = () => {
     const contentToUse = isEditing ? editedContent : generatedContent;
     if (!contentToUse) return;
 
     // Detect if content is in Korean
-    const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(contentToUse);
+    const isKorean = isMostlyKorean(contentToUse);
+    console.log("Seleted language 000: ", isKorean);
+    console.log("Seleted language content: ", contentToUse);
 
     // Initialize PDF
     const doc = new jsPDF({
@@ -686,16 +703,14 @@ ${isEditing ? editedContent : generatedContent}
       orientation: "portrait",
     });
 
-    // Set default font (fallback)
+    // Set default font
     let currentFont = "helvetica";
     doc.setFont(currentFont);
     doc.setFontSize(11);
 
-    // Try to set Korean font if available
+    // Try to set Korean font if needed
     if (isKorean) {
       const availableFonts = doc.getFontList();
-
-      // Check for various possible Korean fonts
       const koreanFonts = [
         "NotoSansKR",
         "malgun",
@@ -707,7 +722,6 @@ ${isEditing ? editedContent : generatedContent}
         "HYGothic",
         "HYMyeongJo",
       ];
-
       const availableKoreanFont = koreanFonts.find(
         (font) => availableFonts[font]
       );
@@ -716,10 +730,7 @@ ${isEditing ? editedContent : generatedContent}
         currentFont = availableKoreanFont;
         doc.setFont(currentFont);
       } else {
-        // Try to load NotoSansKR dynamically if not found
         try {
-          // This would require you to have the font file available
-          // and properly imported/loaded in your application
           doc.addFileToVFS("NotoSansKR-Regular.ttf", NotoSansKR);
           doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
           doc.addFileToVFS("NotoSansKR-Bold.ttf", NotoSansKRBold);
@@ -732,14 +743,37 @@ ${isEditing ? editedContent : generatedContent}
       }
     }
 
-    /* ==================== */
-    /* TITLE PAGE */
-    /* ==================== */
     const pageWidth = 210;
+    const pageHeight = 297;
     const margin = 20;
     const contentWidth = pageWidth - 2 * margin;
 
-    // Title with automatic wrapping
+    // Watermark helper
+    const addWatermarkToPage = (pageNum) => {
+      doc.setPage(pageNum);
+      doc.saveGraphicsState();
+      doc.setGState(new doc.GState({ opacity: 0.2 }));
+      doc.setFont(currentFont, "bold");
+      doc.setFontSize(60);
+      doc.setTextColor(0, 0, 0);
+
+      // Calculate text dimensions
+      const watermarkText = "TecFlow";
+
+      // Get exact center of page
+      const centerX = pageWidth / 2
+      const centerY = pageHeight / 2 + margin;
+
+      // Save current state, rotate, then restore
+      doc.text(watermarkText, centerX, centerY, {
+        angle: 35,
+        align: "center",
+        baseline: "middle",
+      });
+
+      doc.restoreGraphicsState();
+    };
+    /* TITLE PAGE */
     const title =
       selectedDocument?.title ||
       (isKorean ? "생성된 문서" : "Generated Document");
@@ -761,7 +795,6 @@ ${isEditing ? editedContent : generatedContent}
       });
     });
 
-    // Version information
     yPosition += titleBlockHeight + 10;
     doc.setFontSize(16);
     doc.text(
@@ -771,7 +804,6 @@ ${isEditing ? editedContent : generatedContent}
       { align: "center" }
     );
 
-    // Date information
     yPosition += 10;
     doc.text(
       isKorean
@@ -782,7 +814,6 @@ ${isEditing ? editedContent : generatedContent}
       { align: "center" }
     );
 
-    // Author information
     yPosition += 10;
     doc.text(
       isKorean
@@ -793,10 +824,9 @@ ${isEditing ? editedContent : generatedContent}
       { align: "center" }
     );
 
-    /* ==================== */
     /* DOCUMENT CONTENT */
-    /* ==================== */
     doc.addPage();
+    addWatermarkToPage(doc.internal.getNumberOfPages());
 
     const leftMargin = 15;
     const rightMargin = 195;
@@ -808,16 +838,15 @@ ${isEditing ? editedContent : generatedContent}
     const processLine = (line) => {
       if (yPosition > 270) {
         doc.addPage();
+        addWatermarkToPage(doc.internal.getNumberOfPages());
         yPosition = 20;
       }
 
-      // Skip empty lines
       if (line.trim() === "") {
         yPosition += contentLineHeight / 2;
         return;
       }
 
-      // Handle headings
       if (line.startsWith("# ")) {
         doc.setFontSize(18);
         doc.setFont(currentFont, "bold");
@@ -863,7 +892,6 @@ ${isEditing ? editedContent : generatedContent}
         return;
       }
 
-      // Handle lists
       if (line.startsWith("- ") || line.startsWith("* ")) {
         doc.setFontSize(11);
         const listItemLines = doc.splitTextToSize(
@@ -881,7 +909,6 @@ ${isEditing ? editedContent : generatedContent}
         return;
       }
 
-      // Handle diagram placeholders
       if (line.includes("[DIAGRAM]")) {
         doc.setFontSize(10);
         doc.setTextColor(100, 100, 100);
@@ -897,19 +924,17 @@ ${isEditing ? editedContent : generatedContent}
         return;
       }
 
-      // Handle regular text with word wrap
+      // Regular text
       doc.setFontSize(11);
       const splitText = doc.splitTextToSize(line, contentPageWidth);
       doc.text(splitText, leftMargin, yPosition);
       yPosition += contentLineHeight * splitText.length;
     };
 
-    // Process all content lines
     contentToUse.split("\n").forEach((line) => {
       processLine(line);
     });
 
-    // Add page numbers
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
@@ -923,7 +948,6 @@ ${isEditing ? editedContent : generatedContent}
       );
     }
 
-    // Save the PDF with appropriate filename
     const fileName = isKorean
       ? `${selectedDocument?.title || "문서"}_${new Date()
           .toISOString()
@@ -934,6 +958,7 @@ ${isEditing ? editedContent : generatedContent}
 
     doc.save(fileName);
   };
+
   const handleSaveEdit = () => {
     setGeneratedContent(editedContent);
     setIsEditing(false);
@@ -1458,7 +1483,12 @@ ${isEditing ? editedContent : generatedContent}
                   <path d="M5 12h14"></path>
                   <path d="M12 5v14"></path>
                 </svg>
-                <span className="hidden sm:inline">Upgrade Plan</span>
+                <span
+                  className="hidden sm:inline"
+                  onClick={() => navigate("/subscription")}
+                >
+                  Upgrade Plan
+                </span>
               </button>
             )}
 
@@ -1637,19 +1667,20 @@ ${isEditing ? editedContent : generatedContent}
                             >
                               <Share2 className="w-3 h-3 md:w-4 md:h-4" />
                             </button> */}
-                            <button
+                            {/* <button
                               className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Download as Markdown"
                               onClick={handleDownloadMarkdown}
                             >
                               <FileText className="w-3 h-3 md:w-4 md:h-4" />
-                            </button>
+                            </button> */}
                             <button
-                              className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+                              className={`text-sm md:text-md p-1 md:p-2 text-white hover:opacity-80 rounded-lg transition-colors flex items-center gap-2 ${selectedDocument?.color}`}
                               title="Download as PDF"
                               onClick={generatePDF}
                             >
-                              <Download className="w-3 h-3 md:w-4 md:h-4" />
+                              <Download className="w-4 h-4 md:w-5 md:h-5" />{" "}
+                              Download PDF
                             </button>
                           </>
                         )}
