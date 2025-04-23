@@ -4,8 +4,10 @@ import { Mail, Lock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../features/auth/authSlice";
+import { useTranslation } from "react-i18next";
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [isRegistering, setIsRegistering] = useState(false);
   const [authForm, setAuthForm] = useState({
@@ -59,7 +61,7 @@ const LoginPage = () => {
           // Redirect to home
           navigate("/", { state: { loginType: "user" } });
         } catch (err) {
-          setError("Failed to process Google login");
+          setError(t("login_page.errors.google_failed"));
         } finally {
           setIsLoading(false);
         }
@@ -93,7 +95,7 @@ const LoginPage = () => {
     if (loginType === "user") {
       // Basic validation for user login/registration
       if (isRegistering && authForm.password !== authForm.confirmPassword) {
-        setError("Passwords don't match");
+        setError(t("login_page.errors.passwords_match"));
         return;
       }
 
@@ -102,7 +104,7 @@ const LoginPage = () => {
         !authForm.password ||
         (isRegistering && !authForm.name)
       ) {
-        setError("Please fill in all fields");
+        setError(t("login_page.errors.fill_all"));
         return;
       }
 
@@ -142,7 +144,7 @@ const LoginPage = () => {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || "Authentication failed");
+          throw new Error(data.message || t("login_page.errors.auth_failed"));
         }
 
         // Fetch and store user data
@@ -175,7 +177,7 @@ const LoginPage = () => {
         // Open Google auth in same tab
         window.location.href = "https://backend.tecflow.kr/auth/google";
       } catch (err) {
-        setError("Failed to initiate Google login");
+        setError(t("login_page.errors.google_failed"));
         setIsLoading(false);
       }
     } else {
@@ -205,8 +207,8 @@ const LoginPage = () => {
           </div>
           <h2 className="text-md font-normal text-gray-700 mt-8 mb-2 mx-2">
             {isRegistering
-              ? "To use Tecflow you must create an account"
-              : "To use Tecflow you must log into your account using one of the options below"}
+              ? t("login_page.messages.register_required")
+              : t("login_page.messages.login_required")}
           </h2>
 
           {/* Guest Login Button */}
@@ -215,7 +217,7 @@ const LoginPage = () => {
             className="bg-gray-200 text-blue-500 text-xs font-small py-2 px-4 m-2 rounded-full hover:bg-gray-300 transition duration-200"
             disabled={isLoading}
           >
-            Continue as Guest
+            {t("login_page.continue_guest")}
           </button>
         </div>
 
@@ -238,7 +240,7 @@ const LoginPage = () => {
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Full Name
+                {t("login_page.full_name")}
               </label>
               <div className="relative">
                 <input
@@ -260,7 +262,7 @@ const LoginPage = () => {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Email Address
+              {t("login_page.email_address")}
             </label>
             <div className="relative">
               <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -282,7 +284,7 @@ const LoginPage = () => {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Password
+              {t("login_page.password")}
             </label>
             <div className="relative">
               <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -306,7 +308,7 @@ const LoginPage = () => {
                 htmlFor="confirmPassword"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Confirm Password
+                {t("login_page.confirm_password")}
               </label>
               <div className="relative">
                 <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -331,10 +333,10 @@ const LoginPage = () => {
             disabled={isLoading}
           >
             {isLoading
-              ? "Processing..."
+              ? t("login_page.processing")
               : isRegistering
-              ? "Create Account"
-              : "Sign In"}
+              ? t("login_page.create_account")
+              : t("login_page.sign_in")}
           </button>
 
           <div className="relative my-6">
@@ -343,7 +345,7 @@ const LoginPage = () => {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-white text-gray-500">
-                Or continue with
+                {t("login_page.or_continue_with")}
               </span>
             </div>
           </div>
@@ -355,7 +357,7 @@ const LoginPage = () => {
             disabled={isLoading}
           >
             {isLoading ? (
-              "Processing..."
+              t("login_page.processing")
             ) : (
               <>
                 <img
@@ -363,15 +365,15 @@ const LoginPage = () => {
                   alt="Google"
                   className="w-5 h-5"
                 />
-                Continue with Google
+                {t("login_page.continue_google")}
               </>
             )}
           </button>
 
           <p className="text-center text-sm text-gray-600 mt-6">
             {isRegistering
-              ? "Already have an account?"
-              : "Don't have an account?"}{" "}
+              ? t("login_page.already_account")
+              : t("login_page.no_account")}{" "}
             <button
               type="button"
               onClick={() => {
@@ -381,7 +383,9 @@ const LoginPage = () => {
               className="text-blue-600 hover:text-blue-700 font-medium"
               disabled={isLoading}
             >
-              {isRegistering ? "Sign in" : "Create one"}
+              {isRegistering
+                ? t("login_page.sign_in")
+                : t("login_page.create_one")}
             </button>
           </p>
         </form>

@@ -22,27 +22,27 @@ import axios from "axios";
 import { jsPDF } from "jspdf";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/auth/authSlice";
-import {
-  resetChats,
-  setCurrentChat,
-} from "../../features/chats/chatSlice";
+import { resetChats, setCurrentChat } from "../../features/chats/chatSlice";
 import {
   fetchChats,
   createNewChat,
   editChat,
 } from "../../features/chats/chatThunks";
-import NotoSansKR from "../../assets/fonts/NotoSansKR-Regular-normal.js"
-import NotoSansKRBold from "../../assets/fonts/NotoSansKR-Bold.js"
+import NotoSansKR from "../../assets/fonts/NotoSansKR-Regular-normal.js";
+import NotoSansKRBold from "../../assets/fonts/NotoSansKR-Bold.js";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
-const documentTypes = [
-  {
-    id: "tech-spec",
-    title: "Technical Specification",
-    icon: FileText,
-    description:
-      "Generate detailed technical specifications with structured formatting and clarity.",
-    color: "bg-blue-500",
-    systemPrompt: `You are a senior technical writer creating a comprehensive Technical Specification document. Follow these guidelines:
+const GeneratePage = () => {
+  const { t } = useTranslation();
+  const documentTypes = [
+    {
+      id: "tech-spec",
+      title: t("document_types.tech_spec.title"),
+      icon: FileText,
+      description: t("document_types.tech_spec.description"),
+      color: "bg-blue-500",
+      systemPrompt: `You are a senior technical writer creating a comprehensive Technical Specification document. Follow these guidelines:
 
 1. DOCUMENT STRUCTURE:
    - Title Page (Title, Version, Date, Author/Team, Status, Approvers)
@@ -84,15 +84,14 @@ const documentTypes = [
    - Minimum 2000 words
    - Comprehensive coverage of all aspects
    - No placeholder text - all content must be specific and actionable`,
-  },
-  {
-    id: "srs",
-    title: "Software Requirement Specification",
-    icon: FileCode,
-    description:
-      "Create comprehensive SRS documents outlining system functionalities and requirements.",
-    color: "bg-purple-500",
-    systemPrompt: `You are a senior software engineer creating a detailed Software Requirements Specification document. Follow these guidelines:
+    },
+    {
+      id: "srs",
+      title: t("document_types.srs.title"),
+      icon: FileText,
+      description: t("document_types.srs.description"),
+      color: "bg-purple-500",
+      systemPrompt: `You are a senior software engineer creating a detailed Software Requirements Specification document. Follow these guidelines:
 
 1. DOCUMENT STRUCTURE:
    - Title Page (Document Title, Version, Date, Author/Team)
@@ -133,15 +132,14 @@ const documentTypes = [
    - Each requirement must be testable
    - No ambiguous language
    - Technical precision required`,
-  },
-  {
-    id: "architecture",
-    title: "System Architecture",
-    icon: Network,
-    description:
-      "Design and document system architectures with clear diagrams and structured descriptions.",
-    color: "bg-green-500",
-    systemPrompt: `You are a solutions architect creating a comprehensive System Architecture document. Follow these guidelines:
+    },
+    {
+      id: "architecture",
+      title: t("document_types.architecture.title"),
+      icon: FileText,
+      description: t("document_types.architecture.description"),
+      color: "bg-green-500",
+      systemPrompt: `You are a solutions architect creating a comprehensive System Architecture document. Follow these guidelines:
 
 1. DOCUMENT STRUCTURE:
    - Title Page (Document Title, Version, Date, Architect/Team)
@@ -185,10 +183,9 @@ const documentTypes = [
    - Technical depth in all sections
    - Cover all architecture viewpoints
    - Include quantitative metrics`,
-  },
-];
+    },
+  ];
 
-const GeneratePage = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const dispatch = useDispatch();
@@ -245,17 +242,17 @@ const GeneratePage = () => {
     }
   }, [generatedContent]);
 
-const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
-  try {
-    // Detect if the prompt is in Korean (check for Korean characters)
-    const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(prompt);
+  const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
+    try {
+      // Detect if the prompt is in Korean (check for Korean characters)
+      const isKorean = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(prompt);
 
-    console.log("Language detection - Is Korean:", isKorean);
+      console.log("Language detection - Is Korean:", isKorean);
 
-    // System prompt with explicit language instructions
-    const systemPrompt = isKorean
-      ? selectedDocument?.systemPrompt
-        ? `[중요] 이 문서는 반드시 한국어로 작성해야 합니다. 아래 지침을 엄격히 따르세요:\n\n${selectedDocument.systemPrompt}\n\n추가 지침:
+      // System prompt with explicit language instructions
+      const systemPrompt = isKorean
+        ? selectedDocument?.systemPrompt
+          ? `[중요] 이 문서는 반드시 한국어로 작성해야 합니다. 아래 지침을 엄격히 따르세요:\n\n${selectedDocument.systemPrompt}\n\n추가 지침:
 - 반드시 한국어로만 작성할 것
 - 전문적인 기술 문서 스타일 유지
 - 모든 섹션과 하위 섹션 포함
@@ -266,9 +263,9 @@ const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
 - 최소 2000단어 이상 작성
 - 모든 요구사항에 번호 부여 (FR-001, NFR-001 등)
 - 각 요구사항에 검증 기준 포함`
-        : "[중요] 이 문서는 반드시 한국어로 작성해야 합니다. 전문적이고 상세한 기술 문서를 생성하되 다음을 준수하세요:\n- 한국어로만 작성\n- 전문적인 기술 문서 스타일\n- 포괄적인 설명과 예시\n- 명확한 구조\n- 최소 2000단어"
-      : selectedDocument?.systemPrompt
-      ? `${selectedDocument.systemPrompt}\n\nIMPORTANT INSTRUCTIONS:
+          : "[중요] 이 문서는 반드시 한국어로 작성해야 합니다. 전문적이고 상세한 기술 문서를 생성하되 다음을 준수하세요:\n- 한국어로만 작성\n- 전문적인 기술 문서 스타일\n- 포괄적인 설명과 예시\n- 명확한 구조\n- 최소 2000단어"
+        : selectedDocument?.systemPrompt
+        ? `${selectedDocument.systemPrompt}\n\nIMPORTANT INSTRUCTIONS:
 - Be extremely thorough and detailed
 - Include all relevant technical specifications
 - Provide comprehensive explanations
@@ -276,11 +273,11 @@ const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
 - Format with clear hierarchy and structure
 - Add examples where appropriate
 - Include all standard sections plus any relevant subsections`
-      : "Generate professional, highly detailed technical documentation with comprehensive explanations, examples, and proper formatting.";
+        : "Generate professional, highly detailed technical documentation with comprehensive explanations, examples, and proper formatting.";
 
-    // User prompt with language-specific requirements
-    const userPrompt = isKorean
-      ? `다음 요구사항에 따라 ${selectedDocument?.title} 문서를 한국어로 작성하세요:\n\n${prompt}\n\n문서 작성 시 반드시 다음을 준수하세요:
+      // User prompt with language-specific requirements
+      const userPrompt = isKorean
+        ? `다음 요구사항에 따라 ${selectedDocument?.title} 문서를 한국어로 작성하세요:\n\n${prompt}\n\n문서 작성 시 반드시 다음을 준수하세요:
 1. 모든 표준 섹션과 하위 섹션 포함
 2. 상세한 기술 설명 제공
 3. 주요 섹션마다 구체적인 예시 2-3개 포함
@@ -292,7 +289,7 @@ const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
 9. 모든 요구사항에 번호 부여 (예: FR-001, NFR-001)
 10. 모든 요구사항에 대한 검증 기준 포함
 11. 반드시 한국어로만 작성`
-      : `Create a comprehensive ${selectedDocument?.title} document with the following requirements:\n\n${prompt}\n\nDOCUMENT REQUIREMENTS:
+        : `Create a comprehensive ${selectedDocument?.title} document with the following requirements:\n\n${prompt}\n\nDOCUMENT REQUIREMENTS:
 1. Include ALL standard sections and subsections
 2. Provide detailed technical descriptions
 3. Add concrete examples where applicable (minimum 2-3 per major section)
@@ -304,91 +301,96 @@ const callOpenAIWithBackoff = async (prompt, retries = 3, delay = 1000) => {
 9. Number all requirements (e.g., FR-001, NFR-001)
 10. Include validation criteria for all requirements`;
 
-    console.log("System prompt being sent:", systemPrompt);
-    console.log("User prompt being sent:", userPrompt);
+      console.log("System prompt being sent:", systemPrompt);
+      console.log("User prompt being sent:", userPrompt);
 
-    const requestData = {
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: userPrompt,
-        },
-      ],
-      max_tokens: 4000,
-      temperature: isKorean ? 0.1 : 0.3, // Lower temperature for Korean
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-    };
+      const requestData = {
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+        max_tokens: 4000,
+        temperature: isKorean ? 0.1 : 0.3, // Lower temperature for Korean
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+      };
 
-    console.log("Full request payload:", JSON.stringify(requestData, null, 2));
-
-    const response = await axios.post(
-      "https://api.openai.com/v1/chat/completions",
-      requestData,
-      {
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        timeout: 30000, // 30 seconds timeout
-      }
-    );
-
-    console.log("API response:", response.data);
-
-    const generatedContent =
-      response.data.choices[0]?.message?.content || "No content generated";
-    console.log("Generated content:", generatedContent);
-
-    // Verify the response is in Korean if expected
-    if (isKorean && !/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(generatedContent)) {
-      console.warn("Expected Korean content but received non-Korean response");
-      throw new Error("API did not return Korean content as requested");
-    }
-
-    return generatedContent;
-  } catch (error) {
-    console.error("API call error:", error);
-
-    if (axios.isAxiosError(error)) {
-      console.error("Axios error details:", {
-        message: error.message,
-        code: error.code,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-
-      setError(
-        `API Error: ${error.response?.data?.error?.message || error.message}`
+      console.log(
+        "Full request payload:",
+        JSON.stringify(requestData, null, 2)
       );
-    } else {
-      console.error("Unexpected error:", error);
-      setError("An unexpected error occurred");
-    }
 
-    if (
-      retries > 0 &&
-      axios.isAxiosError(error) &&
-      (error.response?.status === 429 || // Too many requests
-        error.response?.status === 502 || // Bad gateway
-        error.response?.status === 503 || // Service unavailable
-        error.response?.status === 504) // Gateway timeout
-    ) {
-      const nextDelay = delay * 2;
-      console.log(`Retrying in ${nextDelay}ms... (${retries} retries left)`);
-      await new Promise((resolve) => setTimeout(resolve, nextDelay));
-      return callOpenAIWithBackoff(prompt, retries - 1, nextDelay);
-    }
+      const response = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          timeout: 30000, // 30 seconds timeout
+        }
+      );
 
-    throw error;
-  }
-};
+      console.log("API response:", response.data);
+
+      const generatedContent =
+        response.data.choices[0]?.message?.content || "No content generated";
+      console.log("Generated content:", generatedContent);
+
+      // Verify the response is in Korean if expected
+      if (isKorean && !/[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(generatedContent)) {
+        console.warn(
+          "Expected Korean content but received non-Korean response"
+        );
+        throw new Error("API did not return Korean content as requested");
+      }
+
+      return generatedContent;
+    } catch (error) {
+      console.error("API call error:", error);
+
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error details:", {
+          message: error.message,
+          code: error.code,
+          status: error.response?.status,
+          data: error.response?.data,
+        });
+
+        setError(
+          `API Error: ${error.response?.data?.error?.message || error.message}`
+        );
+      } else {
+        console.error("Unexpected error:", error);
+        setError("An unexpected error occurred");
+      }
+
+      if (
+        retries > 0 &&
+        axios.isAxiosError(error) &&
+        (error.response?.status === 429 || // Too many requests
+          error.response?.status === 502 || // Bad gateway
+          error.response?.status === 503 || // Service unavailable
+          error.response?.status === 504) // Gateway timeout
+      ) {
+        const nextDelay = delay * 2;
+        console.log(`Retrying in ${nextDelay}ms... (${retries} retries left)`);
+        await new Promise((resolve) => setTimeout(resolve, nextDelay));
+        return callOpenAIWithBackoff(prompt, retries - 1, nextDelay);
+      }
+
+      throw error;
+    }
+  };
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -671,21 +673,21 @@ ${isEditing ? editedContent : generatedContent}
   //       .slice(0, 10)}.pdf`
   //   );
   // };
-function isMostlyKorean(text) {
-  const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
-  const nonKoreanRegex = /[a-zA-Z]/; // English letters
+  function isMostlyKorean(text) {
+    const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+    const nonKoreanRegex = /[a-zA-Z]/; // English letters
 
-  let koreanCount = 0;
-  let englishCount = 0;
+    let koreanCount = 0;
+    let englishCount = 0;
 
-  for (let char of text) {
-    if (koreanRegex.test(char)) koreanCount++;
-    if (nonKoreanRegex.test(char)) englishCount++;
+    for (let char of text) {
+      if (koreanRegex.test(char)) koreanCount++;
+      if (nonKoreanRegex.test(char)) englishCount++;
+    }
+
+    // Consider it Korean only if there are more Korean than English characters
+    return koreanCount > englishCount;
   }
-
-  // Consider it Korean only if there are more Korean than English characters
-  return koreanCount > englishCount;
-}
 
   const generatePDF = () => {
     const contentToUse = isEditing ? editedContent : generatedContent;
@@ -761,7 +763,7 @@ function isMostlyKorean(text) {
       const watermarkText = "TecFlow";
 
       // Get exact center of page
-      const centerX = pageWidth / 2
+      const centerX = pageWidth / 2;
       const centerY = pageHeight / 2 + margin;
 
       // Save current state, rotate, then restore
@@ -959,6 +961,312 @@ function isMostlyKorean(text) {
     doc.save(fileName);
   };
 
+  const handleRequestQuotation = async () => {
+    try {
+      // Generate PDF first
+      const contentToUse = isEditing ? editedContent : generatedContent;
+      if (!contentToUse) return;
+
+      const isKorean = isMostlyKorean(contentToUse);
+      const doc = new jsPDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      });
+
+      // Set default font
+      let currentFont = "helvetica";
+      doc.setFont(currentFont);
+      doc.setFontSize(11);
+
+      // Try to set Korean font if needed
+      if (isKorean) {
+        const availableFonts = doc.getFontList();
+        const koreanFonts = [
+          "NotoSansKR",
+          "malgun",
+          "gulim",
+          "batang",
+          "dotum",
+          "gungsuh",
+          "HYHeadLine",
+          "HYGothic",
+          "HYMyeongJo",
+        ];
+        const availableKoreanFont = koreanFonts.find(
+          (font) => availableFonts[font]
+        );
+
+        if (availableKoreanFont) {
+          currentFont = availableKoreanFont;
+          doc.setFont(currentFont);
+        } else {
+          try {
+            doc.addFileToVFS("NotoSansKR-Regular.ttf", NotoSansKR);
+            doc.addFont("NotoSansKR-Regular.ttf", "NotoSansKR", "normal");
+            doc.addFileToVFS("NotoSansKR-Bold.ttf", NotoSansKRBold);
+            doc.addFont("NotoSansKR-Bold.ttf", "NotoSansKR", "bold");
+            doc.setFont("NotoSansKR");
+            currentFont = "NotoSansKR";
+          } catch (e) {
+            console.error("Failed to load Korean font:", e);
+          }
+        }
+      }
+
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 20;
+      const contentWidth = pageWidth - 2 * margin;
+
+      // Watermark helper
+      const addWatermarkToPage = (pageNum) => {
+        doc.setPage(pageNum);
+        doc.saveGraphicsState();
+        doc.setGState(new doc.GState({ opacity: 0.2 }));
+        doc.setFont(currentFont, "bold");
+        doc.setFontSize(60);
+        doc.setTextColor(0, 0, 0);
+
+        // Calculate text dimensions
+        const watermarkText = "TecFlow";
+
+        // Get exact center of page
+        const centerX = pageWidth / 2;
+        const centerY = pageHeight / 2 + margin;
+
+        // Save current state, rotate, then restore
+        doc.text(watermarkText, centerX, centerY, {
+          angle: 35,
+          align: "center",
+          baseline: "middle",
+        });
+
+        doc.restoreGraphicsState();
+      };
+      /* TITLE PAGE */
+      const title =
+        selectedDocument?.title ||
+        (isKorean ? "생성된 문서" : "Generated Document");
+      doc.setFontSize(24);
+      doc.setTextColor(15, 23, 42);
+
+      const titleLines = doc.splitTextToSize(title, contentWidth);
+      const lineHeight = 10;
+      const titleBlockHeight = titleLines.length * lineHeight;
+      const additionalElementsHeight = 40;
+      const totalHeight = titleBlockHeight + additionalElementsHeight;
+
+      let yPosition = (297 - totalHeight) / 2;
+
+      titleLines.forEach((line, i) => {
+        doc.text(line, pageWidth / 2, yPosition + i * lineHeight, {
+          align: "center",
+          maxWidth: contentWidth,
+        });
+      });
+
+      yPosition += titleBlockHeight + 10;
+      doc.setFontSize(16);
+      doc.text(
+        isKorean ? `버전: 1.0` : `Version: 1.0`,
+        pageWidth / 2,
+        yPosition,
+        { align: "center" }
+      );
+
+      yPosition += 10;
+      doc.text(
+        isKorean
+          ? `날짜: ${new Date().toLocaleDateString("ko-KR")}`
+          : `Date: ${new Date().toLocaleDateString()}`,
+        pageWidth / 2,
+        yPosition,
+        { align: "center" }
+      );
+
+      yPosition += 10;
+      doc.text(
+        isKorean
+          ? `작성자: ${user?.name || "TecFlow AI"}`
+          : `Author: ${user?.name || "TecFlow AI"}`,
+        pageWidth / 2,
+        yPosition,
+        { align: "center" }
+      );
+
+      /* DOCUMENT CONTENT */
+      doc.addPage();
+      addWatermarkToPage(doc.internal.getNumberOfPages());
+
+      const leftMargin = 15;
+      const rightMargin = 195;
+      const contentPageWidth = rightMargin - leftMargin;
+      yPosition = 20;
+      const contentLineHeight = 7;
+      const sectionGap = 10;
+
+      const processLine = (line) => {
+        if (yPosition > 270) {
+          doc.addPage();
+          addWatermarkToPage(doc.internal.getNumberOfPages());
+          yPosition = 20;
+        }
+
+        if (line.trim() === "") {
+          yPosition += contentLineHeight / 2;
+          return;
+        }
+
+        if (line.startsWith("# ")) {
+          doc.setFontSize(18);
+          doc.setFont(currentFont, "bold");
+          const headingLines = doc.splitTextToSize(
+            line.substring(2),
+            contentPageWidth
+          );
+          doc.text(headingLines, leftMargin, yPosition);
+          yPosition += (contentLineHeight + 2) * headingLines.length;
+          doc.setDrawColor(200, 200, 200);
+          doc.line(leftMargin, yPosition, rightMargin, yPosition);
+          yPosition += sectionGap;
+          doc.setFontSize(11);
+          doc.setFont(currentFont, "normal");
+          return;
+        }
+
+        if (line.startsWith("## ")) {
+          doc.setFontSize(16);
+          doc.setFont(currentFont, "bold");
+          const headingLines = doc.splitTextToSize(
+            line.substring(3),
+            contentPageWidth
+          );
+          doc.text(headingLines, leftMargin, yPosition);
+          yPosition +=
+            (contentLineHeight + sectionGap / 2) * headingLines.length;
+          doc.setFontSize(11);
+          doc.setFont(currentFont, "normal");
+          return;
+        }
+
+        if (line.startsWith("### ")) {
+          doc.setFontSize(14);
+          doc.setFont(currentFont, "bold");
+          const headingLines = doc.splitTextToSize(
+            line.substring(4),
+            contentPageWidth
+          );
+          doc.text(headingLines, leftMargin, yPosition);
+          yPosition += contentLineHeight * headingLines.length;
+          doc.setFontSize(11);
+          doc.setFont(currentFont, "normal");
+          return;
+        }
+
+        if (line.startsWith("- ") || line.startsWith("* ")) {
+          doc.setFontSize(11);
+          const listItemLines = doc.splitTextToSize(
+            line.substring(2),
+            contentPageWidth - 5
+          );
+          listItemLines.forEach((text, i) => {
+            doc.text(
+              i === 0 ? "• " + text : "  " + text,
+              leftMargin + 5,
+              yPosition
+            );
+            yPosition += contentLineHeight;
+          });
+          return;
+        }
+
+        if (line.includes("[DIAGRAM]")) {
+          doc.setFontSize(10);
+          doc.setTextColor(100, 100, 100);
+          const diagramText = isKorean
+            ? "[다이어그램 자리표시자]"
+            : "[Diagram placeholder]";
+          const diagramLines = doc.splitTextToSize(
+            diagramText,
+            contentPageWidth
+          );
+          doc.text(diagramLines, leftMargin, yPosition);
+          yPosition += contentLineHeight * diagramLines.length;
+          doc.rect(leftMargin, yPosition, contentPageWidth, 40, "S");
+          doc.setTextColor(15, 23, 42);
+          yPosition += 45;
+          return;
+        }
+
+        // Regular text
+        doc.setFontSize(11);
+        const splitText = doc.splitTextToSize(line, contentPageWidth);
+        doc.text(splitText, leftMargin, yPosition);
+        yPosition += contentLineHeight * splitText.length;
+      };
+
+      contentToUse.split("\n").forEach((line) => {
+        processLine(line);
+      });
+
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(
+          isKorean ? `페이지 ${i} / ${pageCount}` : `Page ${i} of ${pageCount}`,
+          pageWidth / 2,
+          287,
+          { align: "center" }
+        );
+      }
+
+      // Get the PDF as a blob
+      const pdfBlob = doc.output("blob");
+
+      // Create FormData to send the PDF
+      const formData = new FormData();
+      formData.append(
+        "pdf",
+        pdfBlob,
+        `${selectedDocument?.title || "document"}.pdf`
+      );
+      formData.append("email", "asraful8625@gmail.com");
+      formData.append(
+        "subject",
+        `Quotation Request for ${selectedDocument?.title || "Document"}`
+      );
+      formData.append(
+        "message",
+        `Please find attached the ${
+          selectedDocument?.title || "document"
+        } for quotation.`
+      );
+
+      // Send the request to your backend API
+      const response = await axios.post("YOUR_BACKEND_API_ENDPOINT", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        alert("Quotation request sent successfully!");
+      } else {
+        throw new Error(
+          response.data.message || "Failed to send quotation request"
+        );
+      }
+    } catch (error) {
+      console.error("Error sending quotation request:", error);
+      setError(error.message || "Failed to send quotation request");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleSaveEdit = () => {
     setGeneratedContent(editedContent);
     setIsEditing(false);
@@ -971,9 +1279,7 @@ function isMostlyKorean(text) {
         type: currentChat.type,
         content: editedContent,
       };
-      dispatch(
-        editChat(dataToUpdate)
-      );
+      dispatch(editChat(dataToUpdate));
     }
   };
 
@@ -1035,7 +1341,7 @@ function isMostlyKorean(text) {
             }`}
           >
             <Sparkles className="w-4 h-4 flex-shrink-0" />
-            {!sidebarCollapsed && "New AI Document"}
+            {!sidebarCollapsed && t("document_generation.new_document")}
           </button>
 
           <div className="flex-1 overflow-y-auto">
@@ -1043,7 +1349,7 @@ function isMostlyKorean(text) {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
-                    Recent
+                    {t("document_generation.recent")}
                     <Clock className="w-4 h-4" />
                   </h2>
                   {user === null ? (
@@ -1051,11 +1357,10 @@ function isMostlyKorean(text) {
                       <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
                         <div className="space-y-2">
                           <h2 className="text-lg font-semibold text-gray-900">
-                            Sign in to start saving your chats
+                            {t("document_generation.sign_in_prompt")}
                           </h2>
                           <p className="text-sm text-gray-600">
-                            Once you're signed in, you can access your recent
-                            chats here.
+                            {t("document_generation.sign_in_description")}
                           </p>
                         </div>
 
@@ -1063,7 +1368,7 @@ function isMostlyKorean(text) {
                           className="w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                           onClick={() => navigate("/login")}
                         >
-                          Sign in
+                          {t("document_generation.sign_in")}
                         </button>
                       </div>
                     </div>
@@ -1119,14 +1424,14 @@ function isMostlyKorean(text) {
               </svg>
               {!sidebarCollapsed && "Help"}
             </button>
-            <button
+            {/* <button
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
               title="Settings"
               onClick={() => navigate("/")}
             >
               <Settings className="w-5 h-5" />
               {!sidebarCollapsed && "Settings"}
-            </button>
+            </button> */}
           </div>
           <div className="border-t border-gray-200 pt-4 mt-auto">
             <div
@@ -1238,7 +1543,7 @@ function isMostlyKorean(text) {
             }`}
           >
             <Sparkles className="w-4 h-4 flex-shrink-0" />
-            {!sidebarCollapsed && "New AI Document"}
+            {!sidebarCollapsed && t("document_generation.new_document")}
           </button>
 
           <div className="flex-1 overflow-y-auto">
@@ -1263,7 +1568,7 @@ function isMostlyKorean(text) {
 
                 <div>
                   <h2 className="text-sm font-medium text-gray-500 mb-3 px-2 flex items-center justify-between">
-                    Recent
+                    {t("document_generation.recent")}
                     <Clock className="w-4 h-4" />
                   </h2>
                   {user === null ? (
@@ -1271,11 +1576,10 @@ function isMostlyKorean(text) {
                       <div className="bg-gray-300 rounded-xl shadow-sm p-4 max-w-sm w-full space-y-4">
                         <div className="space-y-2">
                           <h2 className="text-lg font-semibold text-gray-900">
-                            Sign in to start saving your chats
+                            {t("document_generation.sign_in_prompt")}
                           </h2>
                           <p className="text-sm text-gray-600">
-                            Once you're signed in, you can access your recent
-                            chats here.
+                            {t("document_generation.sign_in_description")}
                           </p>
                         </div>
 
@@ -1283,7 +1587,7 @@ function isMostlyKorean(text) {
                           className="w-full bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                           onClick={() => navigate("/login")}
                         >
-                          Sign in
+                          {t("document_generation.sign_in")}
                         </button>
                       </div>
                     </div>
@@ -1320,7 +1624,7 @@ function isMostlyKorean(text) {
           <div className="flex flex-col my-2">
             <button
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
-              title="About Us"
+              title="Help"
               onClick={() => navigate("/tecflow-overview")}
             >
               <svg
@@ -1338,16 +1642,16 @@ function isMostlyKorean(text) {
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
-              {!sidebarCollapsed && "Help"}
+              {!sidebarCollapsed && t("document_generation.help")}
             </button>
-            <button
+            {/* <button
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
               title="Settings"
               onClick={() => navigate("/")}
             >
               <Settings className="w-5 h-5" />
-              {!sidebarCollapsed && "Settings"}
-            </button>
+              {!sidebarCollapsed && t("document_generation.settings")}
+            </button> */}
           </div>
 
           <div className="border-t border-gray-200 pt-4 mt-auto">
@@ -1406,7 +1710,7 @@ function isMostlyKorean(text) {
 
             {!sidebarCollapsed && user === null ? (
               <button className="w-full mt-3 text-xs text-blue-600 hover:underline text-left">
-                Add account
+                {t("document_generation.add_account")}
               </button>
             ) : (
               ""
@@ -1463,7 +1767,9 @@ function isMostlyKorean(text) {
               />
             )}
           </div>
+
           <div className="flex items-center gap-2 md:gap-3">
+            <LanguageSwitcher />
             {user !== null && (
               <button
                 className="flex items-center gap-1 md:gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-3 py-1 md:px-4 rounded-xl hover:opacity-90 transition-opacity text-sm md:text-base"
@@ -1487,7 +1793,7 @@ function isMostlyKorean(text) {
                   className="hidden sm:inline"
                   onClick={() => navigate("/subscription")}
                 >
-                  Upgrade Plan
+                  {t("document_generation.upgrade_plan")}
                 </span>
               </button>
             )}
@@ -1497,7 +1803,7 @@ function isMostlyKorean(text) {
                 onClick={() => navigate("/login")}
                 className="bg-blue-600 text-white h-8 md:h-10 px-3 md:px-5 py-1 md:py-2 rounded-xl hover:bg-blue-700 transition-colors font-medium text-sm md:text-base"
               >
-                Sign in
+                {t("document_generation.sign_in")}
               </button>
             ) : (
               <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium overflow-hidden">
@@ -1521,11 +1827,10 @@ function isMostlyKorean(text) {
           <div className="max-w-full md:max-w-[90%] lg:max-w-[80%] xl:max-w-[70%] mx-auto">
             <div className="text-center mb-8 md:mb-12">
               <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4 bg-gradient-to-r from-blue-600 to-blue-800 text-transparent bg-clip-text">
-                AI-Powered Document Generation
+                {t("document_generation.title")}
               </h1>
               <p className="text-base md:text-lg text-gray-600">
-                Transform your ideas into professional technical documentation
-                in seconds.
+                {t("document_generation.subtitle")}
               </p>
             </div>
 
@@ -1574,7 +1879,7 @@ function isMostlyKorean(text) {
                       <selectedDocument.icon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                     </div>
                     <h3 className="text-lg md:text-xl font-semibold text-gray-900">
-                      Generate {selectedDocument?.title}
+                      {t("buttons.generate")} {selectedDocument?.title}
                     </h3>
                   </div>
 
@@ -1583,18 +1888,20 @@ function isMostlyKorean(text) {
                       <textarea
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
-                        placeholder="Describe your requirements"
+                        placeholder={t("placeholders.prompt")}
                         className="w-full min-h-20 p-3 md:p-4 outline-none border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:border-transparent bg-gray-50 placeholder-gray-400 text-gray-600 transition-all duration-200 text-sm md:text-base"
                       />
                       <div className="absolute right-3 bottom-3 md:right-4 md:bottom-4 flex items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-400">
                         <Wand2 className="h-3 w-3 md:h-4 md:w-4" />
-                        <span className="hidden sm:inline">AI-Powered</span>
+                        <span className="hidden sm:inline">
+                          {t("document_generation.ai_powered")}
+                        </span>
                       </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-3 md:pt-4 border-t border-gray-100 gap-2 md:gap-0">
                       <div className="text-xs md:text-sm text-gray-500">
-                        Your document will be generated in PDF format
+                        {t("document_generation.document_will_be_generated")}
                       </div>
                       <button
                         onClick={handleGenerate}
@@ -1608,12 +1915,14 @@ function isMostlyKorean(text) {
                         {isGenerating ? (
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-2 border-white border-t-transparent mr-2" />
-                            Generating...
+
+                            {t("document_generation.generating")}
                           </>
                         ) : (
                           <>
                             <Download className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
-                            Generate Document
+
+                            {t("document_generation.generate_button")}
                           </>
                         )}
                       </button>
@@ -1625,7 +1934,8 @@ function isMostlyKorean(text) {
                   <div className="border border-gray-200 rounded-xl">
                     <div className="p-3 md:p-4 flex items-center justify-between bg-gray-50 rounded-t-lg">
                       <h3 className="font-medium text-gray-900 text-sm md:text-base">
-                        {selectedDocument?.title} Preview
+                        {selectedDocument?.title}{" "}
+                        {t("document_generation.preview_title")}
                       </h3>
                       <div className="flex items-center gap-1 md:gap-2">
                         {isEditing ? (
@@ -1680,7 +1990,18 @@ function isMostlyKorean(text) {
                               onClick={generatePDF}
                             >
                               <Download className="w-4 h-4 md:w-5 md:h-5" />{" "}
-                              Download PDF
+                              {t("document_generation.download_pdf")}
+                            </button>
+
+                            <button
+                              className={`text-sm md:text-md p-1 md:p-2 text-white hover:opacity-80 rounded-lg transition-colors flex items-center gap-2 bg-red-500`}
+                              title="Request Quotation"
+                              onClick={handleRequestQuotation}
+                              disabled={isGenerating}
+                            >
+                              {isGenerating
+                                ? t("document_generation.sending")
+                                : t("document_generation.request_quotation")}
                             </button>
                           </>
                         )}
@@ -1784,7 +2105,7 @@ function isMostlyKorean(text) {
                                   }
                                 })}
                               <div className="mt-4 md:mt-8 pt-2 md:pt-4 border-t text-xs md:text-sm text-gray-500 text-center">
-                                Generated by TecFlow AI •{" "}
+                                {t("document_generation.generated_by")} •{" "}
                                 {new Date().toLocaleDateString()}
                               </div>
                             </div>
@@ -1792,7 +2113,7 @@ function isMostlyKorean(text) {
                         )
                       ) : (
                         <div className="text-gray-500 text-center py-4 md:py-8 text-sm md:text-base">
-                          Your generated content will appear here
+                          {t("document_generation.empty_preview")}
                         </div>
                       )}
                     </div>

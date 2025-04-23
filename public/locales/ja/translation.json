@@ -1,0 +1,179 @@
+{
+  "welcome_message": "TecFlow AIへようこそ",
+  "login_page": {
+    "title": "TecFlow AIにログイン",
+    "register_title": "アカウント作成",
+    "continue_guest": "ゲストとして続ける",
+    "full_name": "氏名",
+    "email_address": "メールアドレス",
+    "password": "パスワード",
+    "confirm_password": "パスワード確認",
+    "sign_in": "ログイン",
+    "create_account": "アカウント作成",
+    "processing": "処理中...",
+    "or_continue_with": "または以下で続行",
+    "continue_google": "Googleで続行",
+    "already_account": "既にアカウントをお持ちですか？",
+    "no_account": "アカウントをお持ちでないですか？",
+    "create_one": "作成する",
+    "errors": {
+      "passwords_match": "パスワードが一致しません",
+      "fill_all": "全ての項目を入力してください",
+      "auth_failed": "認証に失敗しました",
+      "google_failed": "Googleログインの開始に失敗しました"
+    },
+    "messages": {
+      "register_required": "Tecflowを使用するにはアカウント作成が必要です",
+      "login_required": "Tecflowを使用するには以下のオプションでログインしてください"
+    }
+  },
+  "document_generation": {
+    "title": "AIドキュメント生成",
+    "subtitle": "アイデアを数秒でプロフェッショナルな技術文書に変換",
+    "new_document": "新しいAIドキュメント",
+    "recent": "最近",
+    "starred": "スター付き",
+    "sign_in_prompt": "チャットを保存するにはログインしてください",
+    "sign_in_description": "ログイン後、最近のチャットをここで確認できます",
+    "sign_in": "ログイン",
+    "help": "ヘルプ",
+    "settings": "設定",
+    "logout": "ログアウト",
+    "add_account": "アカウント追加",
+    "upgrade_plan": "プランアップグレード",
+    "generate_button": "ドキュメント生成",
+    "generating": "生成中...",
+    "preview_title": "プレビュー",
+    "edit": "編集",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "copy": "コピー",
+    "download_pdf": "PDFダウンロード",
+    "download_markdown": "Markdownダウンロード",
+    "share": "共有",
+    "empty_preview": "生成されたコンテンツがここに表示されます",
+    "document_will_be_generated": "ドキュメントはPDF形式で生成されます",
+    "ai_powered": "AI搭載",
+    "generated_by": "TecFlow AIによって生成",
+    "request_quotation": "TecHubに見積もりを依頼する"
+  },
+  "document_types": {
+    "tech_spec": {
+      "title": "技術仕様書",
+      "description": "構造化されたフォーマットで詳細な技術仕様書を生成"
+    },
+    "srs": {
+      "title": "ソフトウェア要求仕様書",
+      "description": "システム機能と要件を網羅したSRS文書を作成"
+    },
+    "architecture": {
+      "title": "システムアーキテクチャ",
+      "description": "明確な図表と構造化された説明でシステムアーキテクチャを設計・文書化"
+    }
+  },
+  "buttons": {
+    "new": "新規",
+    "generate": "生成",
+    "edit": "編集",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "copy": "コピー",
+    "download": "ダウンロード",
+    "share": "共有"
+  },
+  "placeholders": {
+    "prompt": "要件を説明してください"
+  },
+  "errors": {
+    "empty_prompt": "プロンプトを入力してください",
+    "no_document_type": "ドキュメントタイプを選択してください",
+    "generation_failed": "コンテンツ生成に失敗しました"
+  },
+  "homepage": {
+    "title": "TecFlowヘルプセンター",
+    "subtitle": "よくある質問の回答を見つけるかサポートチームに連絡",
+    "tabs": {
+      "getting_started": "はじめに",
+      "features": "機能ガイド",
+      "troubleshooting": "トラブルシューティング",
+      "contact": "サポートに連絡"
+    },
+    "getting_started": {
+      "title": "TecFlowの始め方",
+      "steps": {
+        "create_account": "アカウント作成",
+        "create_account_desc": "メールまたはGoogleアカウントで登録し全機能にアクセス",
+        "choose_doc": "ドキュメントタイプ選択",
+        "choose_doc_desc": "技術仕様書、SRS、アーキテクチャ図などのテンプレートから選択、または白紙から開始",
+        "input_reqs": "要件入力",
+        "input_reqs_desc": "自然言語でプロジェクトを説明、またはガイド付きプロンプトを使用",
+        "generate_refine": "生成＆調整",
+        "generate_refine_desc": "AI生成ドキュメントを確認し必要に応じて編集",
+        "export_share": "エクスポート＆共有",
+        "export_share_desc": "希望の形式でダウンロード、またはチームメンバーと直接共有"
+      }
+    },
+    "features": {
+      "title": "機能ガイド",
+      "items": {
+        "template_library": "テンプレートライブラリ",
+        "template_library_desc": "様々な技術文書向けの業界標準テンプレートの増加中のコレクションにアクセス",
+        "ai_suggestions": "AI提案",
+        "ai_suggestions_desc": "作業中にセクション、用語、フォーマットのインテリジェントな推奨を取得",
+        "collaboration": "共同作業ツール",
+        "collaboration_desc": "チームメンバーとドキュメントを共有し変更をリアルタイムで追跡",
+        "version_history": "バージョン履歴",
+        "version_history_desc": "ドキュメントの以前のバージョンにアクセスし必要に応じて復元"
+      }
+    },
+    "faq": {
+      "title": "よくある質問",
+      "questions": [
+        {
+          "question": "最初のドキュメントを作成するには？",
+          "answer": "ダッシュボードに移動し「新規ドキュメント」をクリック。ドキュメントタイプを選択し要件を入力すると、TecFlowが最初の草案を生成します"
+        },
+        {
+          "question": "TecFlowがサポートするドキュメント形式は？",
+          "answer": "現在TecFlowはPDF、Word(.docx)、Markdownエクスポートをサポートしています。その他の形式も近日追加予定です"
+        },
+        {
+          "question": "TecFlowでデータは安全ですか？",
+          "answer": "もちろんです。企業レベルの暗号化を使用し、機密情報を保存することはありません。全てのドキュメント処理はブラウザ内で安全に行われます"
+        },
+        {
+          "question": "ドキュメントテンプレートはカスタマイズ可能ですか？",
+          "answer": "はい！全てのテンプレートは完全にカスタマイズ可能です。生成後、どのセクションも編集可能で、変更を新しいテンプレートとして保存できます"
+        }
+      ]
+    },
+    "contact": {
+      "title": "サポートチームに連絡",
+      "support_options": "サポートオプション",
+      "email_support": "メールサポート",
+      "email_address": "support@tecflow.com",
+      "email_response": "通常4時間以内に返信",
+      "live_chat": "ライブチャット",
+      "live_chat_hours": "EST時間9:00-18:00利用可能",
+      "live_chat_location": "右下のチャットアイコンをクリック",
+      "help_center": "ヘルプセンター",
+      "help_center_desc": "ナレッジベースを閲覧",
+      "help_center_articles": "100以上の記事とチュートリアル",
+      "form": {
+        "name": "お名前",
+        "email": "メールアドレス",
+        "issue": "どのようなお問い合わせですか？",
+        "issue_options": [
+          "選択してください",
+          "アカウント問題",
+          "ドキュメント生成",
+          "請求に関する質問",
+          "機能リクエスト",
+          "その他"
+        ],
+        "message": "メッセージ",
+        "send": "メッセージを送信"
+      }
+    }
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "welcome_message": "Bienvenue sur TecFlow AI",
+  "login_page": {
+    "title": "Connexion à TecFlow AI",
+    "register_title": "Créer un compte",
+    "continue_guest": "Continuer en tant qu'invité",
+    "full_name": "Nom complet",
+    "email_address": "Adresse e-mail",
+    "password": "Mot de passe",
+    "confirm_password": "Confirmer le mot de passe",
+    "sign_in": "Se connecter",
+    "create_account": "Créer un compte",
+    "processing": "Traitement en cours...",
+    "or_continue_with": "Ou continuer avec",
+    "continue_google": "Continuer avec Google",
+    "already_account": "Vous avez déjà un compte ?",
+    "no_account": "Vous n'avez pas de compte ?",
+    "create_one": "En créer un",
+    "errors": {
+      "passwords_match": "Les mots de passe ne correspondent pas",
+      "fill_all": "Veuillez remplir tous les champs",
+      "auth_failed": "Échec de l'authentification",
+      "google_failed": "Échec de la connexion avec Google"
+    },
+    "messages": {
+      "register_required": "Pour utiliser Tecflow, vous devez créer un compte",
+      "login_required": "Pour utiliser Tecflow, vous devez vous connecter à votre compte en utilisant l'une des options ci-dessous"
+    }
+  },
+  "document_generation": {
+    "title": "Génération de documents par IA",
+    "subtitle": "Transformez vos idées en documentation technique professionnelle en quelques secondes",
+    "new_document": "Nouveau document IA",
+    "recent": "Récent",
+    "starred": "Favoris",
+    "sign_in_prompt": "Connectez-vous pour enregistrer vos conversations",
+    "sign_in_description": "Une fois connecté, vous pourrez accéder à vos conversations récentes ici.",
+    "sign_in": "Se connecter",
+    "help": "Aide",
+    "settings": "Paramètres",
+    "logout": "Se déconnecter",
+    "add_account": "Ajouter un compte",
+    "upgrade_plan": "Mettre à niveau le plan",
+    "generate_button": "Générer un document",
+    "generating": "Génération en cours...",
+    "preview_title": "Aperçu",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "copy": "Copier",
+    "download_pdf": "Télécharger en PDF",
+    "download_markdown": "Télécharger en Markdown",
+    "share": "Partager",
+    "empty_preview": "Votre contenu généré apparaîtra ici",
+    "document_will_be_generated": "Votre document sera généré au format PDF",
+    "ai_powered": "Alimenté par IA",
+    "generated_by": "Généré par TecFlow AI",
+    "request_quotation": "Demander un devis à TecHub"
+  },
+  "document_types": {
+    "tech_spec": {
+      "title": "Spécification technique",
+      "description": "Générez des spécifications techniques détaillées avec un formatage structuré et clair."
+    },
+    "srs": {
+      "title": "Spécification des exigences logicielles",
+      "description": "Créez des documents SRS complets décrivant les fonctionnalités et exigences du système."
+    },
+    "architecture": {
+      "title": "Architecture système",
+      "description": "Concevez et documentez des architectures système avec des diagrammes clairs et des descriptions structurées."
+    }
+  },
+  "buttons": {
+    "new": "Nouveau",
+    "generate": "Générer",
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "copy": "Copier",
+    "download": "Télécharger",
+    "share": "Partager"
+  },
+  "placeholders": {
+    "prompt": "Décrivez vos exigences"
+  },
+  "errors": {
+    "empty_prompt": "Veuillez saisir une requête",
+    "no_document_type": "Veuillez sélectionner un type de document",
+    "generation_failed": "Échec de la génération du contenu"
+  },
+  "homepage": {
+    "title": "Centre d'aide TecFlow",
+    "subtitle": "Trouvez des réponses aux questions courantes ou contactez notre équipe de support",
+    "tabs": {
+      "getting_started": "Pour commencer",
+      "features": "Guide des fonctionnalités",
+      "troubleshooting": "Dépannage",
+      "contact": "Contacter le support"
+    },
+    "getting_started": {
+      "title": "Commencer avec TecFlow",
+      "steps": {
+        "create_account": "Créer un compte",
+        "create_account_desc": "Inscrivez-vous en utilisant votre e-mail ou compte Google pour accéder à toutes les fonctionnalités.",
+        "choose_doc": "Choisir le type de document",
+        "choose_doc_desc": "Sélectionnez parmi nos modèles : Spécifications techniques, SRS, Diagrammes d'architecture, ou commencez à blanc.",
+        "input_reqs": "Saisir les exigences",
+        "input_reqs_desc": "Décrivez votre projet en langage naturel ou utilisez nos invites guidées.",
+        "generate_refine": "Générer et affiner",
+        "generate_refine_desc": "Revoyez le document généré par l'IA et apportez les modifications nécessaires.",
+        "export_share": "Exporter et partager",
+        "export_share_desc": "Téléchargez dans votre format préféré ou partagez directement avec les membres de l'équipe."
+      }
+    },
+    "features": {
+      "title": "Guide des fonctionnalités",
+      "items": {
+        "template_library": "Bibliothèque de modèles",
+        "template_library_desc": "Accédez à notre collection croissante de modèles standard pour divers documents techniques.",
+        "ai_suggestions": "Suggestions d'IA",
+        "ai_suggestions_desc": "Obtenez des recommandations intelligentes pour les sections, la terminologie et le formatage pendant que vous travaillez.",
+        "collaboration": "Outils de collaboration",
+        "collaboration_desc": "Partagez des documents avec les membres de l'équipe et suivez les modifications en temps réel.",
+        "version_history": "Historique des versions",
+        "version_history_desc": "Accédez aux versions précédentes de vos documents et restaurez-les si nécessaire."
+      }
+    },
+    "faq": {
+      "title": "Foire aux questions",
+      "questions": [
+        {
+          "question": "Comment créer mon premier document ?",
+          "answer": "Accédez au Tableau de bord et cliquez sur 'Nouveau document'. Sélectionnez votre type de document, entrez vos exigences et laissez TecFlow générer votre premier brouillon."
+        },
+        {
+          "question": "Quels formats de document TecFlow prend-il en charge ?",
+          "answer": "TecFlow prend actuellement en charge les exports PDF, Word (.docx) et Markdown. D'autres formats arrivent bientôt."
+        },
+        {
+          "question": "Mes données sont-elles sécurisées avec TecFlow ?",
+          "answer": "Absolument. Nous utilisons un chiffrement de niveau entreprise et ne stockons jamais vos informations sensibles. Tout le traitement des documents se fait de manière sécurisée dans votre navigateur."
+        },
+        {
+          "question": "Puis-je personnaliser les modèles de documents ?",
+          "answer": "Oui ! Tous les modèles sont entièrement personnalisables. Après la génération, vous pouvez modifier n'importe quelle section ou enregistrer vos modifications comme nouveau modèle."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Contactez notre équipe de support",
+      "support_options": "Options de support",
+      "email_support": "Support par e-mail",
+      "email_address": "support@tecflow.com",
+      "email_response": "Réponse généralement dans les 4 heures",
+      "live_chat": "Chat en direct",
+      "live_chat_hours": "Disponible de 9h à 18h EST",
+      "live_chat_location": "Cliquez sur l'icône de chat en bas à droite",
+      "help_center": "Centre d'aide",
+      "help_center_desc": "Parcourez notre base de connaissances",
+      "help_center_articles": "Plus de 100 articles et tutoriels",
+      "form": {
+        "name": "Votre nom",
+        "email": "Adresse e-mail",
+        "issue": "Comment pouvons-nous vous aider ?",
+        "issue_options": [
+          "Sélectionnez une option",
+          "Problèmes de compte",
+          "Génération de documents",
+          "Questions de facturation",
+          "Demande de fonctionnalité",
+          "Autre"
+        ],
+        "message": "Message",
+        "send": "Envoyer le message"
+      }
+    }
+  }
+}
