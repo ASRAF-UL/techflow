@@ -1132,7 +1132,7 @@ ${isEditing ? editedContent : generatedContent}
             <button
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
               title="About Us"
-              onClick={() => navigate("/tecflow-overview")}
+              onClick={() => navigate("/tecflow-help")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1353,7 +1353,7 @@ ${isEditing ? editedContent : generatedContent}
             <button
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
               title="About Us"
-              onClick={() => navigate("/tecflow-overview")}
+              onClick={() => navigate("/tecflow-help")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

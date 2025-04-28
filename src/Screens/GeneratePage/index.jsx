@@ -17,6 +17,7 @@ import {
   Edit,
   Save,
   X,
+  Phone,
 } from "lucide-react";
 import axios from "axios";
 import { jsPDF } from "jspdf";
@@ -1226,18 +1227,12 @@ ${isEditing ? editedContent : generatedContent}
       // Get the PDF as a blob
       const pdfBlob = doc.output("blob");
 
-      // Create FormData to send the PDF
+      // Create FormData to send the email with attachment
       const formData = new FormData();
-      formData.append(
-        "pdf",
-        pdfBlob,
-        `${selectedDocument?.title || "document"}.pdf`
-      );
-      formData.append("email", "asraful8625@gmail.com");
-      formData.append(
-        "subject",
-        `Quotation Request for ${selectedDocument?.title || "Document"}`
-      );
+      formData.append("name", user.name || "TecFlow User");
+      formData.append("phone", "01666666666"); // Replace with actual phone if available
+      formData.append("email", user.email);
+      formData.append("service", "TecFlow");
       formData.append(
         "message",
         `Please find attached the ${
@@ -1245,19 +1240,30 @@ ${isEditing ? editedContent : generatedContent}
         } for quotation.`
       );
 
-      // Send the request to your backend API
-      const response = await axios.post("YOUR_BACKEND_API_ENDPOINT", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // Append the PDF file
+      const pdfFile = new File(
+        [pdfBlob],
+        `${selectedDocument?.title || "document"}.pdf`,
+        {
+          type: "application/pdf",
+        }
+      );
+      formData.append("attachment", pdfFile);
 
-      if (response.data.success) {
+      const response = await axios.post(
+        "https://techub.kr/send_email_tecflow.php",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data === "success") {
         alert("Quotation request sent successfully!");
       } else {
-        throw new Error(
-          response.data.message || "Failed to send quotation request"
-        );
+        throw new Error(response.data || "Failed to send quotation request");
       }
     } catch (error) {
       console.error("Error sending quotation request:", error);
@@ -1405,7 +1411,7 @@ ${isEditing ? editedContent : generatedContent}
             <button
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
               title="About Us"
-              onClick={() => navigate("/tecflow-overview")}
+              onClick={() => navigate("/tecflow-help")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1625,7 +1631,7 @@ ${isEditing ? editedContent : generatedContent}
             <button
               className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-4 w-full text-sm"
               title="Help"
-              onClick={() => navigate("/tecflow-overview")}
+              onClick={() => navigate("/tecflow-help")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

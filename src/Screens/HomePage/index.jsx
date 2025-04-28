@@ -6,21 +6,124 @@ import {
   Download,
   User,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 const Homepage = () => {
+  const { user } = useSelector((state) => state.auth);
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("getting-started");
   const [expandedFAQ, setExpandedFAQ] = useState(null);
-
+const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const toggleFAQ = (index) => {
     setExpandedFAQ(expandedFAQ === index ? null : index);
   };
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  
+    useEffect(() => {
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 768);
+        if (window.innerWidth >= 768) {
+          setIsMobileSidebarOpen(false);
+        }
+      };
+  
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="container mx-auto px-4 py-16">
+      {/* Added navigation header */}
+      <header className="h-16 bg-white w-full pr-4  md:px-6 flex items-center justify-between fixed top-0 z-10 shadow-sm">
+        <div className="flex items-center gap-4">
+          {isMobile && (
+            <img
+              src="techflow_logo.png"
+              className="h-5 w-auto"
+              alt="TecFlow Logo"
+            />
+          )}
+          {sidebarCollapsed && !isMobile && (
+            <img
+              src="techflow_logo.png"
+              className="w-[11%] h-auto"
+              alt="TecFlow Logo"
+            />
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 md:gap-3">
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            <span className="font-medium">Home</span>
+          </Link>
+          {user !== null && (
+            <button
+              className="flex items-center gap-1 md:gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-3 py-1 md:px-4 rounded-xl hover:opacity-90 transition-opacity text-sm md:text-base"
+              title="Upgrade Plan"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14"></path>
+                <path d="M12 5v14"></path>
+              </svg>
+              <span
+                className="hidden sm:inline"
+                onClick={() => navigate("/subscription")}
+              >
+                {t("document_generation.upgrade_plan")}
+              </span>
+            </button>
+          )}
+
+          {user === null ? (
+            <button
+              onClick={() => navigate("/login")}
+              className="bg-blue-600 text-white h-8 md:h-10 px-3 md:px-5 py-1 md:py-2 rounded-xl hover:bg-blue-700 transition-colors font-medium text-sm md:text-base"
+            >
+              {t("document_generation.sign_in")}
+            </button>
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium overflow-hidden">
+              <img
+                src={user ? user.profilePic : ""}
+                alt={user ? user.name : "pp"}
+                className="w-full h-full object-fit"
+              />
+            </div>
+          )}
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-24">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">

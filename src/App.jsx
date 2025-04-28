@@ -10,7 +10,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<GeneratePage />} />
-        <Route path="/tecflow-overview" element={<Homepage />} />
+        <Route path="/tecflow-help" element={<Homepage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/subscription" element={<SubscriptionPlans />} />
       </Routes>
