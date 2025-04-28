@@ -55,7 +55,8 @@
     "document_will_be_generated": "Tu documento se generará en formato PDF",
     "ai_powered": "Impulsado por IA",
     "generated_by": "Generado por TecFlow AI",
-    "request_quotation": "Solicitar cotización a TecHub"
+    "request_quotation": "Solicitar cotización a TecHub",
+    "additional_info_message": "Ingrese cualquier información adicional para su solicitud de cotización..."
   },
   "document_types": {
     "tech_spec": {

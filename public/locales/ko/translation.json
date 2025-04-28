@@ -55,7 +55,8 @@
     "document_will_be_generated": "문서가 PDF 형식으로 생성됩니다",
     "ai_powered": "AI 기반",
     "generated_by": "TecFlow AI로 생성됨",
-    "request_quotation": "TecHub에 견적 요청하기"
+    "request_quotation": "TecHub에 견적 요청하기",
+    "additional_info_message": "견적 요청을 위한 추가 정보를 입력해 주세요..."
   },
   "document_types": {
     "tech_spec": {

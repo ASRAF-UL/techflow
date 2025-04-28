@@ -55,7 +55,8 @@
     "document_will_be_generated": "Votre document sera généré au format PDF",
     "ai_powered": "Alimenté par IA",
     "generated_by": "Généré par TecFlow AI",
-    "request_quotation": "Demander un devis à TecHub"
+    "request_quotation": "Demander un devis à TecHub",
+    "additional_info_message": "Entrez toute information supplémentaire pour votre demande de devis..."
   },
   "document_types": {
     "tech_spec": {

@@ -55,7 +55,8 @@
     "document_will_be_generated": "ドキュメントはPDF形式で生成されます",
     "ai_powered": "AI搭載",
     "generated_by": "TecFlow AIによって生成",
-    "request_quotation": "TecHubに見積もりを依頼する"
+    "request_quotation": "TecHubに見積もりを依頼する",
+    "additional_info_message": "お見積り依頼のための追加情報を入力してください..."
   },
   "document_types": {
     "tech_spec": {

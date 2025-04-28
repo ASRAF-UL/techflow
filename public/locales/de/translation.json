@@ -55,7 +55,8 @@
     "document_will_be_generated": "Ihr Dokument wird im PDF-Format generiert",
     "ai_powered": "KI-gestützt",
     "generated_by": "Erstellt von TecFlow AI",
-    "request_quotation": "Angebot von TecHub anfordern"
+    "request_quotation": "Angebot von TecHub anfordern",
+    "additional_info_message": "Geben Sie zusätzliche Informationen für Ihre Angebotsanfrage ein..."
   },
   "document_types": {
     "tech_spec": {

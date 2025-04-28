@@ -207,6 +207,9 @@ const GeneratePage = () => {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
+  const [showQuotationInput, setShowQuotationInput] = useState(false);
+  const [additionalMessage, setAdditionalMessage] = useState("");
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -1237,7 +1240,7 @@ ${isEditing ? editedContent : generatedContent}
         "message",
         `Please find attached the ${
           selectedDocument?.title || "document"
-        } for quotation.`
+        } for quotation.\n\nAdditional Message:\n${additionalMessage}`
       );
 
       // Append the PDF file
@@ -1262,6 +1265,8 @@ ${isEditing ? editedContent : generatedContent}
 
       if (response.data === "success") {
         alert("Quotation request sent successfully!");
+        setShowQuotationInput(false); // Hide the input after successful submission
+        setAdditionalMessage(""); // Clear the additional message
       } else {
         throw new Error(response.data || "Failed to send quotation request");
       }
@@ -1998,21 +2003,48 @@ ${isEditing ? editedContent : generatedContent}
                               <Download className="w-4 h-4 md:w-5 md:h-5" />{" "}
                               {t("document_generation.download_pdf")}
                             </button>
-
                             <button
-                              className={`text-sm md:text-md p-1 md:p-2 text-white hover:opacity-80 rounded-lg transition-colors flex items-center gap-2 bg-red-500`}
+                              className={`text-sm md:text-md p-1 md:p-2 text-blue-500 font-[500] hover:opacity-80 rounded-lg transition-colors flex items-center gap-2`}
                               title="Request Quotation"
-                              onClick={handleRequestQuotation}
+                              onClick={() => setShowQuotationInput(true)}
                               disabled={isGenerating}
                             >
-                              {isGenerating
-                                ? t("document_generation.sending")
-                                : t("document_generation.request_quotation")}
+                              {t("document_generation.request_quotation")} ?
                             </button>
                           </>
                         )}
                       </div>
                     </div>
+                    {showQuotationInput && (
+                      <div className="flex flex-col gap-2 mt-2 px-4 items-end">
+                        <textarea
+                          value={additionalMessage}
+                          onChange={(e) => setAdditionalMessage(e.target.value)}
+                          placeholder={t(
+                            "document_generation.additional_info_message"
+                          )}
+                          className="w-full outline-none p-2 border border-gray-300 rounded-lg"
+                          rows={3}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            className={`text-sm md:text-md p-2 text-white hover:opacity-80 rounded-lg transition-colors flex items-center gap-2 bg-red-500`}
+                            onClick={handleRequestQuotation}
+                            disabled={isGenerating}
+                          >
+                            {isGenerating
+                              ? t("document_generation.sending")
+                              : t("document_generation.request_quotation")}
+                          </button>
+                          <button
+                            className="text-sm md:text-md p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            onClick={() => setShowQuotationInput(false)}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     <div className="p-3 md:p-4 bg-white">
                       {isGenerating ? (
                         <div className="animate-pulse space-y-3 md:space-y-4">
