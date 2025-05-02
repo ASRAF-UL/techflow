@@ -8,37 +8,113 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import LanguageSwitcher from "../../components/LanguageSwitcher";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Homepage = () => {
   const { user } = useSelector((state) => state.auth);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("getting-started");
   const [expandedFAQ, setExpandedFAQ] = useState(null);
-const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // Contact form state
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    issue: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState({
+    success: false,
+    message: "",
+  });
+
   const toggleFAQ = (index) => {
     setExpandedFAQ(expandedFAQ === index ? null : index);
   };
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  
-    useEffect(() => {
-      const handleResize = () => {
-        setIsMobile(window.innerWidth < 768);
-        if (window.innerWidth >= 768) {
-          setIsMobileSidebarOpen(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setSidebarCollapsed(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
+  const submitEmail = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus({ success: false, message: "" });
+
+    try {
+      // Create FormData object for multipart/form-data
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("issue", formData.issue);
+      formDataToSend.append("message", formData.message);
+
+      const response = await axios.post(
+        "https://techub.kr/send_email_tecflow.php",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      };
-  
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }, []);
+      );
+
+      if (response.data.success) {
+        setSubmitStatus({
+          success: true,
+          message: t("homepage.contact.form.success_message"),
+        });
+        // Reset form on success
+        setFormData({
+          name: "",
+          email: "",
+          issue: "",
+          message: "",
+        });
+      } else {
+        setSubmitStatus({
+          success: false,
+          message:
+            response.data.message || t("homepage.contact.form.error_message"),
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitStatus({
+        success: false,
+        message: t("homepage.contact.form.error_message"),
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Added navigation header */}
-      <header className="h-16 bg-white w-full pr-4  md:px-6 flex items-center justify-between fixed top-0 z-10 shadow-sm">
+      {/* Navigation Header */}
+      <header className="h-16 bg-white w-full pr-4 md:px-6 flex items-center justify-between fixed top-0 z-10 shadow-sm">
         <div className="flex items-center gap-4">
           {isMobile && (
             <img
@@ -80,6 +156,7 @@ const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
             <button
               className="flex items-center gap-1 md:gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-3 py-1 md:px-4 rounded-xl hover:opacity-90 transition-opacity text-sm md:text-base"
               title="Upgrade Plan"
+              onClick={() => navigate("/subscription")}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -95,10 +172,7 @@ const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
                 <path d="M5 12h14"></path>
                 <path d="M12 5v14"></path>
               </svg>
-              <span
-                className="hidden sm:inline"
-                onClick={() => navigate("/subscription")}
-              >
+              <span className="hidden sm:inline">
                 {t("document_generation.upgrade_plan")}
               </span>
             </button>
@@ -368,7 +442,7 @@ const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
                     </div>
                   </div>
                   <div>
-                    <form className="space-y-4">
+                    <form className="space-y-4" onSubmit={submitEmail}>
                       <div>
                         <label
                           htmlFor="name"
@@ -379,7 +453,10 @@ const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
                         <input
                           type="text"
                           id="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                          required
                         />
                       </div>
                       <div>
@@ -392,7 +469,10 @@ const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
                         <input
                           type="email"
                           id="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                          required
                         />
                       </div>
                       <div>
@@ -404,13 +484,26 @@ const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
                         </label>
                         <select
                           id="issue"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                          value={formData.issue}
+                          onChange={handleInputChange}
+                          className="outline-none w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                          required
                         >
+                          <option value="" disabled>
+                            {t("homepage.contact.form.issue_options.0")}{" "}
+                            {/* Shows "Select an option" */}
+                          </option>
                           {t("homepage.contact.form.issue_options", {
                             returnObjects: true,
-                          }).map((option, index) => (
-                            <option key={index}>{option}</option>
-                          ))}
+                          })
+                            .filter((_, index) => index > 0) // Skip the first option since we already added it
+                            .map((option, index) => (
+                              <option key={index + 1} value={option}>
+                                {" "}
+                                {/* index + 1 to maintain unique keys */}
+                                {option}
+                              </option>
+                            ))}
                         </select>
                       </div>
                       <div>
@@ -423,14 +516,31 @@ const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
                         <textarea
                           id="message"
                           rows={4}
+                          value={formData.message}
+                          onChange={handleInputChange}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                          required
                         ></textarea>
                       </div>
+                      {submitStatus.message && (
+                        <div
+                          className={`p-3 rounded-lg ${
+                            submitStatus.success
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {submitStatus.message}
+                        </div>
+                      )}
                       <button
                         type="submit"
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                        disabled={isSubmitting}
                       >
-                        {t("homepage.contact.form.send")}
+                        {isSubmitting
+                          ? t("homepage.contact.form.sending")
+                          : t("homepage.contact.form.send")}
                       </button>
                     </form>
                   </div>

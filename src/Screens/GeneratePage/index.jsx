@@ -309,7 +309,7 @@ const GeneratePage = () => {
       console.log("User prompt being sent:", userPrompt);
 
       const requestData = {
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
@@ -1236,12 +1236,8 @@ ${isEditing ? editedContent : generatedContent}
       formData.append("phone", "01666666666"); // Replace with actual phone if available
       formData.append("email", user.email);
       formData.append("service", "TecFlow");
-      formData.append(
-        "message",
-        `Please find attached the ${
-          selectedDocument?.title || "document"
-        } for quotation.\n\nAdditional Message:\n${additionalMessage}`
-      );
+      console.log("Document title: ", selectedDocument?.title);
+      formData.append("message", additionalMessage);
 
       // Append the PDF file
       const pdfFile = new File(
@@ -1254,7 +1250,7 @@ ${isEditing ? editedContent : generatedContent}
       formData.append("attachment", pdfFile);
 
       const response = await axios.post(
-        "https://techub.kr/send_email_tecflow.php",
+        "https://techub.kr/send_emailkr.php",
         formData,
         {
           headers: {
@@ -1263,10 +1259,13 @@ ${isEditing ? editedContent : generatedContent}
         }
       );
 
-      if (response.data === "success") {
+      if (
+        response.data.includes("메일이 성공적으로 전송되었습니다") ||
+        response.data.includes("success")
+      ) {
         alert("Quotation request sent successfully!");
-        setShowQuotationInput(false); // Hide the input after successful submission
-        setAdditionalMessage(""); // Clear the additional message
+        setShowQuotationInput(false);
+        setAdditionalMessage("");
       } else {
         throw new Error(response.data || "Failed to send quotation request");
       }
@@ -1865,10 +1864,20 @@ ${isEditing ? editedContent : generatedContent}
                   >
                     <type.icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <h3 className="mt-3 md:mt-4 text-base md:text-lg font-semibold text-gray-900">
+                  <h3
+                    style={{
+                      overflowWrap: "break-word",
+                    }}
+                    className="mt-3 md:mt-4 text-base md:text-lg font-semibold text-gray-900"
+                  >
                     {type.title}
                   </h3>
-                  <p className="mt-1 md:mt-2 text-xs md:text-sm text-gray-600">
+                  <p
+                    style={{
+                      overflowWrap: "break-word",
+                    }}
+                    className="mt-1 md:mt-2 text-xs md:text-sm text-gray-600"
+                  >
                     {type.description}
                   </p>
                   <ArrowRight
