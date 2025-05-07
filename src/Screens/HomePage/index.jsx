@@ -58,58 +58,61 @@ const Homepage = () => {
     }));
   };
 
-  const submitEmail = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus({ success: false, message: "" });
+ const submitEmail = async (e) => {
+   e.preventDefault();
+   setIsSubmitting(true);
+   setSubmitStatus({ success: false, message: "" });
 
-    try {
-      // Create FormData object for multipart/form-data
-      const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("email", formData.email);
-      formDataToSend.append("issue", formData.issue);
-      formDataToSend.append("message", formData.message);
+   try {
+     const formDataToSend = new FormData();
+     formDataToSend.append("name", formData.name);
+     formDataToSend.append("email", formData.email);
+     formDataToSend.append("issue", formData.issue);
+     formDataToSend.append("message", formData.message);
 
-      const response = await axios.post(
-        "https://techub.kr/send_email_tecflow.php",
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+     // To debug, you can see the actual FormData contents like this:
+     for (let [key, value] of formDataToSend.entries()) {
+       console.log(key, value);
+     }
 
-      if (response.data.success) {
-        setSubmitStatus({
-          success: true,
-          message: t("homepage.contact.form.success_message"),
-        });
-        // Reset form on success
-        setFormData({
-          name: "",
-          email: "",
-          issue: "",
-          message: "",
-        });
-      } else {
-        setSubmitStatus({
-          success: false,
-          message:
-            response.data.message || t("homepage.contact.form.error_message"),
-        });
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setSubmitStatus({
-        success: false,
-        message: t("homepage.contact.form.error_message"),
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+     const response = await axios.post(
+       "https://techub.kr/send_email_tecflow.php",
+       formDataToSend,
+       {
+         headers: {
+           "Content-Type": "multipart/form-data",
+         },
+       }
+     );
+
+     console.log("Response data:", response.data);
+     if (response.data === "success" || response.data.success) {
+       setSubmitStatus({
+         success: true,
+         message: "Your contact request sent successfully! Our team will reach to you soon.",
+       });
+       setFormData({
+         name: "",
+         email: "",
+         issue: "",
+         message: "",
+       });
+     } else {
+       setSubmitStatus({
+         success: false,
+         message: "Failed to send your request email. Try again!",
+       });
+     }
+   } catch (error) {
+     console.error("Error submitting form:", error);
+     setSubmitStatus({
+       success: false,
+       message: "Failed to send your request email. Try again!",
+     });
+   } finally {
+     setIsSubmitting(false);
+   }
+ };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">

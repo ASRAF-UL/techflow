@@ -1686,9 +1686,9 @@ ${isEditing ? editedContent : generatedContent}
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    {/* <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                       <Settings className="w-4 h-4 text-gray-500" />
-                    </button>
+                    </button> */}
                     <button
                       className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                       onClick={handleLogout}
@@ -1866,7 +1866,8 @@ ${isEditing ? editedContent : generatedContent}
                   </div>
                   <h3
                     style={{
-                      overflowWrap: "break-word",
+                      wordBreak: "keep-all", // Prevents breaking within Korean words
+                      overflowWrap: "break-word", // Allows breaking at appropriate points
                     }}
                     className="mt-3 md:mt-4 text-base md:text-lg font-semibold text-gray-900"
                   >
@@ -1874,7 +1875,8 @@ ${isEditing ? editedContent : generatedContent}
                   </h3>
                   <p
                     style={{
-                      overflowWrap: "break-word",
+                      wordBreak: "keep-all", // Prevents breaking within Korean words
+                      overflowWrap: "break-word", // Allows breaking at appropriate points
                     }}
                     className="mt-1 md:mt-2 text-xs md:text-sm text-gray-600"
                   >
@@ -1991,30 +1993,9 @@ ${isEditing ? editedContent : generatedContent}
                             >
                               <Copy className="w-3 h-3 md:w-4 md:h-4" />
                             </button>
-                            {/* <button
-                              className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-                              title="Share document"
-                            >
-                              <Share2 className="w-3 h-3 md:w-4 md:h-4" />
-                            </button> */}
-                            {/* <button
-                              className="p-1 md:p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
-                              title="Download as Markdown"
-                              onClick={handleDownloadMarkdown}
-                            >
-                              <FileText className="w-3 h-3 md:w-4 md:h-4" />
-                            </button> */}
-                            <button
-                              className={`text-sm md:text-md p-1 md:p-2 text-white hover:opacity-80 rounded-lg transition-colors flex items-center gap-2 ${selectedDocument?.color}`}
-                              title="Download as PDF"
-                              onClick={generatePDF}
-                            >
-                              <Download className="w-4 h-4 md:w-5 md:h-5" />{" "}
-                              {t("document_generation.download_pdf")}
-                            </button>
                             <button
                               className={`text-sm md:text-md p-1 md:p-2 text-blue-500 font-[500] hover:opacity-80 rounded-lg transition-colors flex items-center gap-2`}
-                              title="Request Quotation"
+                              title={t("document_generation.request_quotation_title")}
                               onClick={() => setShowQuotationInput(true)}
                               disabled={isGenerating}
                             >
@@ -2037,7 +2018,7 @@ ${isEditing ? editedContent : generatedContent}
                         />
                         <div className="flex gap-2">
                           <button
-                            className={`text-sm md:text-md p-2 text-white hover:opacity-80 rounded-lg transition-colors flex items-center gap-2 bg-red-500`}
+                            className={`text-sm md:text-md p-2 text-white hover:opacity-80 rounded-lg transition-colors flex items-center gap-2 bg-blue-500`}
                             onClick={handleRequestQuotation}
                             disabled={isGenerating}
                           >
@@ -2163,6 +2144,17 @@ ${isEditing ? editedContent : generatedContent}
                           {t("document_generation.empty_preview")}
                         </div>
                       )}
+                    </div>
+                    {/* Moved PDF download button here - below the content */}
+                    <div className="p-3 md:p-4 bg-gray-50 rounded-b-lg flex justify-end">
+                      <button
+                        className={`text-sm md:text-md px-4 py-2 text-white hover:opacity-80 rounded-lg transition-colors flex items-center gap-2 ${selectedDocument?.color}`}
+                        title="Download as PDF"
+                        onClick={generatePDF}
+                      >
+                        <Download className="w-4 h-4 md:w-5 md:h-5" />{" "}
+                        {t("document_generation.download_pdf")}
+                      </button>
                     </div>
                   </div>
                 )}
