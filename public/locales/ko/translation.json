@@ -56,6 +56,8 @@
     "ai_powered": "AI 기반",
     "generated_by": "TecFlow AI로 생성됨",
     "request_quotation": "견적 요청",
+    "request_submit": "제출",
+    "request_cancel": "취소",
     "request_quotation_title": "생성된 문서를 사용하여 TecHub에 견적을 요청하세요",
     "additional_info_message": "견적 요청을 위한 추가 정보를 입력해 주세요..."
   },

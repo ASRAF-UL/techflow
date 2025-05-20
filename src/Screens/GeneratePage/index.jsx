@@ -340,7 +340,7 @@ const GeneratePage = () => {
             Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
             "Content-Type": "application/json",
           },
-          timeout: 30000, // 30 seconds timeout
+          timeout: 80000, // 30 seconds timeout
         }
       );
 
@@ -967,6 +967,12 @@ ${isEditing ? editedContent : generatedContent}
 
   const handleRequestQuotation = async () => {
     try {
+      if (!user?.name || !user?.email) {
+        setError("You need to login for requesting a quotation.");
+        alert("You need to login for requesting a quotation.");
+        return;
+      }
+
       // Generate PDF first
       const contentToUse = isEditing ? editedContent : generatedContent;
       if (!contentToUse) return;
@@ -1995,11 +2001,13 @@ ${isEditing ? editedContent : generatedContent}
                             </button>
                             <button
                               className={`text-sm md:text-md p-1 md:p-2 text-blue-500 font-[500] hover:opacity-80 rounded-lg transition-colors flex items-center gap-2`}
-                              title={t("document_generation.request_quotation_title")}
+                              title={t(
+                                "document_generation.request_quotation_title"
+                              )}
                               onClick={() => setShowQuotationInput(true)}
                               disabled={isGenerating}
                             >
-                              {t("document_generation.request_quotation")} ?
+                              {t("document_generation.request_quotation")}
                             </button>
                           </>
                         )}
@@ -2024,13 +2032,13 @@ ${isEditing ? editedContent : generatedContent}
                           >
                             {isGenerating
                               ? t("document_generation.sending")
-                              : t("document_generation.request_quotation")}
+                              : t("document_generation.request_submit")}
                           </button>
                           <button
                             className="text-sm md:text-md p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                             onClick={() => setShowQuotationInput(false)}
                           >
-                            Cancel
+                            {t("document_generation.request_cancel")}
                           </button>
                         </div>
                       </div>
